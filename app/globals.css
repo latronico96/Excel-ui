@@ -167,7 +167,7 @@ h3 {
 .select:focus {
   outline: none;
   border-color: var(--primary);
-  ring: 2px solid var(--primary);
+  box-shadow: 0 0 0 2px var(--primary-light);
 }
 
 /* Table */
