@@ -59,6 +59,11 @@ export default function LoginPage() {
                 <p style={{ marginTop: '1.5rem', fontSize: '0.75rem', color: 'var(--text-muted)' }}>
                     Al iniciar sesión, autorizas el acceso a Google Drive para crear y gestionar el archivo de datos.
                 </p>
+
+                <div style={{ marginTop: '2rem', display: 'flex', justifyContent: 'center', gap: '1rem', fontSize: '0.75rem' }}>
+                    <a href="/privacy" style={{ color: 'var(--text-muted)', textDecoration: 'underline' }}>Política de Privacidad</a>
+                    <a href="/terms" style={{ color: 'var(--text-muted)', textDecoration: 'underline' }}>Términos de Servicio</a>
+                </div>
             </div>
         </div>
     );
