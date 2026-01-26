@@ -6,8 +6,11 @@ import { Providers } from "./Providers";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-    title: process.env.NEXT_PUBLIC_APP_TITLE || "Control Diario - Mi Comercio",
+    title: process.env.NEXT_PUBLIC_APP_TITLE || "Tienda de Ropa - Gestión",
     description: "Gestión de ingresos y gastos con Google Sheets",
+    verification: {
+        google: "LPSt3_sjFJfq1Qv7_ISCHgBPvXt41xcRKK2Nzk_kRfU",
+    }
 };
 
 export default function RootLayout({
