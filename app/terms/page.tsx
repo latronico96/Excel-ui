@@ -14,7 +14,7 @@ export default function TermsPage() {
             <p>Usted es el único responsable de la exactitud de los datos ingresados y de mantener la seguridad de su cuenta de Google.</p>
 
             <h2>4. Limitación de responsabilidad</h2>
-            <p>Esta aplicación se proporciona "tal cual", sin garantías de ningún tipo. No nos hacemos responsables de pérdidas financieras, errores de cálculo o pérdida de acceso a su cuenta de Google.</p>
+            <p>Esta aplicación se proporciona &quot;tal cual&quot;, sin garantías de ningún tipo. No nos hacemos responsables de pérdidas financieras, errores de cálculo o pérdida de acceso a su cuenta de Google.</p>
 
             <h2>5. Cambios en el servicio</h2>
             <p>Nos reservamos el derecho de modificar o interrumpir el servicio en cualquier momento, aunque al ser una aplicación que utiliza su propio almacenamiento, sus datos siempre permanecerán en su Google Drive.</p>

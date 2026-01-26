@@ -4,7 +4,7 @@ export default function PrivacyPage() {
             <h1>Política de Privacidad</h1>
             <p>Última actualización: 25 de enero de 2026</p>
 
-            <p>Esta aplicación ("Excel-UI") respeta su privacidad y se compromete a proteger sus datos personales.</p>
+            <p>Esta aplicación (&quot;Excel-UI&quot;) respeta su privacidad y se compromete a proteger sus datos personales.</p>
 
             <h2>1. Datos que recopilamos</h2>
             <p>Excel-UI no almacena sus datos en servidores propios. La aplicación actúa como una interfaz entre usted y su propia cuenta de Google Drive.</p>
@@ -21,7 +21,7 @@ export default function PrivacyPage() {
             </ul>
 
             <h2>3. Almacenamiento y Seguridad</h2>
-            <p>Todos sus datos financieros se almacenan exclusivamente en su cuenta personal de Google Drive. Nosotros no tenemos acceso a sus archivos fuera de los que la aplicación crea bajo su autorización ("drive.file").</p>
+            <p>Todos sus datos financieros se almacenan exclusivamente en su cuenta personal de Google Drive. Nosotros no tenemos acceso a sus archivos fuera de los que la aplicación crea bajo su autorización (&quot;drive.file&quot;).</p>
 
             <h2>4. Compartir datos con terceros</h2>
             <p>No vendemos, alquilamos ni compartimos sus datos personales con terceros. Su información permanece privada en su entorno de Google.</p>
