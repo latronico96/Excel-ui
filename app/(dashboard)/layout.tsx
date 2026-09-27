@@ -5,6 +5,7 @@ import { useRouter, usePathname } from 'next/navigation';
 import { useEffect } from 'react';
 import Link from 'next/link';
 import {
+    CreditCard,
     LayoutDashboard,
     Receipt,
     PieChart,
@@ -44,6 +45,14 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                         <Link href="/tipos-gasto" className={`nav-link ${pathname === '/tipos-gasto' ? 'active' : ''}`}>
                             <Tags size={20} />
                             Tipos de gasto
+                        </Link>
+                        <Link
+                            href="/medios-pago"
+                            className={`nav-link ${pathname === '/medios-pago' ? 'active' : ''
+                                }`}
+                        >
+                            <CreditCard size={20} />
+                            Medios de pago
                         </Link>
                         <Link href="/resumen" className={`nav-link ${pathname === '/resumen' ? 'active' : ''}`}>
                             <PieChart size={20} />
