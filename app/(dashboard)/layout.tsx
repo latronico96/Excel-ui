@@ -4,8 +4,13 @@ import { useSession, signOut } from 'next-auth/react';
 import { useRouter, usePathname } from 'next/navigation';
 import { useEffect } from 'react';
 import Link from 'next/link';
-import { LayoutDashboard, Receipt, PieChart, LogOut } from 'lucide-react';
-
+import {
+    LayoutDashboard,
+    Receipt,
+    PieChart,
+    Tags,
+    LogOut,
+} from 'lucide-react';
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
     const { status } = useSession();
     const router = useRouter();
@@ -35,6 +40,10 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                         <Link href="/movimientos" className={`nav-link ${pathname === '/movimientos' ? 'active' : ''}`}>
                             <Receipt size={20} />
                             Movimientos
+                        </Link>
+                        <Link href="/tipos-gasto" className={`nav-link ${pathname === '/tipos-gasto' ? 'active' : ''}`}>
+                            <Tags size={20} />
+                            Tipos de gasto
                         </Link>
                         <Link href="/resumen" className={`nav-link ${pathname === '/resumen' ? 'active' : ''}`}>
                             <PieChart size={20} />
