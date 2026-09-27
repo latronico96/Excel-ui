@@ -9,7 +9,7 @@ export class MovimientosService {
                 const date = new Date(movement.date);
 
                 if (Number.isNaN(date.getTime())) {
-                    throw new Error("Fecha inválida");
+                    throw new Error("VALIDATION: Fecha inválida");
                 }
 
                 const investmentPercentage =
@@ -20,13 +20,11 @@ export class MovimientosService {
                     investmentPercentage < 0 ||
                     investmentPercentage > 100
                 ) {
-                    throw new Error(
-                        "El porcentaje de inversión debe estar entre 0 y 100"
-                    );
+                    throw new Error("VALIDATION: El porcentaje de inversión debe estar entre 0 y 100");
                 }
 
                 if (!Array.isArray(movement.payments)) {
-                    throw new Error("Los medios de pago son inválidos");
+                    throw new Error("VALIDATION: Los medios de pago son inválidos");
                 }
 
                 const paymentMethodIds = movement.payments.map(
@@ -37,9 +35,7 @@ export class MovimientosService {
                     new Set(paymentMethodIds).size !==
                     paymentMethodIds.length
                 ) {
-                    throw new Error(
-                        "No se puede repetir un medio de pago en el mismo ingreso"
-                    );
+                    throw new Error("VALIDATION: No se puede repetir un medio de pago en el mismo ingreso");
                 }
 
                 const validPayments = movement.payments.filter(
@@ -47,9 +43,7 @@ export class MovimientosService {
                 );
 
                 if (validPayments.length === 0) {
-                    throw new Error(
-                        "El ingreso debe tener al menos un monto mayor a 0"
-                    );
+                    throw new Error("VALIDATION: El ingreso debe tener al menos un monto mayor a 0");
                 }
 
                 const total = validPayments.reduce(
@@ -64,9 +58,7 @@ export class MovimientosService {
                         !Number.isFinite(payment.amount) ||
                         payment.amount <= 0
                     ) {
-                        throw new Error(
-                            "Los montos de los medios de pago deben ser mayores a 0"
-                        );
+                        throw new Error("VALIDATION: Los montos de los medios de pago deben ser mayores a 0");
                     }
 
                     const paymentMethod =
@@ -79,7 +71,7 @@ export class MovimientosService {
                         });
 
                     if (!paymentMethod) {
-                        throw new Error("Medio de pago inválido");
+                        throw new Error("VALIDATION: Medio de pago inválido");
                     }
 
                     const commissionPercentage =
@@ -93,9 +85,7 @@ export class MovimientosService {
                         commissionPercentage < 0 ||
                         commissionPercentage > 100
                     ) {
-                        throw new Error(
-                            "Porcentaje de comisión inválido"
-                        );
+                        throw new Error("VALIDATION: Porcentaje de comisión inválido");
                     }
 
                     const commissionAmount =
@@ -148,28 +138,22 @@ export class MovimientosService {
             const date = new Date(movement.date);
 
             if (Number.isNaN(date.getTime())) {
-                throw new Error("Fecha inválida");
+                throw new Error("VALIDATION: Fecha inválida");
             }
 
             if (
                 !Number.isFinite(movement.amount) ||
                 movement.amount <= 0
             ) {
-                throw new Error(
-                    "El egreso debe tener un monto mayor a 0"
-                );
+                throw new Error("VALIDATION: El egreso debe tener un monto mayor a 0");
             }
 
             if (!movement.paymentMethodId) {
-                throw new Error(
-                    "Debe seleccionar un medio de pago"
-                );
+                throw new Error("VALIDATION: Debe seleccionar un medio de pago");
             }
 
             if (!movement.expenseTypeId) {
-                throw new Error(
-                    "Debe seleccionar un tipo de gasto"
-                );
+                throw new Error("VALIDATION: Debe seleccionar un tipo de gasto");
             }
 
             const paymentMethod =
@@ -182,7 +166,7 @@ export class MovimientosService {
                 });
 
             if (!paymentMethod) {
-                throw new Error("Medio de pago inválido");
+                throw new Error("VALIDATION: Medio de pago inválido");
             }
 
             const expenseType =
@@ -195,7 +179,7 @@ export class MovimientosService {
                 });
 
             if (!expenseType) {
-                throw new Error("Tipo de gasto inválido");
+                throw new Error("VALIDATION: Tipo de gasto inválido");
             }
 
             const movementRecord = await tx.movement.create({

@@ -148,6 +148,21 @@ export async function POST(req: NextRequest) {
     } catch (error) {
         console.error("POST /api/movimientos:", error);
 
+        if (
+            error instanceof Error &&
+            error.message.startsWith("VALIDATION:")
+        ) {
+            return NextResponse.json(
+                {
+                    error: error.message.replace(
+                        "VALIDATION: ",
+                        ""
+                    ),
+                },
+                { status: 400 }
+            );
+        }
+
         return NextResponse.json(
             {
                 error:
@@ -159,3 +174,5 @@ export async function POST(req: NextRequest) {
         );
     }
 }
+
+class ValidationError extends Error { }
