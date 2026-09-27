@@ -6,6 +6,7 @@ import {
     Movement,
     PaymentMethodOption,
 } from "@/shared/types";
+import { Plus } from "lucide-react";
 
 import EgresoForm from "./components/EgresoForm";
 import IngresoForm from "./components/IngresoForm";
@@ -22,6 +23,7 @@ export default function MovimientosPage() {
 
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
+
     const [showIngresoForm, setShowIngresoForm] = useState(false);
     const [showEgresoForm, setShowEgresoForm] = useState(false);
 
@@ -68,22 +70,23 @@ export default function MovimientosPage() {
                 expenseTypesRes.json(),
             ]);
 
-            const methods = Array.isArray(paymentMethodsData)
-                ? paymentMethodsData
-                : [];
-
-            const types = Array.isArray(expenseTypesData)
-                ? expenseTypesData
-                : [];
-
             setMovements(
                 Array.isArray(movementsData)
                     ? movementsData
                     : []
             );
 
-            setPaymentMethods(methods);
-            setExpenseTypes(types);
+            setPaymentMethods(
+                Array.isArray(paymentMethodsData)
+                    ? paymentMethodsData
+                    : []
+            );
+
+            setExpenseTypes(
+                Array.isArray(expenseTypesData)
+                    ? expenseTypesData
+                    : []
+            );
         } catch (err) {
             console.error(err);
 
@@ -101,6 +104,26 @@ export default function MovimientosPage() {
         fetchData();
     }, []);
 
+    const openIngreso = () => {
+        setShowEgresoForm(false);
+        setShowIngresoForm(true);
+        setError("");
+    };
+
+    const openEgreso = () => {
+        setShowIngresoForm(false);
+        setShowEgresoForm(true);
+        setError("");
+    };
+
+    const closeIngreso = () => {
+        setShowIngresoForm(false);
+    };
+
+    const closeEgreso = () => {
+        setShowEgresoForm(false);
+    };
+
     return (
         <div className="animate-fade">
             <h1>Movimientos</h1>
@@ -117,7 +140,6 @@ export default function MovimientosPage() {
                 </div>
             )}
 
-
             <div
                 style={{
                     display: "flex",
@@ -129,53 +151,59 @@ export default function MovimientosPage() {
                 <button
                     type="button"
                     className="btn btn-primary"
-                    onClick={() => setShowIngresoForm((current) => !current)}
+                    onClick={openIngreso}
                 >
-                    + Nuevo ingreso
+                    <Plus size={18} />
+                    Nuevo ingreso
                 </button>
 
                 <button
                     type="button"
                     className="btn"
-                    onClick={() => setShowEgresoForm((current) => !current)}
+                    onClick={openEgreso}
                 >
-                    + Nuevo egreso
+                    <Plus size={18} />
+                    Nuevo egreso
                 </button>
             </div>
 
             <div
                 style={{
-                    display: "grid",
-                    gridTemplateColumns:
-                        "repeat(auto-fit, minmax(320px, 1fr))",
-                    gap: "1rem",
                     marginBottom: "1.5rem",
                 }}
             >
+                {showIngresoForm && (
+                    <IngresoForm
+                        paymentMethods={paymentMethods}
+                        loading={loading}
+                        onSaved={async () => {
+                            await fetchData();
+                            closeIngreso();
+                        }}
+                        onClose={closeIngreso}
+                        onError={setError}
+                    />
+                )}
 
                 {showEgresoForm && (
                     <EgresoForm
                         paymentMethods={paymentMethods}
                         expenseTypes={expenseTypes}
                         loading={loading}
-                        onSaved={fetchData}
-                        onError={setError}
-                    />
-                )}
-
-                {showIngresoForm && (
-                    <IngresoForm
-                        paymentMethods={paymentMethods}
-                        loading={loading}
-                        onSaved={fetchData}
+                        onSaved={async () => {
+                            await fetchData();
+                            closeEgreso();
+                        }}
+                        onClose={closeEgreso}
                         onError={setError}
                     />
                 )}
             </div>
+
             <MovimientosHistorial
                 movements={movements}
                 loading={loading}
             />
-        </div >
+        </div>
     );
 }

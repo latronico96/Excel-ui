@@ -5,13 +5,13 @@ import {
     ExpenseTypeOption,
     PaymentMethodOption,
 } from "@/shared/types";
-import { Loader2, Plus } from "lucide-react";
-
+import { Loader2, Plus, X } from "lucide-react";
 interface EgresoFormProps {
     paymentMethods: PaymentMethodOption[];
     expenseTypes: ExpenseTypeOption[];
     loading: boolean;
     onSaved: () => Promise<void>;
+    onClose: () => void;
     onError: (message: string) => void;
 }
 
@@ -20,6 +20,7 @@ export default function EgresoForm({
     expenseTypes,
     loading,
     onSaved,
+    onClose,
     onError,
 }: EgresoFormProps) {
     const today = new Date().toISOString().split("T")[0];
@@ -104,9 +105,55 @@ export default function EgresoForm({
         }
     };
 
+    const handleClose = () => {
+        const hasData =
+            form.amount.trim() !== "" ||
+            form.description.trim() !== "" ||
+            form.paymentMethodId !== "" ||
+            form.expenseTypeId !== "";
+
+        if (!hasData) {
+            onClose();
+            return;
+        }
+
+        const confirmed = window.confirm(
+            "¿Cerrar el formulario?\n\nSe perderán los datos que ingresaste."
+        );
+
+        if (confirmed) {
+            onClose();
+        }
+    };
+
     return (
         <div className="card">
-            <h3>Nuevo egreso</h3>
+            <div
+                style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    marginBottom: "1rem",
+                }}
+            >
+                <h3 style={{ margin: 0 }}>Nuevo egreso</h3>
+
+                <button
+                    type="button"
+                    onClick={handleClose}
+                    aria-label="Cerrar formulario"
+                    style={{
+                        border: "none",
+                        background: "transparent",
+                        cursor: "pointer",
+                        padding: "0.25rem",
+                        display: "flex",
+                        alignItems: "center",
+                    }}
+                >
+                    <X size={20} />
+                </button>
+            </div>
 
             <form
                 onSubmit={handleSave}
