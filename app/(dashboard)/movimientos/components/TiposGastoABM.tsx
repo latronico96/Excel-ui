@@ -23,7 +23,7 @@ export default function TiposGastoABM() {
             setLoading(true);
             setError("");
 
-            const res = await fetch("/api/tipos-gasto");
+            const res = await fetch("/api/tipos-gasto?all=true");
 
             const data = await res.json();
 
@@ -35,10 +35,7 @@ export default function TiposGastoABM() {
 
             setExpenseTypes(
                 Array.isArray(data)
-                    ? data.map((type) => ({
-                        ...type,
-                        active: true,
-                    }))
+                    ? data
                     : []
             );
         } catch (err) {

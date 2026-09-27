@@ -32,23 +32,20 @@ export default function MediosPagoABM() {
             setLoading(true);
             setError("");
 
-            const res = await fetch("/api/medios-pago");
+            const res = await fetch("/api/medios-pago?all=true");
 
             const data = await res.json();
 
             if (!res.ok) {
                 throw new Error(
                     data.error ||
-                        "No se pudieron cargar los medios de pago"
+                    "No se pudieron cargar los medios de pago"
                 );
             }
 
             setPaymentMethods(
                 Array.isArray(data)
-                    ? data.map((method) => ({
-                          ...method,
-                          active: true,
-                      }))
+                    ? data
                     : []
             );
         } catch (err) {
@@ -134,16 +131,16 @@ export default function MediosPagoABM() {
                 body: JSON.stringify(
                     editingId
                         ? {
-                              id: editingId,
-                              name: trimmedName,
-                              defaultCommissionPercentage:
-                                  commissionValue,
-                          }
+                            id: editingId,
+                            name: trimmedName,
+                            defaultCommissionPercentage:
+                                commissionValue,
+                        }
                         : {
-                              name: trimmedName,
-                              defaultCommissionPercentage:
-                                  commissionValue,
-                          }
+                            name: trimmedName,
+                            defaultCommissionPercentage:
+                                commissionValue,
+                        }
                 ),
             });
 
@@ -152,7 +149,7 @@ export default function MediosPagoABM() {
             if (!res.ok) {
                 throw new Error(
                     data.error ||
-                        "No se pudo guardar el medio de pago"
+                    "No se pudo guardar el medio de pago"
                 );
             }
 
@@ -161,12 +158,12 @@ export default function MediosPagoABM() {
                     current.map((method) =>
                         method.id === editingId
                             ? {
-                                  ...method,
-                                  name: data.name,
-                                  active: data.active,
-                                  defaultCommissionPercentage:
-                                      data.defaultCommissionPercentage,
-                              }
+                                ...method,
+                                name: data.name,
+                                active: data.active,
+                                defaultCommissionPercentage:
+                                    data.defaultCommissionPercentage,
+                            }
                             : method
                     )
                 );
@@ -217,7 +214,7 @@ export default function MediosPagoABM() {
             if (!res.ok) {
                 throw new Error(
                     data.error ||
-                        "No se pudo cambiar el estado"
+                    "No se pudo cambiar el estado"
                 );
             }
 
@@ -225,9 +222,9 @@ export default function MediosPagoABM() {
                 current.map((method) =>
                     method.id === paymentMethod.id
                         ? {
-                              ...method,
-                              active: data.active,
-                          }
+                            ...method,
+                            active: data.active,
+                        }
                         : method
                 )
             );

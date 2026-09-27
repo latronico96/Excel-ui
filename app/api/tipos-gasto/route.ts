@@ -20,7 +20,7 @@ async function getUser() {
     });
 }
 
-export async function GET() {
+export async function GET(request: Request) {
     const user = await getUser();
 
     if (!user) {
@@ -31,6 +31,7 @@ export async function GET() {
     }
 
     try {
+        const showAll = new URL(request.url).searchParams.get("all") === "true";
         const existingCount = await prisma.expenseType.count({
             where: {
                 userId: user.id,
@@ -63,7 +64,7 @@ export async function GET() {
         const expenseTypes = await prisma.expenseType.findMany({
             where: {
                 userId: user.id,
-                active: true,
+                ...(showAll ? {} : { active: true }),
             },
             select: {
                 id: true,
