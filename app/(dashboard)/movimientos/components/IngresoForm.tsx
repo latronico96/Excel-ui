@@ -1,8 +1,17 @@
 "use client";
 
-import { useState } from "react";
-import { PaymentMethodOption } from "@/shared/types";
-import { Loader2, Plus, X } from "lucide-react";
+import { useEffect, useState } from "react";
+import {
+    Movement,
+    PaymentMethodOption,
+} from "@/shared/types";
+import {
+    Loader2,
+    Plus,
+    Save,
+    X,
+} from "lucide-react";
+
 interface IncomePaymentForm {
     paymentMethodId: string;
     amount: string;
@@ -15,6 +24,7 @@ interface IngresoFormProps {
     onSaved: () => Promise<void>;
     onClose: () => void;
     onError: (message: string) => void;
+    movement?: Movement;
 }
 
 export default function IngresoForm({
@@ -23,12 +33,15 @@ export default function IngresoForm({
     onSaved,
     onClose,
     onError,
+    movement,
 }: IngresoFormProps) {
-    const today = new Date().toISOString().split("T")[0];
+    const today = new Date()
+        .toISOString()
+        .split("T")[0];
 
-    const [saving, setSaving] = useState(false);
+    const isEditing = Boolean(movement);
 
-    const createPayments = () =>
+    const createPayments = (): IncomePaymentForm[] =>
         paymentMethods.map((method) => ({
             paymentMethodId: method.id,
             amount: "",
@@ -37,40 +50,109 @@ export default function IngresoForm({
             ),
         }));
 
-    const [form, setForm] = useState({
+    const createForm = () => ({
         date: today,
         investmentPercentage: "50",
         description: "",
         payments: createPayments(),
     });
 
+    const [saving, setSaving] = useState(false);
+
+    const [form, setForm] = useState(createForm);
+
+    useEffect(() => {
+        if (!movement) {
+            setForm(createForm());
+            return;
+        }
+
+        const movementDate = new Date(movement.date);
+
+        const formattedDate = Number.isNaN(
+            movementDate.getTime()
+        )
+            ? today
+            : movementDate
+                .toISOString()
+                .split("T")[0];
+
+        const movementPayments =
+            movement.payments ?? [];
+
+        const payments = paymentMethods.map(
+            (method) => {
+                const existingPayment =
+                    movementPayments.find(
+                        (payment) =>
+                            payment.paymentMethodId ===
+                            method.id
+                    );
+
+                return {
+                    paymentMethodId: method.id,
+                    amount: existingPayment
+                        ? String(existingPayment.amount)
+                        : "",
+                    commissionPercentage:
+                        existingPayment
+                            ? String(
+                                existingPayment.commissionPercentage
+                            )
+                            : String(
+                                method.defaultCommissionPercentage ??
+                                0
+                            ),
+                };
+            }
+        );
+
+        setForm({
+            date: formattedDate,
+            investmentPercentage: String(
+                movement.investmentPercentage ?? 50
+            ),
+            description:
+                movement.description ?? "",
+            payments,
+        });
+    }, [movement, paymentMethods]);
+
     const updatePayment = (
         paymentMethodId: string,
-        field: "amount" | "commissionPercentage",
+        field:
+            | "amount"
+            | "commissionPercentage",
         value: string
     ) => {
         setForm((current) => ({
             ...current,
-            payments: current.payments.map((payment) =>
-                payment.paymentMethodId === paymentMethodId
-                    ? {
-                        ...payment,
-                        [field]: value,
-                    }
-                    : payment
+            payments: current.payments.map(
+                (payment) =>
+                    payment.paymentMethodId ===
+                        paymentMethodId
+                        ? {
+                            ...payment,
+                            [field]: value,
+                        }
+                        : payment
             ),
         }));
     };
 
     const totalIncome = form.payments.reduce(
         (total, payment) =>
-            total + Number(payment.amount || 0),
+            total +
+            Number(payment.amount || 0),
         0
     );
 
     const totalCommission = form.payments.reduce(
         (total, payment) => {
-            const amount = Number(payment.amount || 0);
+            const amount = Number(
+                payment.amount || 0
+            );
+
             const percentage = Number(
                 payment.commissionPercentage || 0
             );
@@ -83,16 +165,20 @@ export default function IngresoForm({
         0
     );
 
-    const netIncome = totalIncome - totalCommission;
+    const netIncome =
+        totalIncome - totalCommission;
 
     const investmentPercentage = Number(
         form.investmentPercentage || 0
     );
 
     const investmentAmount =
-        netIncome * (investmentPercentage / 100);
+        netIncome *
+        (investmentPercentage / 100);
 
-    const handleSave = async (e: React.FormEvent) => {
+    const handleSave = async (
+        e: React.FormEvent
+    ) => {
         e.preventDefault();
 
         const payments = form.payments
@@ -127,36 +213,53 @@ export default function IngresoForm({
             setSaving(true);
             onError("");
 
-            const res = await fetch("/api/movimientos", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    type: "INGRESO",
-                    date: form.date,
-                    investmentPercentage,
-                    payments,
-                    description:
-                        form.description.trim() || null,
-                }),
-            });
+            const payload = {
+                type: "INGRESO" as const,
+                date: form.date,
+                investmentPercentage,
+                payments,
+                description:
+                    form.description.trim() ||
+                    null,
+            };
+
+            const res = await fetch(
+                "/api/movimientos",
+                {
+                    method: isEditing
+                        ? "PUT"
+                        : "POST",
+                    headers: {
+                        "Content-Type":
+                            "application/json",
+                    },
+                    body: JSON.stringify(
+                        isEditing
+                            ? {
+                                id: movement!.id,
+                                ...payload,
+                            }
+                            : payload
+                    ),
+                }
+            );
 
             const data = await res.json();
 
             if (!res.ok) {
                 throw new Error(
                     data.error ||
-                    "No se pudo guardar el ingreso"
+                    (
+                        isEditing
+                            ? "No se pudo actualizar el ingreso"
+                            : "No se pudo guardar el ingreso"
+                    )
                 );
             }
 
-            setForm({
-                date: today,
-                investmentPercentage: "50",
-                description: "",
-                payments: createPayments(),
-            });
+            if (!isEditing) {
+                setForm(createForm());
+            }
 
             await onSaved();
         } catch (err) {
@@ -165,7 +268,11 @@ export default function IngresoForm({
             onError(
                 err instanceof Error
                     ? err.message
-                    : "No se pudo guardar el ingreso"
+                    : (
+                        isEditing
+                            ? "No se pudo actualizar el ingreso"
+                            : "No se pudo guardar el ingreso"
+                    )
             );
         } finally {
             setSaving(false);
@@ -177,7 +284,8 @@ export default function IngresoForm({
             form.description.trim() !== "" ||
             form.investmentPercentage !== "50" ||
             form.payments.some(
-                (payment) => payment.amount.trim() !== ""
+                (payment) =>
+                    payment.amount.trim() !== ""
             );
 
         if (!hasData) {
@@ -205,12 +313,17 @@ export default function IngresoForm({
             <div
                 style={{
                     display: "flex",
-                    justifyContent: "space-between",
+                    justifyContent:
+                        "space-between",
                     alignItems: "center",
                     marginBottom: "1rem",
                 }}
             >
-                <h3 style={{ margin: 0 }}>Nuevo ingreso</h3>
+                <h3 style={{ margin: 0 }}>
+                    {isEditing
+                        ? "Editar ingreso"
+                        : "Nuevo ingreso"}
+                </h3>
 
                 <button
                     type="button"
@@ -218,7 +331,8 @@ export default function IngresoForm({
                     aria-label="Cerrar formulario"
                     style={{
                         border: "none",
-                        background: "transparent",
+                        background:
+                            "transparent",
                         cursor: "pointer",
                         padding: "0.25rem",
                         display: "flex",
@@ -233,7 +347,8 @@ export default function IngresoForm({
                 onSubmit={handleSave}
                 style={{
                     display: "flex",
-                    flexDirection: "column",
+                    flexDirection:
+                        "column",
                     gap: "1rem",
                 }}
             >
@@ -258,7 +373,7 @@ export default function IngresoForm({
                     <label
                         style={{
                             display: "block",
-                            marginBottom: "0.75rem",
+                            marginBottom: "0.5rem",
                             fontWeight: 600,
                         }}
                     >
@@ -269,95 +384,79 @@ export default function IngresoForm({
                         style={{
                             display: "flex",
                             flexDirection: "column",
-                            gap: "0.75rem",
+                            gap: "0.4rem",
                         }}
                     >
                         {paymentMethods.map((method) => {
-                            const payment =
-                                form.payments.find(
-                                    (p) =>
-                                        p.paymentMethodId ===
-                                        method.id
-                                );
+                            const payment = form.payments.find(
+                                (p) => p.paymentMethodId === method.id
+                            );
+
+                            const commission = Number(
+                                payment?.commissionPercentage || 0
+                            );
 
                             return (
                                 <div
                                     key={method.id}
                                     style={{
-                                        padding: "0.75rem",
-                                        border:
-                                            "1px solid var(--border, #ddd)",
-                                        borderRadius:
-                                            "0.5rem",
+                                        display: "grid",
+                                        gridTemplateColumns: "1fr 130px",
+                                        gap: "0.5rem",
+                                        alignItems: "center",
+                                        minHeight: "42px",
                                     }}
                                 >
                                     <div
                                         style={{
-                                            fontWeight: 600,
-                                            marginBottom:
-                                                "0.5rem",
+                                            display: "flex",
+                                            alignItems: "center",
+                                            gap: "0.35rem",
+                                            minWidth: 0,
                                         }}
                                     >
-                                        {method.name}
+                                        <span
+                                            style={{
+                                                fontWeight: 500,
+                                                whiteSpace: "nowrap",
+                                                overflow: "hidden",
+                                                textOverflow: "ellipsis",
+                                            }}
+                                        >
+                                            {method.name}
+                                        </span>
+
+                                        {commission > 0 && (
+                                            <span
+                                                style={{
+                                                    fontSize: "0.75rem",
+                                                    color: "var(--text-muted)",
+                                                    whiteSpace: "nowrap",
+                                                }}
+                                            >
+                                                · {commission}%
+                                            </span>
+                                        )}
                                     </div>
 
-                                    <div
+                                    <input
+                                        type="number"
+                                        step="0.01"
+                                        min="0"
+                                        className="input"
+                                        placeholder="0.00"
+                                        value={payment?.amount ?? ""}
+                                        onChange={(e) =>
+                                            updatePayment(
+                                                method.id,
+                                                "amount",
+                                                e.target.value
+                                            )
+                                        }
                                         style={{
-                                            display: "grid",
-                                            gridTemplateColumns:
-                                                "1fr 100px",
-                                            gap: "0.75rem",
+                                            width: "100%",
                                         }}
-                                    >
-                                        <div className="form-group">
-                                            <label>
-                                                Monto
-                                            </label>
-
-                                            <input
-                                                type="number"
-                                                step="0.01"
-                                                min="0"
-                                                className="input"
-                                                placeholder="0.00"
-                                                value={
-                                                    payment?.amount ??
-                                                    ""
-                                                }
-                                                onChange={(e) =>
-                                                    updatePayment(
-                                                        method.id,
-                                                        "amount",
-                                                        e.target.value
-                                                    )
-                                                }
-                                            />
-                                        </div>
-
-                                        <div className="form-group">
-                                            <label>
-                                                Comisión %
-                                            </label>
-
-                                            <input
-                                                type="number"
-                                                step="0.01"
-                                                min="0"
-                                                className="input"
-                                                value={
-                                                    payment?.commissionPercentage ??
-                                                    "0"
-                                                }
-                                                onChange={(e) =>
-                                                    updatePayment(
-                                                        method.id,
-                                                        "commissionPercentage",
-                                                        e.target.value
-                                                    )
-                                                }
-                                            />
-                                        </div>
-                                    </div>
+                                    />
                                 </div>
                             );
                         })}
@@ -369,33 +468,44 @@ export default function IngresoForm({
                         borderTop:
                             "1px solid var(--border, #ddd)",
                         paddingTop: "1rem",
-                        display: "flex",
-                        flexDirection: "column",
+                        display:
+                            "flex",
+                        flexDirection:
+                            "column",
                         gap: "0.5rem",
                     }}
                 >
                     <div
                         style={{
-                            display: "flex",
+                            display:
+                                "flex",
                             justifyContent:
                                 "space-between",
                         }}
                     >
-                        <span>Total bruto</span>
+                        <span>
+                            Total bruto
+                        </span>
 
                         <strong>
-                            ${formatMoney(totalIncome)}
+                            $
+                            {formatMoney(
+                                totalIncome
+                            )}
                         </strong>
                     </div>
 
                     <div
                         style={{
-                            display: "flex",
+                            display:
+                                "flex",
                             justifyContent:
                                 "space-between",
                         }}
                     >
-                        <span>Comisiones</span>
+                        <span>
+                            Comisiones
+                        </span>
 
                         <strong>
                             -$
@@ -407,16 +517,23 @@ export default function IngresoForm({
 
                     <div
                         style={{
-                            display: "flex",
+                            display:
+                                "flex",
                             justifyContent:
                                 "space-between",
-                            fontSize: "1.1rem",
+                            fontSize:
+                                "1.1rem",
                         }}
                     >
-                        <strong>Total neto</strong>
+                        <strong>
+                            Total neto
+                        </strong>
 
                         <strong>
-                            ${formatMoney(netIncome)}
+                            $
+                            {formatMoney(
+                                netIncome
+                            )}
                         </strong>
                     </div>
                 </div>
@@ -428,11 +545,14 @@ export default function IngresoForm({
 
                     <div
                         style={{
-                            display: "grid",
+                            display:
+                                "grid",
                             gridTemplateColumns:
                                 "100px 1fr",
-                            gap: "0.75rem",
-                            alignItems: "center",
+                            gap:
+                                "0.75rem",
+                            alignItems:
+                                "center",
                         }}
                     >
                         <input
@@ -448,30 +568,39 @@ export default function IngresoForm({
                                 setForm({
                                     ...form,
                                     investmentPercentage:
-                                        e.target.value,
+                                        e.target
+                                            .value,
                                 })
                             }
                         />
 
                         <div>
-                            ${formatMoney(investmentAmount)}
+                            $
+                            {formatMoney(
+                                investmentAmount
+                            )}
                         </div>
                     </div>
                 </div>
 
                 <div className="form-group">
-                    <label>Descripción</label>
+                    <label>
+                        Descripción
+                    </label>
 
                     <input
                         type="text"
                         className="input"
                         placeholder="Ej: Ventas del día"
-                        value={form.description}
+                        value={
+                            form.description
+                        }
                         onChange={(e) =>
                             setForm({
                                 ...form,
                                 description:
-                                    e.target.value,
+                                    e.target
+                                        .value,
                             })
                         }
                     />
@@ -480,11 +609,16 @@ export default function IngresoForm({
                 <button
                     type="submit"
                     className="btn btn-primary"
-                    disabled={saving || loading}
+                    disabled={
+                        saving || loading
+                    }
                     style={{
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
+                        display:
+                            "flex",
+                        alignItems:
+                            "center",
+                        justifyContent:
+                            "center",
                         gap: "0.5rem",
                     }}
                 >
@@ -493,13 +627,17 @@ export default function IngresoForm({
                             className="animate-spin"
                             size={20}
                         />
+                    ) : isEditing ? (
+                        <Save size={20} />
                     ) : (
                         <Plus size={20} />
                     )}
 
                     {saving
                         ? "Guardando..."
-                        : "Guardar ingreso"}
+                        : isEditing
+                            ? "Guardar cambios"
+                            : "Guardar ingreso"}
                 </button>
             </form>
         </div>

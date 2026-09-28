@@ -20,6 +20,15 @@ async function getUser() {
     });
 }
 
+function isUniqueError(error: unknown) {
+    return (
+        typeof error === "object" &&
+        error !== null &&
+        "code" in error &&
+        error.code === "P2002"
+    );
+}
+
 export async function GET(request: Request) {
     const user = await getUser();
 
@@ -31,7 +40,9 @@ export async function GET(request: Request) {
     }
 
     try {
-        const showAll = new URL(request.url).searchParams.get("all") === "true";
+        const showAll =
+            new URL(request.url).searchParams.get("all") === "true";
+
         const existingCount = await prisma.paymentMethod.count({
             where: {
                 userId: user.id,
@@ -62,6 +73,7 @@ export async function GET(request: Request) {
                         defaultCommissionPercentage: 0,
                     },
                 ],
+                skipDuplicates: true,
             });
         }
 
@@ -73,12 +85,14 @@ export async function GET(request: Request) {
             select: {
                 id: true,
                 name: true,
+                active: true,
                 defaultCommissionPercentage: true,
             },
             orderBy: {
                 name: "asc",
             },
         });
+
         return NextResponse.json(
             paymentMethods.map(
                 (method: {
@@ -149,11 +163,12 @@ export async function POST(req: Request) {
             );
         }
 
-        const existing = await prisma.paymentMethod.findUnique({
+        const existing = await prisma.paymentMethod.findFirst({
             where: {
-                userId_name: {
-                    userId: user.id,
-                    name,
+                userId: user.id,
+                name: {
+                    equals: name,
+                    mode: "insensitive",
                 },
             },
         });
@@ -193,6 +208,16 @@ export async function POST(req: Request) {
         );
     } catch (error) {
         console.error("POST /api/medios-pago:", error);
+
+        if (isUniqueError(error)) {
+            return NextResponse.json(
+                {
+                    error:
+                        "Ya existe un medio de pago con ese nombre",
+                },
+                { status: 400 }
+            );
+        }
 
         return NextResponse.json(
             { error: "Error creating payment method" },
@@ -263,7 +288,10 @@ export async function PATCH(req: Request) {
                 await prisma.paymentMethod.findFirst({
                     where: {
                         userId: user.id,
-                        name,
+                        name: {
+                            equals: name,
+                            mode: "insensitive",
+                        },
                         id: {
                             not: id,
                         },
@@ -340,6 +368,16 @@ export async function PATCH(req: Request) {
         });
     } catch (error) {
         console.error("PATCH /api/medios-pago:", error);
+
+        if (isUniqueError(error)) {
+            return NextResponse.json(
+                {
+                    error:
+                        "Ya existe otro medio de pago con ese nombre",
+                },
+                { status: 400 }
+            );
+        }
 
         return NextResponse.json(
             { error: "Error updating payment method" },

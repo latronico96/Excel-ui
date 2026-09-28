@@ -27,6 +27,8 @@ export interface Movement {
     amount: number;
     description: string | null;
 
+    investmentPercentage?: number;
+
     expenseType?: {
         id: string;
         name: string;

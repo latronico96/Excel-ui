@@ -27,6 +27,9 @@ export default function MovimientosPage() {
     const [showIngresoForm, setShowIngresoForm] = useState(false);
     const [showEgresoForm, setShowEgresoForm] = useState(false);
 
+    const [editingMovement, setEditingMovement] =
+        useState<Movement | null>(null);
+
     const fetchData = async () => {
         try {
             setLoading(true);
@@ -105,12 +108,14 @@ export default function MovimientosPage() {
     }, []);
 
     const openIngreso = () => {
+        setEditingMovement(null);
         setShowEgresoForm(false);
         setShowIngresoForm(true);
         setError("");
     };
 
     const openEgreso = () => {
+        setEditingMovement(null);
         setShowIngresoForm(false);
         setShowEgresoForm(true);
         setError("");
@@ -118,10 +123,66 @@ export default function MovimientosPage() {
 
     const closeIngreso = () => {
         setShowIngresoForm(false);
+        setEditingMovement(null);
     };
 
     const closeEgreso = () => {
         setShowEgresoForm(false);
+        setEditingMovement(null);
+    };
+
+    const handleEdit = (movement: Movement) => {
+        setError("");
+        setEditingMovement(movement);
+
+        if (movement.type === "INGRESO") {
+            setShowEgresoForm(false);
+            setShowIngresoForm(true);
+        } else {
+            setShowIngresoForm(false);
+            setShowEgresoForm(true);
+        }
+
+        window.scrollTo({
+            top: 0,
+            behavior: "smooth",
+        });
+    };
+
+    const handleDelete = async (movementId: string) => {
+        try {
+            setError("");
+
+            const res = await fetch(
+                `/api/movimientos?id=${encodeURIComponent(
+                    movementId
+                )}`,
+                {
+                    method: "DELETE",
+                }
+            );
+
+            const data = await res.json();
+
+            if (!res.ok) {
+                throw new Error(
+                    data.error ||
+                        "No se pudo eliminar el movimiento"
+                );
+            }
+
+            await fetchData();
+        } catch (err) {
+            console.error(err);
+
+            setError(
+                err instanceof Error
+                    ? err.message
+                    : "No se pudo eliminar el movimiento"
+            );
+
+            throw err;
+        }
     };
 
     return (
@@ -176,6 +237,11 @@ export default function MovimientosPage() {
                     <IngresoForm
                         paymentMethods={paymentMethods}
                         loading={loading}
+                        movement={
+                            editingMovement?.type === "INGRESO"
+                                ? editingMovement
+                                : undefined
+                        }
                         onSaved={async () => {
                             await fetchData();
                             closeIngreso();
@@ -190,6 +256,11 @@ export default function MovimientosPage() {
                         paymentMethods={paymentMethods}
                         expenseTypes={expenseTypes}
                         loading={loading}
+                        movement={
+                            editingMovement?.type === "EGRESO"
+                                ? editingMovement
+                                : undefined
+                        }
                         onSaved={async () => {
                             await fetchData();
                             closeEgreso();
@@ -203,6 +274,8 @@ export default function MovimientosPage() {
             <MovimientosHistorial
                 movements={movements}
                 loading={loading}
+                onEdit={handleEdit}
+                onDelete={handleDelete}
             />
         </div>
     );

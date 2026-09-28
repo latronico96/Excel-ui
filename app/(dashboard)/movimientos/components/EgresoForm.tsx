@@ -1,11 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
     ExpenseTypeOption,
+    Movement,
     PaymentMethodOption,
 } from "@/shared/types";
-import { Loader2, Plus, X } from "lucide-react";
+import { Loader2, Plus, Save, X } from "lucide-react";
+
 interface EgresoFormProps {
     paymentMethods: PaymentMethodOption[];
     expenseTypes: ExpenseTypeOption[];
@@ -13,6 +15,7 @@ interface EgresoFormProps {
     onSaved: () => Promise<void>;
     onClose: () => void;
     onError: (message: string) => void;
+    movement?: Movement;
 }
 
 export default function EgresoForm({
@@ -22,6 +25,7 @@ export default function EgresoForm({
     onSaved,
     onClose,
     onError,
+    movement,
 }: EgresoFormProps) {
     const today = new Date().toISOString().split("T")[0];
 
@@ -34,6 +38,28 @@ export default function EgresoForm({
         amount: "",
         description: "",
     });
+
+    const isEditing = Boolean(movement);
+
+    useEffect(() => {
+        if (!movement) {
+            return;
+        }
+
+        setForm({
+            date: movement.date
+                ? new Date(movement.date)
+                      .toISOString()
+                      .split("T")[0]
+                : today,
+            paymentMethodId:
+                movement.paymentMethod?.id ?? "",
+            expenseTypeId:
+                movement.expenseType?.id ?? "",
+            amount: String(movement.amount),
+            description: movement.description ?? "",
+        });
+    }, [movement, today]);
 
     const handleSave = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -61,35 +87,49 @@ export default function EgresoForm({
             setSaving(true);
             onError("");
 
+            const payload = {
+                type: "EGRESO" as const,
+                date: form.date,
+                amount,
+                paymentMethodId: form.paymentMethodId,
+                expenseTypeId: form.expenseTypeId,
+                description:
+                    form.description.trim() || null,
+            };
+
             const res = await fetch("/api/movimientos", {
-                method: "POST",
+                method: isEditing ? "PUT" : "POST",
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify({
-                    type: "EGRESO",
-                    date: form.date,
-                    amount,
-                    paymentMethodId: form.paymentMethodId,
-                    expenseTypeId: form.expenseTypeId,
-                    description:
-                        form.description.trim() || null,
-                }),
+                body: JSON.stringify(
+                    isEditing
+                        ? {
+                              id: movement!.id,
+                              ...payload,
+                          }
+                        : payload
+                ),
             });
 
             const data = await res.json();
 
             if (!res.ok) {
                 throw new Error(
-                    data.error || "No se pudo guardar el egreso"
+                    data.error ||
+                        (isEditing
+                            ? "No se pudo actualizar el egreso"
+                            : "No se pudo guardar el egreso")
                 );
             }
 
-            setForm((current) => ({
-                ...current,
-                amount: "",
-                description: "",
-            }));
+            if (!isEditing) {
+                setForm((current) => ({
+                    ...current,
+                    amount: "",
+                    description: "",
+                }));
+            }
 
             await onSaved();
         } catch (err) {
@@ -98,7 +138,9 @@ export default function EgresoForm({
             onError(
                 err instanceof Error
                     ? err.message
-                    : "No se pudo guardar el egreso"
+                    : isEditing
+                      ? "No se pudo actualizar el egreso"
+                      : "No se pudo guardar el egreso"
             );
         } finally {
             setSaving(false);
@@ -127,16 +169,24 @@ export default function EgresoForm({
     };
 
     return (
-        <div className="card">
+        <div
+            className="card"
+            style={{
+                padding: "1rem",
+            }}
+        >
+            {/* Header */}
             <div
                 style={{
                     display: "flex",
                     justifyContent: "space-between",
                     alignItems: "center",
-                    marginBottom: "1rem",
+                    marginBottom: "0.75rem",
                 }}
             >
-                <h3 style={{ margin: 0 }}>Nuevo egreso</h3>
+                <h3 style={{ margin: 0 }}>
+                    {isEditing ? "Editar egreso" : "Nuevo egreso"}
+                </h3>
 
                 <button
                     type="button"
@@ -160,9 +210,10 @@ export default function EgresoForm({
                 style={{
                     display: "flex",
                     flexDirection: "column",
-                    gap: "1rem",
+                    gap: "0.75rem",
                 }}
             >
+                {/* Fecha */}
                 <div className="form-group">
                     <label>Fecha</label>
 
@@ -180,6 +231,7 @@ export default function EgresoForm({
                     />
                 </div>
 
+                {/* Tipo de gasto */}
                 <div className="form-group">
                     <label>Tipo de gasto</label>
 
@@ -209,6 +261,7 @@ export default function EgresoForm({
                     </select>
                 </div>
 
+                {/* Medio de pago */}
                 <div className="form-group">
                     <label>Medio de pago</label>
 
@@ -238,6 +291,7 @@ export default function EgresoForm({
                     </select>
                 </div>
 
+                {/* Monto */}
                 <div className="form-group">
                     <label>Monto</label>
 
@@ -245,6 +299,7 @@ export default function EgresoForm({
                         type="number"
                         step="0.01"
                         min="0"
+                        inputMode="decimal"
                         className="input"
                         placeholder="0.00"
                         value={form.amount}
@@ -258,6 +313,7 @@ export default function EgresoForm({
                     />
                 </div>
 
+                {/* Descripción */}
                 <div className="form-group">
                     <label>Descripción</label>
 
@@ -275,6 +331,7 @@ export default function EgresoForm({
                     />
                 </div>
 
+                {/* Guardar */}
                 <button
                     type="submit"
                     className="btn btn-primary"
@@ -284,6 +341,7 @@ export default function EgresoForm({
                         alignItems: "center",
                         justifyContent: "center",
                         gap: "0.5rem",
+                        marginTop: "0.25rem",
                     }}
                 >
                     {saving ? (
@@ -291,13 +349,17 @@ export default function EgresoForm({
                             className="animate-spin"
                             size={20}
                         />
+                    ) : isEditing ? (
+                        <Save size={20} />
                     ) : (
                         <Plus size={20} />
                     )}
 
                     {saving
                         ? "Guardando..."
-                        : "Guardar egreso"}
+                        : isEditing
+                          ? "Guardar cambios"
+                          : "Guardar egreso"}
                 </button>
             </form>
         </div>

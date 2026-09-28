@@ -20,6 +20,15 @@ async function getUser() {
     });
 }
 
+function isUniqueError(error: unknown) {
+    return (
+        typeof error === "object" &&
+        error !== null &&
+        "code" in error &&
+        error.code === "P2002"
+    );
+}
+
 export async function GET(request: Request) {
     const user = await getUser();
 
@@ -31,7 +40,9 @@ export async function GET(request: Request) {
     }
 
     try {
-        const showAll = new URL(request.url).searchParams.get("all") === "true";
+        const showAll =
+            new URL(request.url).searchParams.get("all") === "true";
+
         const existingCount = await prisma.expenseType.count({
             where: {
                 userId: user.id,
@@ -58,6 +69,7 @@ export async function GET(request: Request) {
                         name: "Otros",
                     },
                 ],
+                skipDuplicates: true,
             });
         }
 
@@ -69,6 +81,7 @@ export async function GET(request: Request) {
             select: {
                 id: true,
                 name: true,
+                active: true,
             },
             orderBy: {
                 name: "asc",
@@ -111,11 +124,12 @@ export async function POST(req: Request) {
             );
         }
 
-        const existing = await prisma.expenseType.findUnique({
+        const existing = await prisma.expenseType.findFirst({
             where: {
-                userId_name: {
-                    userId: user.id,
-                    name,
+                userId: user.id,
+                name: {
+                    equals: name,
+                    mode: "insensitive",
                 },
             },
         });
@@ -148,6 +162,16 @@ export async function POST(req: Request) {
         );
     } catch (error) {
         console.error("POST /api/tipos-gasto:", error);
+
+        if (isUniqueError(error)) {
+            return NextResponse.json(
+                {
+                    error:
+                        "Ya existe un tipo de gasto con ese nombre",
+                },
+                { status: 400 }
+            );
+        }
 
         return NextResponse.json(
             { error: "Error creating expense type" },
@@ -216,7 +240,10 @@ export async function PATCH(req: Request) {
             const duplicate = await prisma.expenseType.findFirst({
                 where: {
                     userId: user.id,
-                    name,
+                    name: {
+                        equals: name,
+                        mode: "insensitive",
+                    },
                     id: {
                         not: id,
                     },
@@ -262,6 +289,16 @@ export async function PATCH(req: Request) {
         return NextResponse.json(expenseType);
     } catch (error) {
         console.error("PATCH /api/tipos-gasto:", error);
+
+        if (isUniqueError(error)) {
+            return NextResponse.json(
+                {
+                    error:
+                        "Ya existe otro tipo de gasto con ese nombre",
+                },
+                { status: 400 }
+            );
+        }
 
         return NextResponse.json(
             { error: "Error updating expense type" },

@@ -1,19 +1,29 @@
 "use client";
 
 import { useState } from "react";
-import { ChevronDown, ChevronUp } from "lucide-react";
+import {
+    ChevronDown,
+    ChevronUp,
+    Pencil,
+    Trash2,
+} from "lucide-react";
 import { Movement } from "@/shared/types";
 
 interface MovimientosHistorialProps {
     movements: Movement[];
     loading: boolean;
+    onEdit: (movement: Movement) => void;
+    onDelete: (movementId: string) => Promise<void>;
 }
 
 export default function MovimientosHistorial({
     movements,
     loading,
+    onEdit,
+    onDelete,
 }: MovimientosHistorialProps) {
     const [expandedId, setExpandedId] = useState<string | null>(null);
+    const [deletingId, setDeletingId] = useState<string | null>(null);
 
     const formatDate = (date: string) => {
         const [year, month, day] = date.slice(0, 10).split("-");
@@ -34,14 +44,37 @@ export default function MovimientosHistorial({
         });
     };
 
+    const handleDelete = async (movement: Movement) => {
+        const confirmed = window.confirm(
+            `¿Eliminar este ${
+                movement.type === "INGRESO" ? "ingreso" : "egreso"
+            }?\n\n` +
+                `$${formatMoney(movement.amount)}\n\n` +
+                "Esta acción no se puede deshacer."
+        );
+
+        if (!confirmed) {
+            return;
+        }
+
+        try {
+            setDeletingId(movement.id);
+            await onDelete(movement.id);
+        } finally {
+            setDeletingId(null);
+        }
+    };
+
     if (loading) {
         return (
             <div className="card">
-                <h3>Historial de movimientos</h3>
+                <h3 style={{ marginTop: 0 }}>
+                    Historial de movimientos
+                </h3>
 
                 <div
                     style={{
-                        padding: "2rem",
+                        padding: "1.5rem",
                         textAlign: "center",
                     }}
                 >
@@ -54,11 +87,13 @@ export default function MovimientosHistorial({
     if (movements.length === 0) {
         return (
             <div className="card">
-                <h3>Historial de movimientos</h3>
+                <h3 style={{ marginTop: 0 }}>
+                    Historial de movimientos
+                </h3>
 
                 <div
                     style={{
-                        padding: "2rem",
+                        padding: "1.5rem",
                         textAlign: "center",
                         color: "var(--text-muted)",
                     }}
@@ -71,7 +106,9 @@ export default function MovimientosHistorial({
 
     return (
         <div className="card">
-            <h3>Historial de movimientos</h3>
+            <h3 style={{ marginTop: 0 }}>
+                Historial de movimientos
+            </h3>
 
             <div
                 style={{
@@ -83,11 +120,14 @@ export default function MovimientosHistorial({
                 {movements.map((movement) => {
                     const expanded = expandedId === movement.id;
                     const isIncome = movement.type === "INGRESO";
+                    const isDeleting =
+                        deletingId === movement.id;
 
                     const totalCommission =
                         movement.payments?.reduce(
                             (total, payment) =>
-                                total + payment.commissionAmount,
+                                total +
+                                payment.commissionAmount,
                             0
                         ) ?? 0;
 
@@ -98,6 +138,15 @@ export default function MovimientosHistorial({
                             0
                         ) ?? movement.amount;
 
+                    const investmentAmount =
+                        isIncome &&
+                        movement.investmentPercentage !==
+                            undefined
+                            ? netIncome *
+                              (movement.investmentPercentage /
+                                  100)
+                            : 0;
+
                     return (
                         <div
                             key={movement.id}
@@ -107,183 +156,401 @@ export default function MovimientosHistorial({
                                 overflow: "hidden",
                             }}
                         >
-                            <button
-                                type="button"
-                                onClick={() =>
-                                    toggleMovement(movement.id)
-                                }
+                            {/* Movimiento principal */}
+                            <div
                                 style={{
-                                    width: "100%",
-                                    border: "none",
-                                    background: "transparent",
-                                    cursor: "pointer",
-                                    padding: "0.9rem",
                                     display: "grid",
                                     gridTemplateColumns:
-                                        "70px 1fr auto auto",
-                                    gap: "0.75rem",
+                                        "1fr auto auto auto",
+                                    gap: "0.5rem",
                                     alignItems: "center",
-                                    textAlign: "left",
+                                    padding: "0.75rem",
                                 }}
                             >
-                                <span
+                                {/* Información */}
+                                <button
+                                    type="button"
+                                    onClick={() =>
+                                        toggleMovement(
+                                            movement.id
+                                        )
+                                    }
                                     style={{
-                                        fontSize: "0.85rem",
-                                        color: "var(--text-muted)",
-                                    }}
-                                >
-                                    {formatDate(movement.date)}
-                                </span>
-
-                                <span
-                                    style={{
-                                        display: "flex",
-                                        flexDirection: "column",
-                                        gap: "0.2rem",
+                                        border: "none",
+                                        background:
+                                            "transparent",
+                                        padding: 0,
+                                        margin: 0,
+                                        cursor: "pointer",
+                                        textAlign: "left",
                                         minWidth: 0,
+                                        display: "flex",
+                                        flexDirection:
+                                            "column",
+                                        gap: "0.15rem",
                                     }}
                                 >
-                                    <span
+                                    <div
                                         style={{
-                                            fontWeight: 600,
+                                            display: "flex",
+                                            alignItems:
+                                                "center",
+                                            gap: "0.4rem",
+                                            minWidth: 0,
                                         }}
                                     >
                                         <span
                                             style={{
-                                                marginRight: "0.4rem",
+                                                fontSize:
+                                                    "0.8rem",
+                                                color: "var(--text-muted)",
+                                                whiteSpace:
+                                                    "nowrap",
                                             }}
                                         >
-                                            {isIncome ? "↑" : "↓"}
+                                            {formatDate(
+                                                movement.date
+                                            )}
                                         </span>
 
-                                        {isIncome
-                                            ? "Ingreso"
-                                            : "Egreso"}
-                                    </span>
+                                        <span
+                                            style={{
+                                                fontWeight: 600,
+                                                whiteSpace:
+                                                    "nowrap",
+                                            }}
+                                        >
+                                            {isIncome
+                                                ? "↑ Ingreso"
+                                                : "↓ Egreso"}
+                                        </span>
+                                    </div>
 
                                     <span
                                         style={{
-                                            fontSize: "0.85rem",
+                                            fontSize:
+                                                "0.85rem",
                                             color: "var(--text-muted)",
                                             overflow: "hidden",
-                                            textOverflow: "ellipsis",
-                                            whiteSpace: "nowrap",
+                                            textOverflow:
+                                                "ellipsis",
+                                            whiteSpace:
+                                                "nowrap",
+                                            maxWidth: "100%",
                                         }}
                                     >
                                         {movement.description ||
                                             "Sin descripción"}
                                     </span>
+                                </button>
 
-                                    {isIncome &&
-                                        movement.payments &&
-                                        movement.payments.length > 0 && (
-                                            <span
-                                                style={{
-                                                    fontSize: "0.75rem",
-                                                    color: "var(--text-muted)",
-                                                    overflow: "hidden",
-                                                    textOverflow:
-                                                        "ellipsis",
-                                                    whiteSpace: "nowrap",
-                                                }}
-                                            >
-                                                {movement.payments
-                                                    .map(
-                                                        (payment) =>
-                                                            `${payment.paymentMethodName} $${formatMoney(
-                                                                payment.amount
-                                                            )}`
-                                                    )
-                                                    .join(" · ")}
-                                            </span>
-                                        )}
-                                </span>
-
+                                {/* Monto */}
                                 <span
                                     style={{
                                         fontWeight: 600,
-                                        whiteSpace: "nowrap",
+                                        whiteSpace:
+                                            "nowrap",
+                                        fontSize:
+                                            "0.95rem",
                                     }}
                                 >
-                                    ${formatMoney(movement.amount)}
+                                    $
+                                    {formatMoney(
+                                        movement.amount
+                                    )}
                                 </span>
 
-                                <span
+                                {/* Editar */}
+                                <button
+                                    type="button"
+                                    onClick={() =>
+                                        onEdit(movement)
+                                    }
+                                    aria-label="Editar movimiento"
+                                    title="Editar"
+                                    disabled={isDeleting}
                                     style={{
+                                        width: "34px",
+                                        height: "34px",
+                                        border: "1px solid var(--border, #ddd)",
+                                        borderRadius:
+                                            "0.5rem",
+                                        background:
+                                            "var(--background, #fff)",
+                                        color: "var(--text-muted)",
+                                        cursor: isDeleting
+                                            ? "not-allowed"
+                                            : "pointer",
                                         display: "flex",
-                                        alignItems: "center",
+                                        alignItems:
+                                            "center",
+                                        justifyContent:
+                                            "center",
+                                        padding: 0,
+                                        opacity: isDeleting
+                                            ? 0.5
+                                            : 1,
+                                    }}
+                                >
+                                    <Pencil size={16} />
+                                </button>
+
+                                {/* Eliminar */}
+                                <button
+                                    type="button"
+                                    onClick={() =>
+                                        handleDelete(
+                                            movement
+                                        )
+                                    }
+                                    aria-label="Eliminar movimiento"
+                                    title="Eliminar"
+                                    disabled={isDeleting}
+                                    style={{
+                                        width: "34px",
+                                        height: "34px",
+                                        border: "1px solid #fecaca",
+                                        borderRadius:
+                                            "0.5rem",
+                                        background:
+                                            "#fff5f5",
+                                        color: "#dc2626",
+                                        cursor: isDeleting
+                                            ? "not-allowed"
+                                            : "pointer",
+                                        display: "flex",
+                                        alignItems:
+                                            "center",
+                                        justifyContent:
+                                            "center",
+                                        padding: 0,
+                                        opacity: isDeleting
+                                            ? 0.5
+                                            : 1,
+                                    }}
+                                >
+                                    <Trash2 size={16} />
+                                </button>
+
+                                {/* Expandir */}
+                                <button
+                                    type="button"
+                                    onClick={() =>
+                                        toggleMovement(
+                                            movement.id
+                                        )
+                                    }
+                                    aria-label={
+                                        expanded
+                                            ? "Contraer movimiento"
+                                            : "Expandir movimiento"
+                                    }
+                                    title={
+                                        expanded
+                                            ? "Contraer"
+                                            : "Ver detalle"
+                                    }
+                                    style={{
+                                        width: "30px",
+                                        height: "34px",
+                                        border: "none",
+                                        background:
+                                            "transparent",
+                                        color: "var(--text-muted)",
+                                        cursor: "pointer",
+                                        display: "flex",
+                                        alignItems:
+                                            "center",
+                                        justifyContent:
+                                            "center",
+                                        padding: 0,
                                     }}
                                 >
                                     {expanded ? (
-                                        <ChevronUp size={18} />
+                                        <ChevronUp
+                                            size={18}
+                                        />
                                     ) : (
-                                        <ChevronDown size={18} />
+                                        <ChevronDown
+                                            size={18}
+                                        />
                                     )}
-                                </span>
-                            </button>
+                                </button>
+                            </div>
 
+                            {/* Detalle */}
                             {expanded && (
                                 <div
                                     style={{
                                         borderTop:
                                             "1px solid var(--border, #ddd)",
-                                        padding: "1rem",
+                                        padding: "0.85rem",
                                         display: "flex",
-                                        flexDirection: "column",
-                                        gap: "0.75rem",
+                                        flexDirection:
+                                            "column",
+                                        gap: "0.65rem",
                                     }}
                                 >
-                                    <div>
-                                        <strong>Fecha:</strong>{" "}
-                                        {formatDate(movement.date)}
+                                    {/* Información general */}
+                                    <div
+                                        style={{
+                                            display: "flex",
+                                            flexDirection:
+                                                "column",
+                                            gap: "0.35rem",
+                                        }}
+                                    >
+                                        <div
+                                            style={{
+                                                display:
+                                                    "flex",
+                                                justifyContent:
+                                                    "space-between",
+                                                gap: "1rem",
+                                            }}
+                                        >
+                                            <span
+                                                style={{
+                                                    color: "var(--text-muted)",
+                                                }}
+                                            >
+                                                Fecha
+                                            </span>
+
+                                            <strong>
+                                                {formatDate(
+                                                    movement.date
+                                                )}
+                                            </strong>
+                                        </div>
+
+                                        {movement.description && (
+                                            <div
+                                                style={{
+                                                    display:
+                                                        "flex",
+                                                    justifyContent:
+                                                        "space-between",
+                                                    gap: "1rem",
+                                                }}
+                                            >
+                                                <span
+                                                    style={{
+                                                        color: "var(--text-muted)",
+                                                    }}
+                                                >
+                                                    Descripción
+                                                </span>
+
+                                                <span
+                                                    style={{
+                                                        textAlign:
+                                                            "right",
+                                                        overflowWrap:
+                                                            "anywhere",
+                                                    }}
+                                                >
+                                                    {
+                                                        movement.description
+                                                    }
+                                                </span>
+                                            </div>
+                                        )}
                                     </div>
 
-                                    {movement.description && (
-                                        <div>
-                                            <strong>
-                                                Descripción:
-                                            </strong>{" "}
-                                            {movement.description}
-                                        </div>
-                                    )}
-
-                                    {movement.type === "EGRESO" && (
+                                    {/* EGRESO */}
+                                    {!isIncome && (
                                         <>
-                                            {movement.expenseType && (
-                                                <div>
-                                                    <strong>
-                                                        Tipo de gasto:
-                                                    </strong>{" "}
-                                                    {
-                                                        movement
-                                                            .expenseType
-                                                            .name
-                                                    }
-                                                </div>
-                                            )}
+                                            {(movement.expenseType ||
+                                                movement.paymentMethod) && (
+                                                <div
+                                                    style={{
+                                                        borderTop:
+                                                            "1px solid var(--border, #eee)",
+                                                        paddingTop:
+                                                            "0.65rem",
+                                                        display:
+                                                            "flex",
+                                                        flexDirection:
+                                                            "column",
+                                                        gap: "0.4rem",
+                                                    }}
+                                                >
+                                                    {movement.expenseType && (
+                                                        <div
+                                                            style={{
+                                                                display:
+                                                                    "flex",
+                                                                justifyContent:
+                                                                    "space-between",
+                                                                gap: "1rem",
+                                                            }}
+                                                        >
+                                                            <span
+                                                                style={{
+                                                                    color: "var(--text-muted)",
+                                                                }}
+                                                            >
+                                                                Tipo de gasto
+                                                            </span>
 
-                                            {movement.paymentMethod && (
-                                                <div>
-                                                    <strong>
-                                                        Medio de pago:
-                                                    </strong>{" "}
-                                                    {
-                                                        movement
-                                                            .paymentMethod
-                                                            .name
-                                                    }
+                                                            <strong>
+                                                                {
+                                                                    movement
+                                                                        .expenseType
+                                                                        .name
+                                                                }
+                                                            </strong>
+                                                        </div>
+                                                    )}
+
+                                                    {movement.paymentMethod && (
+                                                        <div
+                                                            style={{
+                                                                display:
+                                                                    "flex",
+                                                                justifyContent:
+                                                                    "space-between",
+                                                                gap: "1rem",
+                                                            }}
+                                                        >
+                                                            <span
+                                                                style={{
+                                                                    color: "var(--text-muted)",
+                                                                }}
+                                                            >
+                                                                Medio de pago
+                                                            </span>
+
+                                                            <strong>
+                                                                {
+                                                                    movement
+                                                                        .paymentMethod
+                                                                        .name
+                                                                }
+                                                            </strong>
+                                                        </div>
+                                                    )}
                                                 </div>
                                             )}
 
                                             <div
                                                 style={{
-                                                    display: "flex",
+                                                    borderTop:
+                                                        "1px solid var(--border, #ddd)",
+                                                    paddingTop:
+                                                        "0.65rem",
+                                                    display:
+                                                        "flex",
                                                     justifyContent:
                                                         "space-between",
-                                                    paddingTop: "0.5rem",
+                                                    alignItems:
+                                                        "center",
                                                 }}
                                             >
-                                                <strong>Total</strong>
+                                                <strong>
+                                                    Total
+                                                </strong>
 
                                                 <strong>
                                                     $
@@ -295,103 +562,18 @@ export default function MovimientosHistorial({
                                         </>
                                     )}
 
-                                    {isIncome &&
-                                        movement.payments &&
-                                        movement.payments.length > 0 && (
-                                            <>
-                                                <div>
-                                                    <strong>
-                                                        Medios de pago
-                                                    </strong>
-                                                </div>
-
-                                                <div
-                                                    style={{
-                                                        display: "flex",
-                                                        flexDirection:
-                                                            "column",
-                                                        gap: "0.75rem",
-                                                    }}
-                                                >
-                                                    {movement.payments.map(
-                                                        (payment) => (
-                                                            <div
-                                                                key={`${movement.id}-${payment.paymentMethodId}`}
-                                                                style={{
-                                                                    padding: "0.75rem",
-                                                                    border: "1px solid var(--border, #ddd)",
-                                                                    borderRadius: "0.5rem",
-                                                                }}
-                                                            >
-                                                                <div
-                                                                    style={{
-                                                                        display: "flex",
-                                                                        justifyContent: "space-between",
-                                                                        alignItems: "center",
-                                                                        gap: "1rem",
-                                                                        fontWeight: 600,
-                                                                    }}
-                                                                >
-                                                                    <span>{payment.paymentMethodName}</span>
-
-                                                                    <span>
-                                                                        ${formatMoney(payment.amount)}
-                                                                    </span>
-                                                                </div>
-
-                                                                {payment.commissionPercentage > 0 && (
-                                                                    <div
-                                                                        style={{
-                                                                            marginTop: "0.5rem",
-                                                                            paddingTop: "0.5rem",
-                                                                            borderTop: "1px solid var(--border, #eee)",
-                                                                            display: "flex",
-                                                                            flexDirection: "column",
-                                                                            gap: "0.25rem",
-                                                                            fontSize: "0.85rem",
-                                                                        }}
-                                                                    >
-                                                                        <div
-                                                                            style={{
-                                                                                display: "flex",
-                                                                                justifyContent: "space-between",
-                                                                                color: "var(--text-muted)",
-                                                                            }}
-                                                                        >
-                                                                            <span>
-                                                                                Comisión ({payment.commissionPercentage}%)
-                                                                            </span>
-
-                                                                            <span>
-                                                                                -${formatMoney(payment.commissionAmount)}
-                                                                            </span>
-                                                                        </div>
-
-                                                                        <div
-                                                                            style={{
-                                                                                display: "flex",
-                                                                                justifyContent: "space-between",
-                                                                            }}
-                                                                        >
-                                                                            <span>Neto</span>
-
-                                                                            <strong>
-                                                                                ${formatMoney(payment.netAmount)}
-                                                                            </strong>
-                                                                        </div>
-                                                                    </div>
-                                                                )}
-                                                            </div>
-                                                        )
-                                                    )}
-                                                </div>
-
+                                    {/* INGRESO */}
+                                    {isIncome && (
+                                        <>
+                                            {/* Inversión */}
+                                            {movement.investmentPercentage !==
+                                                undefined && (
                                                 <div
                                                     style={{
                                                         borderTop:
-                                                            "1px solid var(--border, #ddd)",
+                                                            "1px solid var(--border, #eee)",
                                                         paddingTop:
-                                                            "0.75rem",
+                                                            "0.65rem",
                                                         display:
                                                             "flex",
                                                         flexDirection:
@@ -408,14 +590,14 @@ export default function MovimientosHistorial({
                                                         }}
                                                     >
                                                         <span>
-                                                            Total bruto
+                                                            Inversión
                                                         </span>
 
                                                         <strong>
-                                                            $
-                                                            {formatMoney(
-                                                                movement.amount
-                                                            )}
+                                                            {
+                                                                movement.investmentPercentage
+                                                            }
+                                                            %
                                                         </strong>
                                                     </div>
 
@@ -428,41 +610,232 @@ export default function MovimientosHistorial({
                                                         }}
                                                     >
                                                         <span>
-                                                            Comisiones
+                                                            Total inversión
                                                         </span>
-
-                                                        <strong>
-                                                            -$
-                                                            {formatMoney(
-                                                                totalCommission
-                                                            )}
-                                                        </strong>
-                                                    </div>
-
-                                                    <div
-                                                        style={{
-                                                            display:
-                                                                "flex",
-                                                            justifyContent:
-                                                                "space-between",
-                                                            fontSize:
-                                                                "1.05rem",
-                                                        }}
-                                                    >
-                                                        <strong>
-                                                            Total neto
-                                                        </strong>
 
                                                         <strong>
                                                             $
                                                             {formatMoney(
-                                                                netIncome
+                                                                investmentAmount
                                                             )}
                                                         </strong>
                                                     </div>
                                                 </div>
-                                            </>
-                                        )}
+                                            )}
+
+                                            {/* Medios de pago */}
+                                            {movement.payments &&
+                                                movement.payments.length >
+                                                    0 && (
+                                                    <div
+                                                        style={{
+                                                            borderTop:
+                                                                "1px solid var(--border, #ddd)",
+                                                            paddingTop:
+                                                                "0.65rem",
+                                                            display:
+                                                                "flex",
+                                                            flexDirection:
+                                                                "column",
+                                                            gap: "0.6rem",
+                                                        }}
+                                                    >
+                                                        <strong>
+                                                            Medios de pago
+                                                        </strong>
+
+                                                        <div
+                                                            style={{
+                                                                display:
+                                                                    "flex",
+                                                                flexDirection:
+                                                                    "column",
+                                                                gap: "0.55rem",
+                                                            }}
+                                                        >
+                                                            {movement.payments.map(
+                                                                (
+                                                                    payment
+                                                                ) => (
+                                                                    <div
+                                                                        key={`${movement.id}-${payment.paymentMethodId}`}
+                                                                        style={{
+                                                                            display:
+                                                                                "flex",
+                                                                            flexDirection:
+                                                                                "column",
+                                                                            gap: "0.15rem",
+                                                                        }}
+                                                                    >
+                                                                        <div
+                                                                            style={{
+                                                                                display:
+                                                                                    "flex",
+                                                                                justifyContent:
+                                                                                    "space-between",
+                                                                                alignItems:
+                                                                                    "center",
+                                                                                gap: "1rem",
+                                                                            }}
+                                                                        >
+                                                                            <strong>
+                                                                                {
+                                                                                    payment.paymentMethodName
+                                                                                }
+                                                                            </strong>
+
+                                                                            <strong>
+                                                                                $
+                                                                                {formatMoney(
+                                                                                    payment.amount
+                                                                                )}
+                                                                            </strong>
+                                                                        </div>
+
+                                                                        {payment.commissionPercentage >
+                                                                            0 && (
+                                                                            <>
+                                                                                <div
+                                                                                    style={{
+                                                                                        display:
+                                                                                            "flex",
+                                                                                        justifyContent:
+                                                                                            "space-between",
+                                                                                        paddingLeft:
+                                                                                            "0.5rem",
+                                                                                        fontSize:
+                                                                                            "0.8rem",
+                                                                                        color: "var(--text-muted)",
+                                                                                    }}
+                                                                                >
+                                                                                    <span>
+                                                                                        Comisión (
+                                                                                        {
+                                                                                            payment.commissionPercentage
+                                                                                        }
+                                                                                        %)
+                                                                                    </span>
+
+                                                                                    <span>
+                                                                                        -$
+                                                                                        {formatMoney(
+                                                                                            payment.commissionAmount
+                                                                                        )}
+                                                                                    </span>
+                                                                                </div>
+
+                                                                                <div
+                                                                                    style={{
+                                                                                        display:
+                                                                                            "flex",
+                                                                                        justifyContent:
+                                                                                            "space-between",
+                                                                                        paddingLeft:
+                                                                                            "0.5rem",
+                                                                                        fontSize:
+                                                                                            "0.8rem",
+                                                                                    }}
+                                                                                >
+                                                                                    <span>
+                                                                                        Neto
+                                                                                    </span>
+
+                                                                                    <strong>
+                                                                                        $
+                                                                                        {formatMoney(
+                                                                                            payment.netAmount
+                                                                                        )}
+                                                                                    </strong>
+                                                                                </div>
+                                                                            </>
+                                                                        )}
+                                                                    </div>
+                                                                )
+                                                            )}
+                                                        </div>
+                                                    </div>
+                                                )}
+
+                                            {/* Resumen */}
+                                            <div
+                                                style={{
+                                                    borderTop:
+                                                        "1px solid var(--border, #ddd)",
+                                                    paddingTop:
+                                                        "0.65rem",
+                                                    display:
+                                                        "flex",
+                                                    flexDirection:
+                                                        "column",
+                                                    gap: "0.35rem",
+                                                }}
+                                            >
+                                                <div
+                                                    style={{
+                                                        display:
+                                                            "flex",
+                                                        justifyContent:
+                                                            "space-between",
+                                                    }}
+                                                >
+                                                    <span>
+                                                        Bruto
+                                                    </span>
+
+                                                    <span>
+                                                        $
+                                                        {formatMoney(
+                                                            movement.amount
+                                                        )}
+                                                    </span>
+                                                </div>
+
+                                                <div
+                                                    style={{
+                                                        display:
+                                                            "flex",
+                                                        justifyContent:
+                                                            "space-between",
+                                                        color: "var(--text-muted)",
+                                                    }}
+                                                >
+                                                    <span>
+                                                        Comisiones
+                                                    </span>
+
+                                                    <span>
+                                                        -$
+                                                        {formatMoney(
+                                                            totalCommission
+                                                        )}
+                                                    </span>
+                                                </div>
+
+                                                <div
+                                                    style={{
+                                                        display:
+                                                            "flex",
+                                                        justifyContent:
+                                                            "space-between",
+                                                        paddingTop:
+                                                            "0.25rem",
+                                                        fontWeight: 600,
+                                                    }}
+                                                >
+                                                    <span>
+                                                        Neto
+                                                    </span>
+
+                                                    <span>
+                                                        $
+                                                        {formatMoney(
+                                                            netIncome
+                                                        )}
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </>
+                                    )}
                                 </div>
                             )}
                         </div>
