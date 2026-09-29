@@ -19,7 +19,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
     useEffect(() => {
         if (status === 'unauthenticated') {
-            router.push('/login');
+            router.push('/');
         }
     }, [status, router]);
 
@@ -63,7 +63,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
                 <div style={{ marginTop: 'auto' }}>
                     <button
-                        onClick={() => signOut({ callbackUrl: '/login' })}
+                        onClick={() => signOut({ callbackUrl: '/' })}
                         className="nav-link"
                         style={{ width: '100%', border: 'none', background: 'none', cursor: 'pointer', textAlign: 'left' }}
                     >
