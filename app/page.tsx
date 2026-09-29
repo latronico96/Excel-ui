@@ -11,12 +11,12 @@ export default function RootPage() {
 
     useEffect(() => {
         if (status === 'authenticated') {
-            router.push('/movimientos');
+            router.push('/resumen');
         }
     }, [status, router]);
 
     const handleLogin = () => {
-        signIn('google', { callbackUrl: '/movimientos' });
+        signIn('google', { callbackUrl: '/resumen' });
     };
 
     return (
