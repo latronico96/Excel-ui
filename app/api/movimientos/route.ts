@@ -3,27 +3,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "../auth/auth-options";
 import { MovimientosService } from "@/server/services/movimientos.service";
 import { prisma } from "@/prisma/prisma";
-import { Prisma } from "@prisma/client";
-
-type MovementWithDetails = Prisma.MovementGetPayload<{
-    include: {
-        expense: {
-            include: {
-                expenseType: true;
-                paymentMethod: true;
-            };
-        };
-        income: {
-            include: {
-                payments: {
-                    include: {
-                        paymentMethod: true;
-                    };
-                };
-            };
-        };
-    };
-}>;
+import { MovementWithDetails } from "@/shared/types";
 
 async function getUserId() {
     const session = await getServerSession(authOptions);

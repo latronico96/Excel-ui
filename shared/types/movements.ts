@@ -69,3 +69,36 @@ export type MovementInput =
         paymentMethodId: string;
         description?: string | null;
     };
+
+
+export type MovementWithDetails = {
+    id: string;
+    type: "INGRESO" | "EGRESO";
+    amount: unknown;
+    date: Date;
+    description: string | null;
+    expense: {
+        expenseType: {
+            id: string;
+            name: string;
+        };
+        paymentMethod: {
+            id: string;
+            name: string;
+        };
+    } | null;
+    income: {
+        investmentPercentage: unknown;
+        payments: {
+            paymentMethodId: string;
+            paymentMethod: {
+                id: string;
+                name: string;
+            };
+            amount: unknown;
+            commissionPercentage: unknown;
+            commissionAmount: unknown;
+            netAmount: unknown;
+        }[];
+    } | null;
+};

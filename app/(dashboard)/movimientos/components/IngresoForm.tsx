@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import {
     Movement,
-    PaymentMethodOption,
+    PaymentMethodOption
 } from "@/shared/types";
 import {
     Loader2,
