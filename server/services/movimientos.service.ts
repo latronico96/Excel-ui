@@ -107,13 +107,13 @@ export class MovimientosService {
                             (payment.amount *
                                 commissionPercentage /
                                 100) *
-                                100
+                            100
                         ) / 100;
 
                     const netAmount =
                         Math.round(
                             (payment.amount - commissionAmount) *
-                                100
+                            100
                         ) / 100;
 
                     incomePayments.push({
@@ -369,13 +369,13 @@ export class MovimientosService {
                             (payment.amount *
                                 commissionPercentage /
                                 100) *
-                                100
+                            100
                         ) / 100;
 
                     const netAmount =
                         Math.round(
                             (payment.amount - commissionAmount) *
-                                100
+                            100
                         ) / 100;
 
                     incomePayments.push({
@@ -598,51 +598,154 @@ export class MovimientosService {
         });
     }
 
-    static async fetchSummary(userId: string) {
+    static async fetchSummary(
+        userId: string,
+        period: "week" | "month" | "year" = "month"
+    ) {
+        const now = new Date();
+
+        const startDate = new Date(now);
+
+        if (period === "week") {
+            // Lunes de la semana actual
+            const day = startDate.getDay();
+            const diff = day === 0 ? -6 : 1 - day;
+
+            startDate.setDate(startDate.getDate() + diff);
+            startDate.setHours(0, 0, 0, 0);
+        } else if (period === "month") {
+            startDate.setDate(1);
+            startDate.setHours(0, 0, 0, 0);
+        } else {
+            startDate.setMonth(0, 1);
+            startDate.setHours(0, 0, 0, 0);
+        }
+
         const movements = await prisma.movement.findMany({
             where: {
                 userId,
+                date: {
+                    gte: startDate,
+                    lte: now,
+                },
             },
             select: {
                 type: true,
                 amount: true,
                 date: true,
+                income: {
+                    select: {
+                        investmentPercentage: true,
+                        payments: {
+                            select: {
+                                commissionAmount: true,
+                                netAmount: true,
+                            },
+                        },
+                    },
+                },
             },
             orderBy: {
                 date: "desc",
             },
         });
 
-        const summaries: Record<
+        const totals = {
+            income: 0,
+            expenses: 0,
+            balance: 0,
+            commissions: 0,
+            netIncome: 0,
+            investment: 0,
+        };
+
+        const breakdown: Record<
             string,
             {
                 income: number;
                 expenses: number;
+                commissions: number;
+                netIncome: number;
+                investment: number;
             }
         > = {};
 
         for (const movement of movements) {
-            const date = movement.date.toISOString().slice(0, 10);
+            const movementDate = movement.date;
 
-            if (!summaries[date]) {
-                summaries[date] = {
+            let key: string;
+
+            if (period === "week" || period === "month") {
+                key = movementDate.toISOString().slice(0, 10);
+            } else {
+                // Para el año agrupamos por mes
+                key = movementDate.toISOString().slice(0, 7);
+            }
+
+            if (!breakdown[key]) {
+                breakdown[key] = {
                     income: 0,
                     expenses: 0,
+                    commissions: 0,
+                    netIncome: 0,
+                    investment: 0,
                 };
             }
 
             if (movement.type === "INGRESO") {
-                summaries[date].income += Number(movement.amount);
+                const grossIncome = Number(movement.amount);
+
+                const commissions =
+                    movement.income?.payments.reduce(
+                        (sum: number, payment: { commissionAmount: any }) =>
+                            sum + Number(payment.commissionAmount),
+                        0
+                    ) ?? 0;
+
+                const netIncome =
+                    movement.income?.payments.reduce(
+                        (sum: number, payment: { netAmount: any }) =>
+                            sum + Number(payment.netAmount),
+                        0
+                    ) ?? 0;
+
+                const investmentPercentage = Number(
+                    movement.income?.investmentPercentage ?? 0
+                );
+
+                const investment =
+                    Math.round(
+                        ((netIncome * investmentPercentage) / 100) * 100
+                    ) / 100;
+
+                totals.income += grossIncome;
+                totals.commissions += commissions;
+                totals.netIncome += netIncome;
+                totals.investment += investment;
+
+                breakdown[key].income += grossIncome;
+                breakdown[key].commissions += commissions;
+                breakdown[key].netIncome += netIncome;
+                breakdown[key].investment += investment;
             } else {
-                summaries[date].expenses += Number(movement.amount);
+                const expense = Number(movement.amount);
+
+                totals.expenses += expense;
+
+                breakdown[key].expenses += expense;
             }
         }
 
-        return Object.entries(summaries)
+        totals.balance = totals.income - totals.expenses;
+
+        const result = Object.entries(breakdown)
             .map(([date, data]) => ({
                 date,
                 totalIncome: data.income,
                 totalExpenses: data.expenses,
+                commissions: data.commissions,
+                netIncome: data.netIncome,
+                investment: data.investment,
                 netDaily: data.income - data.expenses,
             }))
             .sort(
@@ -650,5 +753,11 @@ export class MovimientosService {
                     new Date(b.date).getTime() -
                     new Date(a.date).getTime()
             );
+
+        return {
+            period,
+            totals,
+            breakdown: result,
+        };
     }
 }
