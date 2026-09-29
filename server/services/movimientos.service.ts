@@ -1,10 +1,10 @@
 import { prisma } from "@/prisma/prisma";
-import { Prisma } from "@prisma/client";
 import { MovementInput } from "@/shared/types";
+import { Prisma } from "@/prisma/generated/client";
 
 export class MovimientosService {
     static async saveMovement(userId: string, movement: MovementInput) {
-        return prisma.$transaction(async (tx: Prisma.TransactionClient) => {
+        return prisma.$transaction(async (tx) => {
             if (movement.type === "INGRESO") {
                 const date = new Date(movement.date);
 
@@ -234,7 +234,7 @@ export class MovimientosService {
         movementId: string,
         movement: MovementInput
     ) {
-        return prisma.$transaction(async (tx: Prisma.TransactionClient) => {
+        return prisma.$transaction(async (tx) => {
             // Primero verificamos que el movimiento exista
             // y pertenezca al usuario actual.
             const existingMovement =
@@ -545,7 +545,7 @@ export class MovimientosService {
         userId: string,
         movementId: string
     ) {
-        return prisma.$transaction(async (tx: Prisma.TransactionClient) => {
+        return prisma.$transaction(async (tx) => {
             const movement = await tx.movement.findFirst({
                 where: {
                     id: movementId,
