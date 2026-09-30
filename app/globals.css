@@ -924,3 +924,46 @@ tr:last-child td {
         grid-column: span 2;
     }
 }
+
+.recurring-payment-update-option {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.85rem;
+    margin-top: 1rem;
+    padding: 1rem;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.recurring-payment-update-option input {
+    margin: 0.25rem 0 0 0.1rem;
+    flex-shrink: 0;
+    width: 16px;
+    height: 16px;
+}
+
+.recurring-payment-update-option span {
+    font-size: 0.85rem;
+    line-height: 1.4;
+}
+
+
+.recurring-payment-info {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.85rem;
+    margin-top: 1rem;
+    padding: 1rem;
+    border-radius: 8px;
+    background: var(--primary-light);
+    color: var(--text-muted);
+    font-size: 0.8rem;
+    line-height: 1.4;
+}
+
+.recurring-payment-info svg {
+    flex-shrink: 0;
+    margin: 0.1rem 0.15rem 0 0.1rem;
+    color: var(--primary);
+}
