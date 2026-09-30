@@ -5,6 +5,7 @@ import { useRouter, usePathname } from 'next/navigation';
 import { useEffect } from 'react';
 import Link from 'next/link';
 import {
+    Calendar,
     CreditCard,
     LayoutDashboard,
     Receipt,
@@ -38,6 +39,10 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                         {process.env.NEXT_PUBLIC_APP_TITLE || 'Mi Comercio'}
                     </h2>
                     <nav className="sidebar-nav">
+                        <Link href="/resumen" className={`nav-link ${pathname === '/resumen' ? 'active' : ''}`}>
+                            <PieChart size={20} />
+                            Resumen
+                        </Link> 
                         <Link href="/movimientos" className={`nav-link ${pathname === '/movimientos' ? 'active' : ''}`}>
                             <Receipt size={20} />
                             Movimientos
@@ -54,9 +59,12 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                             <CreditCard size={20} />
                             Medios de pago
                         </Link>
-                        <Link href="/resumen" className={`nav-link ${pathname === '/resumen' ? 'active' : ''}`}>
-                            <PieChart size={20} />
-                            Resumen
+                        <Link
+                            href="/gastos-mensuales"
+                            className={`nav-link ${pathname === '/gastos-mensuales' ? 'active' : ''}`}
+                        >
+                            <Calendar size={20} />
+                            Gastos mensuales
                         </Link>
                     </nav>
                 </div>

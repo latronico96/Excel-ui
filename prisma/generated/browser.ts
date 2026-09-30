@@ -67,3 +67,13 @@ export type Expense = Prisma.ExpenseModel
  * 
  */
 export type PaymentMethod = Prisma.PaymentMethodModel
+/**
+ * Model RecurringExpense
+ * 
+ */
+export type RecurringExpense = Prisma.RecurringExpenseModel
+/**
+ * Model RecurringExpensePayment
+ * 
+ */
+export type RecurringExpensePayment = Prisma.RecurringExpensePaymentModel

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Check, Pencil, Plus, X } from "lucide-react";
+import { Check, Pencil, Plus, X, Power } from "lucide-react";
 
 interface PaymentMethod {
     id: string;
@@ -33,20 +33,17 @@ export default function MediosPagoABM() {
             setError("");
 
             const res = await fetch("/api/medios-pago?all=true");
-
             const data = await res.json();
 
             if (!res.ok) {
                 throw new Error(
                     data.error ||
-                    "No se pudieron cargar los medios de pago"
+                        "No se pudieron cargar los medios de pago"
                 );
             }
 
             setPaymentMethods(
-                Array.isArray(data)
-                    ? data
-                    : []
+                Array.isArray(data) ? data : []
             );
         } catch (err) {
             console.error(err);
@@ -77,9 +74,7 @@ export default function MediosPagoABM() {
         setEditingId(paymentMethod.id);
         setName(paymentMethod.name);
         setCommission(
-            String(
-                paymentMethod.defaultCommissionPercentage
-            )
+            String(paymentMethod.defaultCommissionPercentage)
         );
         setError("");
         setShowForm(true);
@@ -113,9 +108,7 @@ export default function MediosPagoABM() {
             commissionValue < 0 ||
             commissionValue > 100
         ) {
-            setError(
-                "La comisión debe estar entre 0 y 100."
-            );
+            setError("La comisión debe estar entre 0 y 100.");
             return;
         }
 
@@ -131,16 +124,16 @@ export default function MediosPagoABM() {
                 body: JSON.stringify(
                     editingId
                         ? {
-                            id: editingId,
-                            name: trimmedName,
-                            defaultCommissionPercentage:
-                                commissionValue,
-                        }
+                              id: editingId,
+                              name: trimmedName,
+                              defaultCommissionPercentage:
+                                  commissionValue,
+                          }
                         : {
-                            name: trimmedName,
-                            defaultCommissionPercentage:
-                                commissionValue,
-                        }
+                              name: trimmedName,
+                              defaultCommissionPercentage:
+                                  commissionValue,
+                          }
                 ),
             });
 
@@ -149,7 +142,7 @@ export default function MediosPagoABM() {
             if (!res.ok) {
                 throw new Error(
                     data.error ||
-                    "No se pudo guardar el medio de pago"
+                        "No se pudo guardar el medio de pago"
                 );
             }
 
@@ -158,22 +151,19 @@ export default function MediosPagoABM() {
                     current.map((method) =>
                         method.id === editingId
                             ? {
-                                ...method,
-                                name: data.name,
-                                active: data.active,
-                                defaultCommissionPercentage:
-                                    data.defaultCommissionPercentage,
-                            }
+                                  ...method,
+                                  name: data.name,
+                                  active: data.active,
+                                  defaultCommissionPercentage:
+                                      data.defaultCommissionPercentage,
+                              }
                             : method
                     )
                 );
             } else {
                 setPaymentMethods((current) =>
                     [...current, data].sort((a, b) =>
-                        a.name.localeCompare(
-                            b.name,
-                            "es"
-                        )
+                        a.name.localeCompare(b.name, "es")
                     )
                 );
             }
@@ -214,7 +204,7 @@ export default function MediosPagoABM() {
             if (!res.ok) {
                 throw new Error(
                     data.error ||
-                    "No se pudo cambiar el estado"
+                        "No se pudo cambiar el estado"
                 );
             }
 
@@ -222,9 +212,9 @@ export default function MediosPagoABM() {
                 current.map((method) =>
                     method.id === paymentMethod.id
                         ? {
-                            ...method,
-                            active: data.active,
-                        }
+                              ...method,
+                              active: data.active,
+                          }
                         : method
                 )
             );
@@ -241,18 +231,18 @@ export default function MediosPagoABM() {
 
     return (
         <div className="card">
-            <div
-                style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                    gap: "1rem",
-                    marginBottom: "1rem",
-                }}
-            >
-                <h3 style={{ margin: 0 }}>
-                    Medios de pago
-                </h3>
+            {/* Header */}
+            <div className="abm-header">
+                <div>
+                    <h3 style={{ margin: 0 }}>
+                        Medios de pago
+                    </h3>
+
+                    <p className="abm-subtitle">
+                        Configurá los medios y sus comisiones
+                        predeterminadas.
+                    </p>
+                </div>
 
                 {!showForm && (
                     <button
@@ -266,35 +256,20 @@ export default function MediosPagoABM() {
                 )}
             </div>
 
+            {/* Error */}
             {error && (
-                <div
-                    style={{
-                        marginBottom: "1rem",
-                        color: "var(--danger, #dc2626)",
-                    }}
-                >
+                <div className="abm-error">
                     {error}
                 </div>
             )}
 
+            {/* Formulario */}
             {showForm && (
                 <form
                     onSubmit={handleSave}
-                    style={{
-                        marginBottom: "1.25rem",
-                        padding: "1rem",
-                        border: "1px solid var(--border, #ddd)",
-                        borderRadius: "0.75rem",
-                    }}
+                    className="abm-form"
                 >
-                    <div
-                        style={{
-                            display: "flex",
-                            justifyContent: "space-between",
-                            alignItems: "center",
-                            marginBottom: "1rem",
-                        }}
-                    >
+                    <div className="abm-form-header">
                         <h4 style={{ margin: 0 }}>
                             {editingId
                                 ? "Editar medio de pago"
@@ -306,35 +281,20 @@ export default function MediosPagoABM() {
                             onClick={closeForm}
                             disabled={saving}
                             aria-label="Cerrar formulario"
-                            style={{
-                                border: "none",
-                                background: "transparent",
-                                cursor: saving
-                                    ? "default"
-                                    : "pointer",
-                                padding: "0.25rem",
-                                display: "flex",
-                                alignItems: "center",
-                            }}
+                            className="abm-close-button"
                         >
                             <X size={20} />
                         </button>
                     </div>
 
-                    <div
-                        style={{
-                            display: "flex",
-                            flexDirection: "column",
-                            gap: "0.5rem",
-                            marginBottom: "1rem",
-                        }}
-                    >
+                    <div className="form-group">
                         <label htmlFor="payment-method-name">
                             Nombre
                         </label>
 
                         <input
                             id="payment-method-name"
+                            className="input"
                             type="text"
                             value={name}
                             onChange={(e) =>
@@ -344,66 +304,30 @@ export default function MediosPagoABM() {
                             maxLength={100}
                             autoFocus
                             disabled={saving}
-                            style={{
-                                width: "100%",
-                                padding: "0.75rem",
-                                border: "1px solid var(--border, #ddd)",
-                                borderRadius: "0.5rem",
-                                background:
-                                    "var(--input-bg, #fff)",
-                                color: "var(--text, inherit)",
-                                fontSize: "1rem",
-                                boxSizing: "border-box",
-                            }}
                         />
                     </div>
 
-                    <div
-                        style={{
-                            display: "flex",
-                            flexDirection: "column",
-                            gap: "0.5rem",
-                        }}
-                    >
+                    <div className="form-group">
                         <label htmlFor="payment-method-commission">
                             Comisión predeterminada (%)
                         </label>
 
                         <input
                             id="payment-method-commission"
+                            className="input"
                             type="number"
                             min="0"
                             max="100"
                             step="0.01"
                             value={commission}
                             onChange={(e) =>
-                                setCommission(
-                                    e.target.value
-                                )
+                                setCommission(e.target.value)
                             }
                             disabled={saving}
-                            style={{
-                                width: "100%",
-                                padding: "0.75rem",
-                                border: "1px solid var(--border, #ddd)",
-                                borderRadius: "0.5rem",
-                                background:
-                                    "var(--input-bg, #fff)",
-                                color: "var(--text, inherit)",
-                                fontSize: "1rem",
-                                boxSizing: "border-box",
-                            }}
                         />
                     </div>
 
-                    <div
-                        style={{
-                            display: "flex",
-                            justifyContent: "flex-end",
-                            gap: "0.75rem",
-                            marginTop: "1rem",
-                        }}
-                    >
+                    <div className="abm-form-actions">
                         <button
                             type="button"
                             className="btn"
@@ -427,108 +351,75 @@ export default function MediosPagoABM() {
                 </form>
             )}
 
+            {/* Lista */}
             {loading ? (
-                <div
-                    style={{
-                        padding: "1.5rem",
-                        textAlign: "center",
-                        color: "var(--text-muted)",
-                    }}
-                >
+                <div className="abm-empty">
                     Cargando medios de pago...
                 </div>
             ) : paymentMethods.length === 0 ? (
-                <div
-                    style={{
-                        padding: "1.5rem",
-                        textAlign: "center",
-                        color: "var(--text-muted)",
-                    }}
-                >
+                <div className="abm-empty">
                     No hay medios de pago.
                 </div>
             ) : (
-                <div
-                    style={{
-                        display: "flex",
-                        flexDirection: "column",
-                        gap: "0.5rem",
-                    }}
-                >
+                <div className="payment-method-grid">
                     {paymentMethods.map((paymentMethod) => (
                         <div
                             key={paymentMethod.id}
-                            style={{
-                                display: "flex",
-                                alignItems: "center",
-                                justifyContent: "space-between",
-                                gap: "1rem",
-                                padding: "0.75rem",
-                                border:
-                                    "1px solid var(--border, #ddd)",
-                                borderRadius: "0.6rem",
-                                opacity:
-                                    paymentMethod.active
-                                        ? 1
-                                        : 0.55,
-                            }}
+                            className={`payment-method-card ${
+                                paymentMethod.active
+                                    ? ""
+                                    : "inactive"
+                            }`}
                         >
-                            <div
-                                style={{
-                                    minWidth: 0,
-                                }}
-                            >
+                            {/* Encabezado */}
+                            <div className="payment-method-card-header">
                                 <div
-                                    style={{
-                                        fontWeight: 600,
-                                        overflow: "hidden",
-                                        textOverflow:
-                                            "ellipsis",
-                                        whiteSpace:
-                                            "nowrap",
-                                    }}
+                                    className="payment-method-icon"
+                                    aria-hidden="true"
                                 >
-                                    {paymentMethod.name}
+                                    $
                                 </div>
 
                                 <div
                                     style={{
-                                        fontSize: "0.8rem",
-                                        color:
-                                            "var(--text-muted)",
-                                        marginTop: "0.15rem",
+                                        minWidth: 0,
+                                        flex: 1,
                                     }}
                                 >
-                                    Comisión:{" "}
+                                    <div className="payment-method-name">
+                                        {paymentMethod.name}
+                                    </div>
+
+                                    <span
+                                        className={`payment-method-status ${
+                                            paymentMethod.active
+                                                ? "active"
+                                                : "inactive"
+                                        }`}
+                                    >
+                                        {paymentMethod.active
+                                            ? "Activo"
+                                            : "Inactivo"}
+                                    </span>
+                                </div>
+                            </div>
+
+                            {/* Comisión */}
+                            <div className="payment-method-commission">
+                                <span>
+                                    Comisión predeterminada
+                                </span>
+
+                                <strong>
                                     {
                                         paymentMethod.defaultCommissionPercentage
                                     }
                                     %
-                                </div>
-
-                                {!paymentMethod.active && (
-                                    <div
-                                        style={{
-                                            fontSize:
-                                                "0.8rem",
-                                            color:
-                                                "var(--text-muted)",
-                                            marginTop:
-                                                "0.15rem",
-                                        }}
-                                    >
-                                        Inactivo
-                                    </div>
-                                )}
+                                </strong>
                             </div>
 
-                            <div
-                                style={{
-                                    display: "flex",
-                                    gap: "0.5rem",
-                                    flexShrink: 0,
-                                }}
-                            >
+                            {/* Acciones */}
+                            <div className="payment-method-actions">
                                 <button
                                     type="button"
                                     className="btn"
@@ -537,7 +428,6 @@ export default function MediosPagoABM() {
                                             paymentMethod
                                         )
                                     }
-                                    aria-label={`Editar ${paymentMethod.name}`}
                                 >
                                     <Pencil size={16} />
                                     Editar
@@ -552,6 +442,7 @@ export default function MediosPagoABM() {
                                         )
                                     }
                                 >
+                                    <Power size={16} />
                                     {paymentMethod.active
                                         ? "Desactivar"
                                         : "Activar"}

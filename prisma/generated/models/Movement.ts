@@ -243,6 +243,7 @@ export type MovementWhereInput = {
   expense?: Prisma.XOR<Prisma.ExpenseNullableScalarRelationFilter, Prisma.ExpenseWhereInput> | null
   income?: Prisma.XOR<Prisma.IncomeNullableScalarRelationFilter, Prisma.IncomeWhereInput> | null
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
+  recurringExpensePayment?: Prisma.XOR<Prisma.RecurringExpensePaymentNullableScalarRelationFilter, Prisma.RecurringExpensePaymentWhereInput> | null
 }
 
 export type MovementOrderByWithRelationInput = {
@@ -257,6 +258,7 @@ export type MovementOrderByWithRelationInput = {
   expense?: Prisma.ExpenseOrderByWithRelationInput
   income?: Prisma.IncomeOrderByWithRelationInput
   user?: Prisma.UserOrderByWithRelationInput
+  recurringExpensePayment?: Prisma.RecurringExpensePaymentOrderByWithRelationInput
 }
 
 export type MovementWhereUniqueInput = Prisma.AtLeast<{
@@ -274,6 +276,7 @@ export type MovementWhereUniqueInput = Prisma.AtLeast<{
   expense?: Prisma.XOR<Prisma.ExpenseNullableScalarRelationFilter, Prisma.ExpenseWhereInput> | null
   income?: Prisma.XOR<Prisma.IncomeNullableScalarRelationFilter, Prisma.IncomeWhereInput> | null
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
+  recurringExpensePayment?: Prisma.XOR<Prisma.RecurringExpensePaymentNullableScalarRelationFilter, Prisma.RecurringExpensePaymentWhereInput> | null
 }, "id">
 
 export type MovementOrderByWithAggregationInput = {
@@ -317,6 +320,7 @@ export type MovementCreateInput = {
   expense?: Prisma.ExpenseCreateNestedOneWithoutMovementInput
   income?: Prisma.IncomeCreateNestedOneWithoutMovementInput
   user: Prisma.UserCreateNestedOneWithoutMovementsInput
+  recurringExpensePayment?: Prisma.RecurringExpensePaymentCreateNestedOneWithoutMovementInput
 }
 
 export type MovementUncheckedCreateInput = {
@@ -330,6 +334,7 @@ export type MovementUncheckedCreateInput = {
   updatedAt?: Date | string
   expense?: Prisma.ExpenseUncheckedCreateNestedOneWithoutMovementInput
   income?: Prisma.IncomeUncheckedCreateNestedOneWithoutMovementInput
+  recurringExpensePayment?: Prisma.RecurringExpensePaymentUncheckedCreateNestedOneWithoutMovementInput
 }
 
 export type MovementUpdateInput = {
@@ -343,6 +348,7 @@ export type MovementUpdateInput = {
   expense?: Prisma.ExpenseUpdateOneWithoutMovementNestedInput
   income?: Prisma.IncomeUpdateOneWithoutMovementNestedInput
   user?: Prisma.UserUpdateOneRequiredWithoutMovementsNestedInput
+  recurringExpensePayment?: Prisma.RecurringExpensePaymentUpdateOneWithoutMovementNestedInput
 }
 
 export type MovementUncheckedUpdateInput = {
@@ -356,6 +362,7 @@ export type MovementUncheckedUpdateInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   expense?: Prisma.ExpenseUncheckedUpdateOneWithoutMovementNestedInput
   income?: Prisma.IncomeUncheckedUpdateOneWithoutMovementNestedInput
+  recurringExpensePayment?: Prisma.RecurringExpensePaymentUncheckedUpdateOneWithoutMovementNestedInput
 }
 
 export type MovementCreateManyInput = {
@@ -520,6 +527,20 @@ export type MovementUpdateOneRequiredWithoutExpenseNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.MovementUpdateToOneWithWhereWithoutExpenseInput, Prisma.MovementUpdateWithoutExpenseInput>, Prisma.MovementUncheckedUpdateWithoutExpenseInput>
 }
 
+export type MovementCreateNestedOneWithoutRecurringExpensePaymentInput = {
+  create?: Prisma.XOR<Prisma.MovementCreateWithoutRecurringExpensePaymentInput, Prisma.MovementUncheckedCreateWithoutRecurringExpensePaymentInput>
+  connectOrCreate?: Prisma.MovementCreateOrConnectWithoutRecurringExpensePaymentInput
+  connect?: Prisma.MovementWhereUniqueInput
+}
+
+export type MovementUpdateOneRequiredWithoutRecurringExpensePaymentNestedInput = {
+  create?: Prisma.XOR<Prisma.MovementCreateWithoutRecurringExpensePaymentInput, Prisma.MovementUncheckedCreateWithoutRecurringExpensePaymentInput>
+  connectOrCreate?: Prisma.MovementCreateOrConnectWithoutRecurringExpensePaymentInput
+  upsert?: Prisma.MovementUpsertWithoutRecurringExpensePaymentInput
+  connect?: Prisma.MovementWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.MovementUpdateToOneWithWhereWithoutRecurringExpensePaymentInput, Prisma.MovementUpdateWithoutRecurringExpensePaymentInput>, Prisma.MovementUncheckedUpdateWithoutRecurringExpensePaymentInput>
+}
+
 export type MovementCreateWithoutUserInput = {
   id?: string
   type: $Enums.MovementType
@@ -530,6 +551,7 @@ export type MovementCreateWithoutUserInput = {
   updatedAt?: Date | string
   expense?: Prisma.ExpenseCreateNestedOneWithoutMovementInput
   income?: Prisma.IncomeCreateNestedOneWithoutMovementInput
+  recurringExpensePayment?: Prisma.RecurringExpensePaymentCreateNestedOneWithoutMovementInput
 }
 
 export type MovementUncheckedCreateWithoutUserInput = {
@@ -542,6 +564,7 @@ export type MovementUncheckedCreateWithoutUserInput = {
   updatedAt?: Date | string
   expense?: Prisma.ExpenseUncheckedCreateNestedOneWithoutMovementInput
   income?: Prisma.IncomeUncheckedCreateNestedOneWithoutMovementInput
+  recurringExpensePayment?: Prisma.RecurringExpensePaymentUncheckedCreateNestedOneWithoutMovementInput
 }
 
 export type MovementCreateOrConnectWithoutUserInput = {
@@ -594,6 +617,7 @@ export type MovementCreateWithoutIncomeInput = {
   updatedAt?: Date | string
   expense?: Prisma.ExpenseCreateNestedOneWithoutMovementInput
   user: Prisma.UserCreateNestedOneWithoutMovementsInput
+  recurringExpensePayment?: Prisma.RecurringExpensePaymentCreateNestedOneWithoutMovementInput
 }
 
 export type MovementUncheckedCreateWithoutIncomeInput = {
@@ -606,6 +630,7 @@ export type MovementUncheckedCreateWithoutIncomeInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   expense?: Prisma.ExpenseUncheckedCreateNestedOneWithoutMovementInput
+  recurringExpensePayment?: Prisma.RecurringExpensePaymentUncheckedCreateNestedOneWithoutMovementInput
 }
 
 export type MovementCreateOrConnectWithoutIncomeInput = {
@@ -634,6 +659,7 @@ export type MovementUpdateWithoutIncomeInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   expense?: Prisma.ExpenseUpdateOneWithoutMovementNestedInput
   user?: Prisma.UserUpdateOneRequiredWithoutMovementsNestedInput
+  recurringExpensePayment?: Prisma.RecurringExpensePaymentUpdateOneWithoutMovementNestedInput
 }
 
 export type MovementUncheckedUpdateWithoutIncomeInput = {
@@ -646,6 +672,7 @@ export type MovementUncheckedUpdateWithoutIncomeInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   expense?: Prisma.ExpenseUncheckedUpdateOneWithoutMovementNestedInput
+  recurringExpensePayment?: Prisma.RecurringExpensePaymentUncheckedUpdateOneWithoutMovementNestedInput
 }
 
 export type MovementCreateWithoutExpenseInput = {
@@ -658,6 +685,7 @@ export type MovementCreateWithoutExpenseInput = {
   updatedAt?: Date | string
   income?: Prisma.IncomeCreateNestedOneWithoutMovementInput
   user: Prisma.UserCreateNestedOneWithoutMovementsInput
+  recurringExpensePayment?: Prisma.RecurringExpensePaymentCreateNestedOneWithoutMovementInput
 }
 
 export type MovementUncheckedCreateWithoutExpenseInput = {
@@ -670,6 +698,7 @@ export type MovementUncheckedCreateWithoutExpenseInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   income?: Prisma.IncomeUncheckedCreateNestedOneWithoutMovementInput
+  recurringExpensePayment?: Prisma.RecurringExpensePaymentUncheckedCreateNestedOneWithoutMovementInput
 }
 
 export type MovementCreateOrConnectWithoutExpenseInput = {
@@ -698,6 +727,7 @@ export type MovementUpdateWithoutExpenseInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   income?: Prisma.IncomeUpdateOneWithoutMovementNestedInput
   user?: Prisma.UserUpdateOneRequiredWithoutMovementsNestedInput
+  recurringExpensePayment?: Prisma.RecurringExpensePaymentUpdateOneWithoutMovementNestedInput
 }
 
 export type MovementUncheckedUpdateWithoutExpenseInput = {
@@ -709,6 +739,75 @@ export type MovementUncheckedUpdateWithoutExpenseInput = {
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  income?: Prisma.IncomeUncheckedUpdateOneWithoutMovementNestedInput
+  recurringExpensePayment?: Prisma.RecurringExpensePaymentUncheckedUpdateOneWithoutMovementNestedInput
+}
+
+export type MovementCreateWithoutRecurringExpensePaymentInput = {
+  id?: string
+  type: $Enums.MovementType
+  amount: runtime.Decimal | runtime.DecimalJsLike | number | string
+  date: Date | string
+  description?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  expense?: Prisma.ExpenseCreateNestedOneWithoutMovementInput
+  income?: Prisma.IncomeCreateNestedOneWithoutMovementInput
+  user: Prisma.UserCreateNestedOneWithoutMovementsInput
+}
+
+export type MovementUncheckedCreateWithoutRecurringExpensePaymentInput = {
+  id?: string
+  userId: string
+  type: $Enums.MovementType
+  amount: runtime.Decimal | runtime.DecimalJsLike | number | string
+  date: Date | string
+  description?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  expense?: Prisma.ExpenseUncheckedCreateNestedOneWithoutMovementInput
+  income?: Prisma.IncomeUncheckedCreateNestedOneWithoutMovementInput
+}
+
+export type MovementCreateOrConnectWithoutRecurringExpensePaymentInput = {
+  where: Prisma.MovementWhereUniqueInput
+  create: Prisma.XOR<Prisma.MovementCreateWithoutRecurringExpensePaymentInput, Prisma.MovementUncheckedCreateWithoutRecurringExpensePaymentInput>
+}
+
+export type MovementUpsertWithoutRecurringExpensePaymentInput = {
+  update: Prisma.XOR<Prisma.MovementUpdateWithoutRecurringExpensePaymentInput, Prisma.MovementUncheckedUpdateWithoutRecurringExpensePaymentInput>
+  create: Prisma.XOR<Prisma.MovementCreateWithoutRecurringExpensePaymentInput, Prisma.MovementUncheckedCreateWithoutRecurringExpensePaymentInput>
+  where?: Prisma.MovementWhereInput
+}
+
+export type MovementUpdateToOneWithWhereWithoutRecurringExpensePaymentInput = {
+  where?: Prisma.MovementWhereInput
+  data: Prisma.XOR<Prisma.MovementUpdateWithoutRecurringExpensePaymentInput, Prisma.MovementUncheckedUpdateWithoutRecurringExpensePaymentInput>
+}
+
+export type MovementUpdateWithoutRecurringExpensePaymentInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.EnumMovementTypeFieldUpdateOperationsInput | $Enums.MovementType
+  amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  expense?: Prisma.ExpenseUpdateOneWithoutMovementNestedInput
+  income?: Prisma.IncomeUpdateOneWithoutMovementNestedInput
+  user?: Prisma.UserUpdateOneRequiredWithoutMovementsNestedInput
+}
+
+export type MovementUncheckedUpdateWithoutRecurringExpensePaymentInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  userId?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.EnumMovementTypeFieldUpdateOperationsInput | $Enums.MovementType
+  amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  expense?: Prisma.ExpenseUncheckedUpdateOneWithoutMovementNestedInput
   income?: Prisma.IncomeUncheckedUpdateOneWithoutMovementNestedInput
 }
 
@@ -732,6 +831,7 @@ export type MovementUpdateWithoutUserInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   expense?: Prisma.ExpenseUpdateOneWithoutMovementNestedInput
   income?: Prisma.IncomeUpdateOneWithoutMovementNestedInput
+  recurringExpensePayment?: Prisma.RecurringExpensePaymentUpdateOneWithoutMovementNestedInput
 }
 
 export type MovementUncheckedUpdateWithoutUserInput = {
@@ -744,6 +844,7 @@ export type MovementUncheckedUpdateWithoutUserInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   expense?: Prisma.ExpenseUncheckedUpdateOneWithoutMovementNestedInput
   income?: Prisma.IncomeUncheckedUpdateOneWithoutMovementNestedInput
+  recurringExpensePayment?: Prisma.RecurringExpensePaymentUncheckedUpdateOneWithoutMovementNestedInput
 }
 
 export type MovementUncheckedUpdateManyWithoutUserInput = {
@@ -770,6 +871,7 @@ export type MovementSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs
   expense?: boolean | Prisma.Movement$expenseArgs<ExtArgs>
   income?: boolean | Prisma.Movement$incomeArgs<ExtArgs>
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  recurringExpensePayment?: boolean | Prisma.Movement$recurringExpensePaymentArgs<ExtArgs>
 }, ExtArgs["result"]["movement"]>
 
 export type MovementSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -812,6 +914,7 @@ export type MovementInclude<ExtArgs extends runtime.Types.Extensions.InternalArg
   expense?: boolean | Prisma.Movement$expenseArgs<ExtArgs>
   income?: boolean | Prisma.Movement$incomeArgs<ExtArgs>
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  recurringExpensePayment?: boolean | Prisma.Movement$recurringExpensePaymentArgs<ExtArgs>
 }
 export type MovementIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
@@ -826,6 +929,7 @@ export type $MovementPayload<ExtArgs extends runtime.Types.Extensions.InternalAr
     expense: Prisma.$ExpensePayload<ExtArgs> | null
     income: Prisma.$IncomePayload<ExtArgs> | null
     user: Prisma.$UserPayload<ExtArgs>
+    recurringExpensePayment: Prisma.$RecurringExpensePaymentPayload<ExtArgs> | null
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1233,6 +1337,7 @@ export interface Prisma__MovementClient<T, Null = never, ExtArgs extends runtime
   expense<T extends Prisma.Movement$expenseArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Movement$expenseArgs<ExtArgs>>): Prisma.Prisma__ExpenseClient<runtime.Types.Result.GetResult<Prisma.$ExpensePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   income<T extends Prisma.Movement$incomeArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Movement$incomeArgs<ExtArgs>>): Prisma.Prisma__IncomeClient<runtime.Types.Result.GetResult<Prisma.$IncomePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   user<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  recurringExpensePayment<T extends Prisma.Movement$recurringExpensePaymentArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Movement$recurringExpensePaymentArgs<ExtArgs>>): Prisma.Prisma__RecurringExpensePaymentClient<runtime.Types.Result.GetResult<Prisma.$RecurringExpensePaymentPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1706,6 +1811,25 @@ export type Movement$incomeArgs<ExtArgs extends runtime.Types.Extensions.Interna
    */
   include?: Prisma.IncomeInclude<ExtArgs> | null
   where?: Prisma.IncomeWhereInput
+}
+
+/**
+ * Movement.recurringExpensePayment
+ */
+export type Movement$recurringExpensePaymentArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the RecurringExpensePayment
+   */
+  select?: Prisma.RecurringExpensePaymentSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the RecurringExpensePayment
+   */
+  omit?: Prisma.RecurringExpensePaymentOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.RecurringExpensePaymentInclude<ExtArgs> | null
+  where?: Prisma.RecurringExpensePaymentWhereInput
 }
 
 /**

@@ -22,6 +22,7 @@ model User {
   movements      Movement[]
   paymentMethods PaymentMethod[]
   sessions       Session[]
+  recurringExpenses RecurringExpense[]
 }
 
 model Account {
@@ -70,6 +71,7 @@ model ExpenseType {
   updatedAt DateTime  @updatedAt
   expenses  Expense[]
   user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  recurringExpenses RecurringExpense[]
 
   @@unique([userId, name])
   @@index([userId])
@@ -114,6 +116,7 @@ model Movement {
   expense     Expense?
   income      Income?
   user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  recurringExpensePayment RecurringExpensePayment?
 
   @@index([userId])
   @@index([userId, date])
@@ -141,6 +144,7 @@ model PaymentMethod {
   expenses                    Expense[]
   incomePayments              IncomePayment[]
   user                        User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  recurringExpenses RecurringExpense[]
 
   @@unique([userId, name])
   @@index([userId])
@@ -149,4 +153,49 @@ model PaymentMethod {
 enum MovementType {
   INGRESO
   EGRESO
+}
+
+model RecurringExpense {
+  id                 String   @id @default(cuid())
+  userId             String
+
+  name               String
+  amount             Decimal? @db.Decimal(12, 2)
+  dueDay             Int?
+  active             Boolean  @default(true)
+
+  expenseTypeId      String
+  paymentMethodId    String
+
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  user               User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expenseType        ExpenseType  @relation(fields: [expenseTypeId], references: [id])
+  paymentMethod      PaymentMethod @relation(fields: [paymentMethodId], references: [id])
+
+  payments           RecurringExpensePayment[]
+
+  @@index([userId])
+  @@index([expenseTypeId])
+  @@index([paymentMethodId])
+}
+
+model RecurringExpensePayment {
+  id                 String   @id @default(cuid())
+
+  recurringExpenseId String
+  movementId         String   @unique
+
+  period             String
+  amount             Decimal  @db.Decimal(12, 2)
+  paidAt             DateTime
+
+  createdAt          DateTime @default(now())
+
+  recurringExpense   RecurringExpense @relation(fields: [recurringExpenseId], references: [id], onDelete: Cascade)
+  movement           Movement         @relation(fields: [movementId], references: [id], onDelete: Cascade)
+
+  @@unique([recurringExpenseId, period])
+  @@index([recurringExpenseId])
 }

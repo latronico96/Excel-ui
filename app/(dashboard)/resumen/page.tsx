@@ -21,10 +21,14 @@ const periodLabels: Record<SummaryPeriod, string> = {
 };
 
 const totalDescriptions = {
-    balance: "Ingresos menos gastos. No descuenta las comisiones de los medios de pago.",
-    income: "Total de ingresos brutos registrados en el período.",
-    expenses: "Total de gastos registrados en el período.",
-    netIncome: "Ingresos menos las comisiones de los medios de pago.",
+    balance:
+        "Ingresos menos gastos. No descuenta las comisiones de los medios de pago.",
+    income:
+        "Total de ingresos brutos registrados en el período.",
+    expenses:
+        "Total de gastos registrados en el período.",
+    netIncome:
+        "Ingresos menos las comisiones de los medios de pago.",
 };
 
 export default function ResumenPage() {
@@ -88,6 +92,7 @@ export default function ResumenPage() {
 
     return (
         <div className="animate-fade">
+            {/* Header */}
             <div
                 style={{
                     display: "flex",
@@ -114,6 +119,7 @@ export default function ResumenPage() {
                 </div>
 
                 <div
+                    className="summary-period-selector"
                     style={{
                         display: "flex",
                         gap: "0.5rem",
@@ -177,6 +183,7 @@ export default function ResumenPage() {
                 </div>
             ) : (
                 <>
+                    {/* Totales */}
                     <div className="summary-grid">
                         <div
                             className="card"
@@ -205,7 +212,6 @@ export default function ResumenPage() {
                                         marginRight: "4px",
                                     }}
                                 />
-
                                 ${formatMoney(totals.balance)}
                             </div>
                         </div>
@@ -234,7 +240,6 @@ export default function ResumenPage() {
                                         marginRight: "4px",
                                     }}
                                 />
-
                                 ${formatMoney(totals.income)}
                             </div>
                         </div>
@@ -263,7 +268,6 @@ export default function ResumenPage() {
                                         marginRight: "4px",
                                     }}
                                 />
-
                                 ${formatMoney(totals.expenses)}
                             </div>
                         </div>
@@ -292,12 +296,12 @@ export default function ResumenPage() {
                                         marginRight: "4px",
                                     }}
                                 />
-
                                 ${formatMoney(totals.netIncome)}
                             </div>
                         </div>
                     </div>
 
+                    {/* Desglose */}
                     <div className="card">
                         <h3>
                             {period === "year"
@@ -305,60 +309,66 @@ export default function ResumenPage() {
                                 : "Desglose Diario"}
                         </h3>
 
-                        <div className="table-container">
-                            <table>
-                                <thead>
-                                    <tr>
-                                        <th>
-                                            {period === "year"
-                                                ? "Mes"
-                                                : "Fecha"}
-                                        </th>
-                                        <th>Ingresos</th>
-                                        <th>Gastos</th>
-                                        <th>Comisiones</th>
-                                        <th>Neto</th>
-                                        <th>Inversión</th>
-                                    </tr>
-                                </thead>
-
-                                <tbody>
-                                    {summary.breakdown.length === 0 ? (
-                                        <tr>
-                                            <td
-                                                colSpan={6}
+                        {summary.breakdown.length === 0 ? (
+                            <div
+                                style={{
+                                    padding: "2rem",
+                                    textAlign: "center",
+                                    color: "var(--text-muted)",
+                                }}
+                            >
+                                No hay movimientos en este período.
+                            </div>
+                        ) : (
+                            <div className="summary-breakdown-list">
+                                {summary.breakdown.map((item) => (
+                                    <div
+                                        key={item.date}
+                                        className="summary-breakdown-card"
+                                    >
+                                        {/* Cabecera */}
+                                        <div className="summary-breakdown-header">
+                                            <div
                                                 style={{
-                                                    textAlign: "center",
-                                                    padding: "2rem",
-                                                    color: "var(--text-muted)",
+                                                    display: "flex",
+                                                    alignItems: "center",
+                                                    gap: "8px",
                                                 }}
                                             >
-                                                No hay movimientos en este
-                                                período.
-                                            </td>
-                                        </tr>
-                                    ) : (
-                                        summary.breakdown.map((item) => (
-                                            <tr key={item.date}>
-                                                <td>
-                                                    <div
-                                                        style={{
-                                                            display: "flex",
-                                                            alignItems:
-                                                                "center",
-                                                            gap: "8px",
-                                                        }}
-                                                    >
-                                                        <Calendar
-                                                            size={16}
-                                                            color="var(--text-muted)"
-                                                        />
+                                                <Calendar
+                                                    size={18}
+                                                    color="var(--text-muted)"
+                                                />
 
-                                                        {item.date}
-                                                    </div>
-                                                </td>
+                                                <strong>
+                                                    {item.date}
+                                                </strong>
+                                            </div>
 
-                                                <td
+                                            <div
+                                                style={{
+                                                    fontWeight: 700,
+                                                    color:
+                                                        item.netDaily >= 0
+                                                            ? "var(--success)"
+                                                            : "var(--error)",
+                                                }}
+                                            >
+                                                {item.netDaily >= 0
+                                                    ? "+"
+                                                    : "-"}
+                                                $
+                                                {formatMoney(
+                                                    Math.abs(item.netDaily)
+                                                )}
+                                            </div>
+                                        </div>
+
+                                        {/* Datos */}
+                                        <div className="summary-breakdown-values">
+                                            <div>
+                                                <span>Ingresos</span>
+                                                <strong
                                                     style={{
                                                         color: "var(--success)",
                                                     }}
@@ -367,9 +377,12 @@ export default function ResumenPage() {
                                                     {formatMoney(
                                                         item.totalIncome
                                                     )}
-                                                </td>
+                                                </strong>
+                                            </div>
 
-                                                <td
+                                            <div>
+                                                <span>Gastos</span>
+                                                <strong
                                                     style={{
                                                         color: "var(--error)",
                                                     }}
@@ -378,38 +391,43 @@ export default function ResumenPage() {
                                                     {formatMoney(
                                                         item.totalExpenses
                                                     )}
-                                                </td>
+                                                </strong>
+                                            </div>
 
-                                                <td>
+                                            <div>
+                                                <span>Comisiones</span>
+                                                <strong>
                                                     $
                                                     {formatMoney(
                                                         item.commissions
                                                     )}
-                                                </td>
+                                                </strong>
+                                            </div>
 
-                                                <td
-                                                    style={{
-                                                        fontWeight: "700",
-                                                    }}
-                                                >
+                                            <div>
+                                                <span>Neto</span>
+                                                <strong>
                                                     $
                                                     {formatMoney(
                                                         item.netIncome
                                                     )}
-                                                </td>
+                                                </strong>
+                                            </div>
 
-                                                <td>
+                                            <div>
+                                                <span>Inversión</span>
+                                                <strong>
                                                     $
                                                     {formatMoney(
                                                         item.investment
                                                     )}
-                                                </td>
-                                            </tr>
-                                        ))
-                                    )}
-                                </tbody>
-                            </table>
-                        </div>
+                                                </strong>
+                                            </div>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
                     </div>
                 </>
             )}

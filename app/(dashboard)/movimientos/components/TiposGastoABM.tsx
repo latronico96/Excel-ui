@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Check, Pencil, Plus, X } from "lucide-react";
+import { Check, Pencil, Plus, Power, X } from "lucide-react";
 import { ExpenseTypeOption } from "@/shared/types";
 
 interface ExpenseType extends ExpenseTypeOption {
@@ -24,19 +24,17 @@ export default function TiposGastoABM() {
             setError("");
 
             const res = await fetch("/api/tipos-gasto?all=true");
-
             const data = await res.json();
 
             if (!res.ok) {
                 throw new Error(
-                    data.error || "No se pudieron cargar los tipos de gasto"
+                    data.error ||
+                        "No se pudieron cargar los tipos de gasto"
                 );
             }
 
             setExpenseTypes(
-                Array.isArray(data)
-                    ? data
-                    : []
+                Array.isArray(data) ? data : []
             );
         } catch (err) {
             console.error(err);
@@ -102,12 +100,12 @@ export default function TiposGastoABM() {
                 body: JSON.stringify(
                     editingId
                         ? {
-                            id: editingId,
-                            name: trimmedName,
-                        }
+                              id: editingId,
+                              name: trimmedName,
+                          }
                         : {
-                            name: trimmedName,
-                        }
+                              name: trimmedName,
+                          }
                 ),
             });
 
@@ -116,7 +114,7 @@ export default function TiposGastoABM() {
             if (!res.ok) {
                 throw new Error(
                     data.error ||
-                    "No se pudo guardar el tipo de gasto"
+                        "No se pudo guardar el tipo de gasto"
                 );
             }
 
@@ -125,20 +123,17 @@ export default function TiposGastoABM() {
                     current.map((expenseType) =>
                         expenseType.id === editingId
                             ? {
-                                ...expenseType,
-                                name: data.name,
-                                active: data.active,
-                            }
+                                  ...expenseType,
+                                  name: data.name,
+                                  active: data.active,
+                              }
                             : expenseType
                     )
                 );
             } else {
                 setExpenseTypes((current) =>
                     [...current, data].sort((a, b) =>
-                        a.name.localeCompare(
-                            b.name,
-                            "es"
-                        )
+                        a.name.localeCompare(b.name, "es")
                     )
                 );
             }
@@ -157,7 +152,9 @@ export default function TiposGastoABM() {
         }
     };
 
-    const toggleActive = async (expenseType: ExpenseType) => {
+    const toggleActive = async (
+        expenseType: ExpenseType
+    ) => {
         try {
             setError("");
 
@@ -177,7 +174,7 @@ export default function TiposGastoABM() {
             if (!res.ok) {
                 throw new Error(
                     data.error ||
-                    "No se pudo cambiar el estado"
+                        "No se pudo cambiar el estado"
                 );
             }
 
@@ -185,9 +182,9 @@ export default function TiposGastoABM() {
                 current.map((item) =>
                     item.id === expenseType.id
                         ? {
-                            ...item,
-                            active: data.active,
-                        }
+                              ...item,
+                              active: data.active,
+                          }
                         : item
                 )
             );
@@ -204,18 +201,17 @@ export default function TiposGastoABM() {
 
     return (
         <div className="card">
-            <div
-                style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                    gap: "1rem",
-                    marginBottom: "1rem",
-                }}
-            >
-                <h3 style={{ margin: 0 }}>
-                    Tipos de gasto
-                </h3>
+            {/* Header */}
+            <div className="abm-header">
+                <div>
+                    <h3 style={{ margin: 0 }}>
+                        Tipos de gasto
+                    </h3>
+
+                    <p className="abm-subtitle">
+                        Organizá tus gastos por categoría.
+                    </p>
+                </div>
 
                 {!showForm && (
                     <button
@@ -229,35 +225,20 @@ export default function TiposGastoABM() {
                 )}
             </div>
 
+            {/* Error */}
             {error && (
-                <div
-                    style={{
-                        marginBottom: "1rem",
-                        color: "var(--danger, #dc2626)",
-                    }}
-                >
+                <div className="abm-error">
                     {error}
                 </div>
             )}
 
+            {/* Formulario */}
             {showForm && (
                 <form
                     onSubmit={handleSave}
-                    style={{
-                        marginBottom: "1.25rem",
-                        padding: "1rem",
-                        border: "1px solid var(--border, #ddd)",
-                        borderRadius: "0.75rem",
-                    }}
+                    className="abm-form"
                 >
-                    <div
-                        style={{
-                            display: "flex",
-                            justifyContent: "space-between",
-                            alignItems: "center",
-                            marginBottom: "1rem",
-                        }}
-                    >
+                    <div className="abm-form-header">
                         <h4 style={{ margin: 0 }}>
                             {editingId
                                 ? "Editar tipo de gasto"
@@ -269,34 +250,20 @@ export default function TiposGastoABM() {
                             onClick={closeForm}
                             disabled={saving}
                             aria-label="Cerrar formulario"
-                            style={{
-                                border: "none",
-                                background: "transparent",
-                                cursor: saving
-                                    ? "default"
-                                    : "pointer",
-                                padding: "0.25rem",
-                                display: "flex",
-                                alignItems: "center",
-                            }}
+                            className="abm-close-button"
                         >
                             <X size={20} />
                         </button>
                     </div>
 
-                    <div
-                        style={{
-                            display: "flex",
-                            flexDirection: "column",
-                            gap: "0.5rem",
-                        }}
-                    >
+                    <div className="form-group">
                         <label htmlFor="expense-type-name">
                             Nombre
                         </label>
 
                         <input
                             id="expense-type-name"
+                            className="input"
                             type="text"
                             value={name}
                             onChange={(e) =>
@@ -306,27 +273,10 @@ export default function TiposGastoABM() {
                             maxLength={100}
                             autoFocus
                             disabled={saving}
-                            style={{
-                                width: "100%",
-                                padding: "0.75rem",
-                                border: "1px solid var(--border, #ddd)",
-                                borderRadius: "0.5rem",
-                                background: "var(--input-bg, #fff)",
-                                color: "var(--text, inherit)",
-                                fontSize: "1rem",
-                                boxSizing: "border-box",
-                            }}
                         />
                     </div>
 
-                    <div
-                        style={{
-                            display: "flex",
-                            justifyContent: "flex-end",
-                            gap: "0.75rem",
-                            marginTop: "1rem",
-                        }}
-                    >
+                    <div className="abm-form-actions">
                         <button
                             type="button"
                             className="btn"
@@ -350,92 +300,58 @@ export default function TiposGastoABM() {
                 </form>
             )}
 
+            {/* Lista */}
             {loading ? (
-                <div
-                    style={{
-                        padding: "1.5rem",
-                        textAlign: "center",
-                        color: "var(--text-muted)",
-                    }}
-                >
+                <div className="abm-empty">
                     Cargando tipos de gasto...
                 </div>
             ) : expenseTypes.length === 0 ? (
-                <div
-                    style={{
-                        padding: "1.5rem",
-                        textAlign: "center",
-                        color: "var(--text-muted)",
-                    }}
-                >
+                <div className="abm-empty">
                     No hay tipos de gasto.
                 </div>
             ) : (
-                <div
-                    style={{
-                        display: "flex",
-                        flexDirection: "column",
-                        gap: "0.5rem",
-                    }}
-                >
+                <div className="expense-type-grid">
                     {expenseTypes.map((expenseType) => (
                         <div
                             key={expenseType.id}
-                            style={{
-                                display: "flex",
-                                alignItems: "center",
-                                justifyContent: "space-between",
-                                gap: "1rem",
-                                padding: "0.75rem",
-                                border:
-                                    "1px solid var(--border, #ddd)",
-                                borderRadius: "0.6rem",
-                                opacity: expenseType.active
-                                    ? 1
-                                    : 0.55,
-                            }}
+                            className={`expense-type-card ${
+                                expenseType.active
+                                    ? ""
+                                    : "inactive"
+                            }`}
                         >
-                            <div
-                                style={{
-                                    minWidth: 0,
-                                }}
-                            >
-                                <div
-                                    style={{
-                                        fontWeight: 600,
-                                        overflow: "hidden",
-                                        textOverflow:
-                                            "ellipsis",
-                                        whiteSpace:
-                                            "nowrap",
-                                    }}
-                                >
-                                    {expenseType.name}
+                            {/* Encabezado */}
+                            <div className="expense-type-header">
+                                <div className="expense-type-icon">
+                                    $
                                 </div>
 
-                                {!expenseType.active && (
-                                    <div
-                                        style={{
-                                            fontSize:
-                                                "0.8rem",
-                                            color:
-                                                "var(--text-muted)",
-                                            marginTop:
-                                                "0.15rem",
-                                        }}
-                                    >
-                                        Inactivo
+                                <div
+                                    style={{
+                                        minWidth: 0,
+                                        flex: 1,
+                                    }}
+                                >
+                                    <div className="expense-type-name">
+                                        {expenseType.name}
                                     </div>
-                                )}
+
+                                    <span
+                                        className={`expense-type-status ${
+                                            expenseType.active
+                                                ? "active"
+                                                : "inactive"
+                                        }`}
+                                    >
+                                        {expenseType.active
+                                            ? "Activo"
+                                            : "Inactivo"}
+                                    </span>
+                                </div>
                             </div>
 
-                            <div
-                                style={{
-                                    display: "flex",
-                                    gap: "0.5rem",
-                                    flexShrink: 0,
-                                }}
-                            >
+                            {/* Acciones */}
+                            <div className="expense-type-actions">
                                 <button
                                     type="button"
                                     className="btn"
@@ -444,7 +360,6 @@ export default function TiposGastoABM() {
                                             expenseType
                                         )
                                     }
-                                    aria-label={`Editar ${expenseType.name}`}
                                 >
                                     <Pencil size={16} />
                                     Editar
@@ -459,6 +374,7 @@ export default function TiposGastoABM() {
                                         )
                                     }
                                 >
+                                    <Power size={16} />
                                     {expenseType.active
                                         ? "Desactivar"
                                         : "Activar"}

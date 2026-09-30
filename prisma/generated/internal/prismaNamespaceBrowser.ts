@@ -60,7 +60,9 @@ export const ModelName = {
   IncomePayment: 'IncomePayment',
   Movement: 'Movement',
   Expense: 'Expense',
-  PaymentMethod: 'PaymentMethod'
+  PaymentMethod: 'PaymentMethod',
+  RecurringExpense: 'RecurringExpense',
+  RecurringExpensePayment: 'RecurringExpensePayment'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -200,6 +202,35 @@ export const PaymentMethodScalarFieldEnum = {
 } as const
 
 export type PaymentMethodScalarFieldEnum = (typeof PaymentMethodScalarFieldEnum)[keyof typeof PaymentMethodScalarFieldEnum]
+
+
+export const RecurringExpenseScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  name: 'name',
+  amount: 'amount',
+  dueDay: 'dueDay',
+  active: 'active',
+  expenseTypeId: 'expenseTypeId',
+  paymentMethodId: 'paymentMethodId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type RecurringExpenseScalarFieldEnum = (typeof RecurringExpenseScalarFieldEnum)[keyof typeof RecurringExpenseScalarFieldEnum]
+
+
+export const RecurringExpensePaymentScalarFieldEnum = {
+  id: 'id',
+  recurringExpenseId: 'recurringExpenseId',
+  movementId: 'movementId',
+  period: 'period',
+  amount: 'amount',
+  paidAt: 'paidAt',
+  createdAt: 'createdAt'
+} as const
+
+export type RecurringExpensePaymentScalarFieldEnum = (typeof RecurringExpensePaymentScalarFieldEnum)[keyof typeof RecurringExpensePaymentScalarFieldEnum]
 
 
 export const SortOrder = {
