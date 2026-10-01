@@ -12,7 +12,7 @@ import {
     DollarSign,
     Receipt,
 } from "lucide-react";
-
+import { useSearchParams } from "next/navigation";
 interface ExpenseTypeOption {
     id: string;
     name: string;
@@ -122,6 +122,45 @@ const formatPeriod = (period: string) => {
     });
 };
 
+const isPaidThisPeriod = (
+    expense: RecurringExpense,
+    period: string
+) => {
+    return expense.lastPayment?.period === period;
+};
+
+const getDueStatus = (
+    expense: RecurringExpense,
+    period: string
+) => {
+    if (!expense.dueDay) {
+        return null;
+    }
+
+    const [year, month] = period.split("-").map(Number);
+    const now = new Date();
+
+    const currentYear = now.getFullYear();
+    const currentMonth = now.getMonth() + 1;
+
+    if (
+        year < currentYear ||
+        (year === currentYear && month < currentMonth)
+    ) {
+        return "Vencido";
+    }
+
+    if (
+        year === currentYear &&
+        month === currentMonth &&
+        expense.dueDay < now.getDate()
+    ) {
+        return "Vencido";
+    }
+
+    return `Vence el ${expense.dueDay}`;
+};
+
 export default function GastosMensualesABM() {
     const [recurringExpenses, setRecurringExpenses] = useState<
         RecurringExpense[]
@@ -167,6 +206,7 @@ export default function GastosMensualesABM() {
             paymentMethodId: "",
             updateAmount: true,
         });
+    const searchParams = useSearchParams();
 
     const fetchData = async () => {
         try {
@@ -251,6 +291,23 @@ export default function GastosMensualesABM() {
     useEffect(() => {
         fetchData();
     }, []);
+
+    useEffect(() => {
+        if (searchParams.get("accion") !== "pagar") {
+            return;
+        }
+
+        const timer = setTimeout(() => {
+            document
+                .getElementById("recurring-pending-section")
+                ?.scrollIntoView({
+                    behavior: "smooth",
+                    block: "start",
+                });
+        }, 100);
+
+        return () => clearTimeout(timer);
+    }, [searchParams]);
 
     const openCreate = () => {
         setEditingId(null);
@@ -640,6 +697,42 @@ export default function GastosMensualesABM() {
                 paymentForm.recurringExpenseId
         );
 
+    const currentPeriod = getCurrentPeriod();
+
+    const activeExpenses = recurringExpenses.filter(
+        (expense) => expense.active
+    );
+
+    const pendingExpenses = activeExpenses
+        .filter(
+            (expense) =>
+                !isPaidThisPeriod(expense, currentPeriod)
+        )
+        .sort((a, b) => {
+            if (a.dueDay === null) return 1;
+            if (b.dueDay === null) return -1;
+
+            return a.dueDay - b.dueDay;
+        });
+
+    const paidExpenses = activeExpenses
+        .filter((expense) =>
+            isPaidThisPeriod(expense, currentPeriod)
+        )
+        .sort((a, b) => {
+            if (a.dueDay === null) return 1;
+            if (b.dueDay === null) return -1;
+
+            return a.dueDay - b.dueDay;
+        });
+
+    const inactiveExpenses = recurringExpenses.filter(
+        (expense) => !expense.active
+    );
+
+    const paidCount = paidExpenses.length;
+    const totalActive = activeExpenses.length;
+
     return (
         <div className="card">
             {/* Header */}
@@ -874,139 +967,346 @@ export default function GastosMensualesABM() {
                     No hay gastos mensuales.
                 </div>
             ) : (
-                <div className="recurring-expense-grid">
-                    {recurringExpenses.map((expense) => (
-                        <div
-                            key={expense.id}
-                            className={`recurring-expense-card ${expense.active ? "" : "inactive"
-                                }`}
-                        >
-                            {/* Header */}
-                            <div className="recurring-expense-header">
-                                <div className="recurring-expense-icon">
-                                    <Receipt size={20} />
-                                </div>
+                <>
+                    {/* Resumen del mes */}
+                    <div className="recurring-month-summary">
+                        <div>
+                            <span>Este mes</span>
+                            <strong>
+                                {paidCount} de {totalActive} pagados
+                            </strong>
+                        </div>
 
-                                <div
-                                    style={{
-                                        minWidth: 0,
-                                        flex: 1,
-                                    }}
-                                >
-                                    <div className="recurring-expense-name">
-                                        {expense.name}
-                                    </div>
+                        {pendingExpenses.length > 0 && (
+                            <span className="recurring-pending-badge">
+                                {pendingExpenses.length} pendiente
+                                {pendingExpenses.length !== 1 ? "s" : ""}
+                            </span>
+                        )}
+                    </div>
 
-                                    <span
-                                        className={`recurring-expense-status ${expense.active
-                                                ? "active"
-                                                : "inactive"
-                                            }`}
-                                    >
-                                        {expense.active
-                                            ? "Activo"
-                                            : "Inactivo"}
+                    {/* Pendientes */}
+                    <section
+                        id="recurring-pending-section"
+                        className="recurring-expense-section"
+                    >
+                        <div className="recurring-expense-section-header">
+                            <div>
+                                <h3>⏳ Pendientes este mes</h3>
+                                <p>
+                                    Gastos que todavía no registraste para{" "}
+                                    {formatPeriod(currentPeriod)}.
+                                </p>
+                            </div>
+                        </div>
+
+                        {pendingExpenses.length === 0 ? (
+                            <div className="recurring-section-empty success">
+                                <Check size={20} />
+                                <div>
+                                    <strong>
+                                        Todos los gastos están pagados
+                                    </strong>
+                                    <span>
+                                        No tenés pagos pendientes para este mes.
                                     </span>
                                 </div>
                             </div>
+                        ) : (
+                            <div className="recurring-expense-grid">
+                                {pendingExpenses.map((expense) => {
+                                    const dueStatus = getDueStatus(
+                                        expense,
+                                        currentPeriod
+                                    );
 
-                            {/* Monto principal */}
-                            <div className="recurring-expense-amount">
-                                {formatMoney(expense.amount)}
+                                    const isOverdue =
+                                        dueStatus === "Vencido";
+
+                                    return (
+                                        <div
+                                            key={expense.id}
+                                            className={`recurring-expense-card recurring-expense-card-pending ${isOverdue
+                                                ? "overdue"
+                                                : ""
+                                                }`}
+                                        >
+                                            <div className="recurring-expense-header">
+                                                <div className="recurring-expense-icon">
+                                                    <Receipt size={20} />
+                                                </div>
+
+                                                <div
+                                                    style={{
+                                                        minWidth: 0,
+                                                        flex: 1,
+                                                    }}
+                                                >
+                                                    <div className="recurring-expense-name">
+                                                        {expense.name}
+                                                    </div>
+
+                                                    <span
+                                                        className={`recurring-expense-due ${isOverdue
+                                                            ? "overdue"
+                                                            : ""
+                                                            }`}
+                                                    >
+                                                        {dueStatus ??
+                                                            "Sin vencimiento"}
+                                                    </span>
+                                                </div>
+                                            </div>
+
+                                            <div className="recurring-expense-amount">
+                                                {formatMoney(expense.amount)}
+                                            </div>
+
+                                            <div className="recurring-expense-details">
+                                                <div>
+                                                    <span>Medio</span>
+                                                    <strong>
+                                                        {
+                                                            expense
+                                                                .paymentMethod
+                                                                .name
+                                                        }
+                                                    </strong>
+                                                </div>
+
+                                                <div>
+                                                    <span>Tipo</span>
+                                                    <strong>
+                                                        {
+                                                            expense
+                                                                .expenseType
+                                                                .name
+                                                        }
+                                                    </strong>
+                                                </div>
+                                            </div>
+
+                                            <div className="recurring-expense-actions">
+                                                <button
+                                                    type="button"
+                                                    className="btn btn-primary"
+                                                    onClick={() =>
+                                                        openPayment(
+                                                            expense
+                                                        )
+                                                    }
+                                                >
+                                                    <DollarSign
+                                                        size={16}
+                                                    />
+                                                    Pagar
+                                                </button>
+
+                                                <button
+                                                    type="button"
+                                                    className="btn"
+                                                    onClick={() =>
+                                                        openEdit(
+                                                            expense
+                                                        )
+                                                    }
+                                                >
+                                                    <Pencil size={16} />
+                                                    Editar
+                                                </button>
+                                            </div>
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                        )}
+                    </section>
+
+                    {/* Pagados */}
+                    {paidExpenses.length > 0 && (
+                        <section className="recurring-expense-section">
+                            <div className="recurring-expense-section-header">
+                                <div>
+                                    <h3>✓ Pagados este mes</h3>
+                                    <p>
+                                        Gastos registrados en{" "}
+                                        {formatPeriod(currentPeriod)}.
+                                    </p>
+                                </div>
                             </div>
 
-                            {/* Datos */}
-                            <div className="recurring-expense-details">
-                                <div>
-                                    <span>Vencimiento</span>
-                                    <strong>
-                                        {expense.dueDay
-                                            ? `Día ${expense.dueDay}`
-                                            : "Sin definir"}
-                                    </strong>
-                                </div>
-
-                                <div>
-                                    <span>Medio</span>
-                                    <strong>
-                                        {expense.paymentMethod.name}
-                                    </strong>
-                                </div>
-
-                                <div>
-                                    <span>Tipo</span>
-                                    <strong>
-                                        {expense.expenseType.name}
-                                    </strong>
-                                </div>
-                            </div>
-
-                            {/* Último pago */}
-                            <div className="recurring-expense-last-payment">
-                                <div>
-                                    <span>Último pago</span>
-
-                                    {expense.lastPayment ? (
-                                        <strong>
-                                            {formatMoney(
-                                                expense.lastPayment.amount
-                                            )}
-                                            <small>
-                                                {" "}
-                                                ·{" "}
-                                                {formatDate(
-                                                    expense.lastPayment.paidAt
-                                                )}
-                                            </small>
-                                        </strong>
-                                    ) : (
-                                        <strong>Sin pagos registrados</strong>
-                                    )}
-                                </div>
-                            </div>
-
-                            {/* Acciones */}
-                            <div className="recurring-expense-actions">
-                                {expense.active && (
-                                    <button
-                                        type="button"
-                                        className="btn btn-primary"
-                                        onClick={() =>
-                                            openPayment(expense)
-                                        }
+                            <div className="recurring-expense-grid">
+                                {paidExpenses.map((expense) => (
+                                    <div
+                                        key={expense.id}
+                                        className="recurring-expense-card recurring-expense-card-paid"
                                     >
-                                        <DollarSign size={16} />
-                                        Pagar
-                                    </button>
-                                )}
+                                        <div className="recurring-expense-header">
+                                            <div className="recurring-expense-icon">
+                                                <Check size={20} />
+                                            </div>
 
-                                <button
-                                    type="button"
-                                    className="btn"
-                                    onClick={() =>
-                                        openEdit(expense)
-                                    }
-                                >
-                                    <Pencil size={16} />
-                                    Editar
-                                </button>
+                                            <div
+                                                style={{
+                                                    minWidth: 0,
+                                                    flex: 1,
+                                                }}
+                                            >
+                                                <div className="recurring-expense-name">
+                                                    {expense.name}
+                                                </div>
 
-                                <button
-                                    type="button"
-                                    className="btn"
-                                    onClick={() =>
-                                        toggleActive(expense)
-                                    }
-                                >
-                                    <Power size={16} />
-                                    {expense.active
-                                        ? "Desactivar"
-                                        : "Activar"}
-                                </button>
+                                                <span className="recurring-expense-status active">
+                                                    Pagado
+                                                </span>
+                                            </div>
+                                        </div>
+
+                                        <div className="recurring-expense-amount">
+                                            {formatMoney(
+                                                expense.lastPayment
+                                                    ?.amount ??
+                                                expense.amount
+                                            )}
+                                        </div>
+
+                                        <div className="recurring-expense-last-payment">
+                                            <div>
+                                                <span>Pagado el</span>
+
+                                                <strong>
+                                                    {expense.lastPayment
+                                                        ? formatDate(
+                                                            expense
+                                                                .lastPayment
+                                                                .paidAt
+                                                        )
+                                                        : "-"}
+                                                </strong>
+                                            </div>
+                                        </div>
+
+                                        <div className="recurring-expense-details">
+                                            <div>
+                                                <span>Medio habitual</span>
+                                                <strong>
+                                                    {
+                                                        expense
+                                                            .paymentMethod
+                                                            .name
+                                                    }
+                                                </strong>
+                                            </div>
+
+                                            <div>
+                                                <span>Vencimiento</span>
+                                                <strong>
+                                                    {expense.dueDay
+                                                        ? `Día ${expense.dueDay}`
+                                                        : "Sin definir"}
+                                                </strong>
+                                            </div>
+                                        </div>
+
+                                        <div className="recurring-expense-actions">
+                                            <button
+                                                type="button"
+                                                className="btn"
+                                                onClick={() =>
+                                                    openEdit(
+                                                        expense
+                                                    )
+                                                }
+                                            >
+                                                <Pencil size={16} />
+                                                Editar
+                                            </button>
+                                        </div>
+                                    </div>
+                                ))}
                             </div>
-                        </div>
-                    ))}
-                </div>
+                        </section>
+                    )}
+
+                    {/* Inactivos */}
+                    {inactiveExpenses.length > 0 && (
+                        <section className="recurring-expense-section recurring-expense-section-inactive">
+                            <div className="recurring-expense-section-header">
+                                <div>
+                                    <h3>Inactivos</h3>
+                                    <p>
+                                        Gastos que ya no forman parte de
+                                        tus gastos mensuales.
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div className="recurring-expense-grid">
+                                {inactiveExpenses.map((expense) => (
+                                    <div
+                                        key={expense.id}
+                                        className="recurring-expense-card inactive"
+                                    >
+                                        <div className="recurring-expense-header">
+                                            <div className="recurring-expense-icon">
+                                                <Receipt size={20} />
+                                            </div>
+
+                                            <div
+                                                style={{
+                                                    minWidth: 0,
+                                                    flex: 1,
+                                                }}
+                                            >
+                                                <div className="recurring-expense-name">
+                                                    {expense.name}
+                                                </div>
+
+                                                <span className="recurring-expense-status inactive">
+                                                    Inactivo
+                                                </span>
+                                            </div>
+                                        </div>
+
+                                        <div className="recurring-expense-amount">
+                                            {formatMoney(
+                                                expense.amount
+                                            )}
+                                        </div>
+
+                                        <div className="recurring-expense-actions">
+                                            <button
+                                                type="button"
+                                                className="btn"
+                                                onClick={() =>
+                                                    toggleActive(
+                                                        expense
+                                                    )
+                                                }
+                                            >
+                                                <Power size={16} />
+                                                Activar
+                                            </button>
+
+                                            <button
+                                                type="button"
+                                                className="btn"
+                                                onClick={() =>
+                                                    openEdit(
+                                                        expense
+                                                    )
+                                                }
+                                            >
+                                                <Pencil size={16} />
+                                                Editar
+                                            </button>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </section>
+                    )}
+                </>
             )}
 
             {/* Modal / formulario de pago */}
@@ -1254,10 +1554,10 @@ export default function GastosMensualesABM() {
                                 <CreditCard
                                     size={20}
                                 />
-                                    Se registrará como un
-                                    egreso y quedará
-                                    asociado a este gasto
-                                    mensual.
+                                Se registrará como un
+                                egreso y quedará
+                                asociado a este gasto
+                                mensual.
                             </div>
 
                             <div className="abm-form-actions">

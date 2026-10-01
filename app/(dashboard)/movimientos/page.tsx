@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useSearchParams, useRouter } from "next/navigation";
 import {
     ExpenseTypeOption,
     Movement,
@@ -13,6 +14,9 @@ import IngresoForm from "./components/IngresoForm";
 import MovimientosHistorial from "./components/MovimientosHistorial";
 
 export default function MovimientosPage() {
+    const searchParams = useSearchParams();
+    const router = useRouter();
+
     const [movements, setMovements] = useState<Movement[]>([]);
     const [expenseTypes, setExpenseTypes] = useState<
         ExpenseTypeOption[]
@@ -112,6 +116,11 @@ export default function MovimientosPage() {
         setShowEgresoForm(false);
         setShowIngresoForm(true);
         setError("");
+
+        window.scrollTo({
+            top: 0,
+            behavior: "smooth",
+        });
     };
 
     const openEgreso = () => {
@@ -119,6 +128,11 @@ export default function MovimientosPage() {
         setShowIngresoForm(false);
         setShowEgresoForm(true);
         setError("");
+
+        window.scrollTo({
+            top: 0,
+            behavior: "smooth",
+        });
     };
 
     const closeIngreso = () => {
@@ -130,6 +144,28 @@ export default function MovimientosPage() {
         setShowEgresoForm(false);
         setEditingMovement(null);
     };
+
+    /*
+     * Abrir automáticamente el formulario indicado
+     * por el botón "+" del DashboardLayout.
+     */
+    useEffect(() => {
+        const nuevo = searchParams.get("nuevo");
+
+        if (nuevo === "ingreso") {
+            openIngreso();
+        }
+
+        if (nuevo === "egreso") {
+            openEgreso();
+        }
+
+        if (nuevo) {
+            router.replace("/movimientos", {
+                scroll: false,
+            });
+        }
+    }, [searchParams]);
 
     const handleEdit = (movement: Movement) => {
         setError("");
