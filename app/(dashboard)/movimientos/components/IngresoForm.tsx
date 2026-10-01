@@ -11,6 +11,8 @@ import {
     Save,
     X,
 } from "lucide-react";
+import MoneyInput from "../../components/ui/MoneyInput";
+import { getArgentinaDateString } from "@/shared/utils/dates";
 
 interface IncomePaymentForm {
     paymentMethodId: string;
@@ -35,9 +37,7 @@ export default function IngresoForm({
     onError,
     movement,
 }: IngresoFormProps) {
-    const today = new Date()
-        .toISOString()
-        .split("T")[0];
+    const today = getArgentinaDateString()
 
     const isEditing = Boolean(movement);
 
@@ -67,15 +67,14 @@ export default function IngresoForm({
             // Si estamos editando, usamos los datos que ya tiene
             // el movimiento y NO la configuración actual.
             if (movement) {
+
                 const movementDate = new Date(movement.date);
 
                 const formattedDate = Number.isNaN(
                     movementDate.getTime()
                 )
                     ? today
-                    : movementDate
-                        .toISOString()
-                        .split("T")[0];
+                    : getArgentinaDateString(movementDate);
 
                 const movementPayments =
                     movement.payments ?? [];
@@ -481,20 +480,16 @@ export default function IngresoForm({
                                         )}
                                     </div>
 
-                                    <input
-                                        type="number"
-                                        step="0.01"
-                                        min="0"
-                                        className="input"
-                                        placeholder="0.00"
+                                    <MoneyInput
                                         value={payment?.amount ?? ""}
-                                        onChange={(e) =>
+                                        onChange={(value) =>
                                             updatePayment(
                                                 method.id,
                                                 "amount",
-                                                e.target.value
+                                                value
                                             )
                                         }
+                                        placeholder="0"
                                         style={{
                                             width: "100%",
                                         }}

@@ -13,6 +13,9 @@ import {
     Receipt,
 } from "lucide-react";
 import { useSearchParams } from "next/navigation";
+import MoneyInput from "../../components/ui/MoneyInput";
+import { getArgentinaDateString } from "@/shared/utils/dates";
+
 interface ExpenseTypeOption {
     id: string;
     name: string;
@@ -84,15 +87,12 @@ const formatDate = (date: string) => {
         return date;
     }
 
-    return parsed.toLocaleDateString("es-AR");
+    return getArgentinaDateString(parsed);
 };
 
 const getCurrentPeriod = () => {
-    const now = new Date();
-
-    return `${now.getFullYear()}-${String(
-        now.getMonth() + 1
-    ).padStart(2, "0")}`;
+    const today = getArgentinaDateString();
+    return today.slice(0, 7);
 };
 
 const getToday = () => {
@@ -818,19 +818,11 @@ export default function GastosMensualesABM() {
                             Monto habitual
                         </label>
 
-                        <input
+                        <MoneyInput
                             id="recurring-expense-amount"
-                            className="input"
-                            type="number"
-                            min="0"
-                            step="0.01"
                             value={amount}
-                            onChange={(e) =>
-                                setAmount(
-                                    e.target.value
-                                )
-                            }
-                            placeholder="Ej: 35000"
+                            onChange={setAmount}
+                            placeholder="Ej: 35.000"
                             disabled={saving}
                         />
 

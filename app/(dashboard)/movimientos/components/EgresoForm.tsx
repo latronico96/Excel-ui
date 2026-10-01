@@ -7,6 +7,8 @@ import {
     PaymentMethodOption,
 } from "@/shared/types";
 import { Loader2, Plus, Save, X } from "lucide-react";
+import MoneyInput from "../../components/ui/MoneyInput";
+import { getArgentinaDateString } from "@/shared/utils/dates";
 
 interface EgresoFormProps {
     paymentMethods: PaymentMethodOption[];
@@ -27,8 +29,7 @@ export default function EgresoForm({
     onError,
     movement,
 }: EgresoFormProps) {
-    const today = new Date().toISOString().split("T")[0];
-
+    const today = getArgentinaDateString();
     const [saving, setSaving] = useState(false);
 
     const [form, setForm] = useState({
@@ -48,9 +49,7 @@ export default function EgresoForm({
 
         setForm({
             date: movement.date
-                ? new Date(movement.date)
-                      .toISOString()
-                      .split("T")[0]
+                ? getArgentinaDateString(new Date(movement.date))
                 : today,
             paymentMethodId:
                 movement.paymentMethod?.id ?? "",
@@ -105,9 +104,9 @@ export default function EgresoForm({
                 body: JSON.stringify(
                     isEditing
                         ? {
-                              id: movement!.id,
-                              ...payload,
-                          }
+                            id: movement!.id,
+                            ...payload,
+                        }
                         : payload
                 ),
             });
@@ -117,9 +116,9 @@ export default function EgresoForm({
             if (!res.ok) {
                 throw new Error(
                     data.error ||
-                        (isEditing
-                            ? "No se pudo actualizar el egreso"
-                            : "No se pudo guardar el egreso")
+                    (isEditing
+                        ? "No se pudo actualizar el egreso"
+                        : "No se pudo guardar el egreso")
                 );
             }
 
@@ -139,8 +138,8 @@ export default function EgresoForm({
                 err instanceof Error
                     ? err.message
                     : isEditing
-                      ? "No se pudo actualizar el egreso"
-                      : "No se pudo guardar el egreso"
+                        ? "No se pudo actualizar el egreso"
+                        : "No se pudo guardar el egreso"
             );
         } finally {
             setSaving(false);
@@ -295,20 +294,15 @@ export default function EgresoForm({
                 <div className="form-group">
                     <label>Monto</label>
 
-                    <input
-                        type="number"
-                        step="0.01"
-                        min="0"
-                        inputMode="decimal"
-                        className="input"
-                        placeholder="0.00"
+                    <MoneyInput
                         value={form.amount}
-                        onChange={(e) =>
+                        onChange={(value) =>
                             setForm({
                                 ...form,
-                                amount: e.target.value,
+                                amount: value,
                             })
                         }
+                        placeholder="0"
                         required
                     />
                 </div>
@@ -358,8 +352,8 @@ export default function EgresoForm({
                     {saving
                         ? "Guardando..."
                         : isEditing
-                          ? "Guardar cambios"
-                          : "Guardar egreso"}
+                            ? "Guardar cambios"
+                            : "Guardar egreso"}
                 </button>
             </form>
         </div>

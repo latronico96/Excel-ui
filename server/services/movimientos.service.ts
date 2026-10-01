@@ -1,16 +1,13 @@
 import { prisma } from "@/prisma/prisma";
 import { MovementInput } from "@/shared/types";
 import { Prisma } from "@/prisma/generated/client";
+import { getArgentinaDateString, parseMovementDate, ARGENTINA_OFFSET } from "@/shared/utils/dates";
 
 export class MovimientosService {
     static async saveMovement(userId: string, movement: MovementInput) {
         return prisma.$transaction(async (tx) => {
             if (movement.type === "INGRESO") {
-                const date = new Date(movement.date);
-
-                if (Number.isNaN(date.getTime())) {
-                    throw new Error("VALIDATION: Fecha inválida");
-                }
+                const date = parseMovementDate(movement.date);
 
                 const investmentPercentage =
                     movement.investmentPercentage ?? 50;
@@ -150,11 +147,7 @@ export class MovimientosService {
 
             // EGRESO
 
-            const date = new Date(movement.date);
-
-            if (Number.isNaN(date.getTime())) {
-                throw new Error("VALIDATION: Fecha inválida");
-            }
+            const date = parseMovementDate(movement.date);
 
             if (
                 !Number.isFinite(movement.amount) ||
@@ -268,11 +261,7 @@ export class MovimientosService {
             // =========================================================
 
             if (movement.type === "INGRESO") {
-                const date = new Date(movement.date);
-
-                if (Number.isNaN(date.getTime())) {
-                    throw new Error("VALIDATION: Fecha inválida");
-                }
+                const date = parseMovementDate(movement.date);
 
                 const investmentPercentage =
                     movement.investmentPercentage ?? 50;
@@ -449,11 +438,7 @@ export class MovimientosService {
             // EGRESO
             // =========================================================
 
-            const date = new Date(movement.date);
-
-            if (Number.isNaN(date.getTime())) {
-                throw new Error("VALIDATION: Fecha inválida");
-            }
+            const date = parseMovementDate(movement.date);
 
             if (
                 !Number.isFinite(movement.amount) ||
@@ -604,21 +589,49 @@ export class MovimientosService {
     ) {
         const now = new Date();
 
-        const startDate = new Date(now);
+        // Obtenemos la fecha actual según Argentina.
+        const argentinaToday = getArgentinaDateString(now);
+        const [year, month, day] = argentinaToday
+            .split("-")
+            .map(Number);
+
+        let startDate: Date;
 
         if (period === "week") {
-            // Lunes de la semana actual
-            const day = startDate.getDay();
-            const diff = day === 0 ? -6 : 1 - day;
+            // Día de la semana según calendario argentino.
+            // Creamos una fecha neutra para calcular el lunes.
+            const argentinaDate = new Date(
+                `${argentinaToday}T12:00:00${ARGENTINA_OFFSET}`
+            );
 
-            startDate.setDate(startDate.getDate() + diff);
-            startDate.setHours(0, 0, 0, 0);
+            const dayOfWeek = argentinaDate.getUTCDay();
+            const daysFromMonday =
+                dayOfWeek === 0 ? 6 : dayOfWeek - 1;
+
+            const monday = new Date(argentinaDate);
+            monday.setUTCDate(
+                monday.getUTCDate() - daysFromMonday
+            );
+
+            const mondayString = [
+                monday.getUTCFullYear(),
+                String(monday.getUTCMonth() + 1).padStart(2, "0"),
+                String(monday.getUTCDate()).padStart(2, "0"),
+            ].join("-");
+
+            startDate = parseMovementDate(mondayString);
         } else if (period === "month") {
-            startDate.setDate(1);
-            startDate.setHours(0, 0, 0, 0);
+            const monthString = [
+                year,
+                String(month).padStart(2, "0"),
+                "01",
+            ].join("-");
+
+            startDate = parseMovementDate(monthString);
         } else {
-            startDate.setMonth(0, 1);
-            startDate.setHours(0, 0, 0, 0);
+            const yearString = `${year}-01-01`;
+
+            startDate = parseMovementDate(yearString);
         }
 
         const movements = await prisma.movement.findMany({
@@ -676,10 +689,11 @@ export class MovimientosService {
             let key: string;
 
             if (period === "week" || period === "month") {
-                key = movementDate.toISOString().slice(0, 10);
+                // Agrupar por día argentino.
+                key = getArgentinaDateString(movementDate);
             } else {
-                // Para el año agrupamos por mes
-                key = movementDate.toISOString().slice(0, 7);
+                // Agrupar por mes argentino.
+                key = getArgentinaDateString(movementDate).slice(0, 7);
             }
 
             if (!breakdown[key]) {
@@ -697,15 +711,19 @@ export class MovimientosService {
 
                 const commissions =
                     movement.income?.payments.reduce(
-                        (sum: number, payment: { commissionAmount: any }) =>
-                            sum + Number(payment.commissionAmount),
+                        (
+                            sum: number,
+                            payment: { commissionAmount: any }
+                        ) => sum + Number(payment.commissionAmount),
                         0
                     ) ?? 0;
 
                 const netIncome =
                     movement.income?.payments.reduce(
-                        (sum: number, payment: { netAmount: any }) =>
-                            sum + Number(payment.netAmount),
+                        (
+                            sum: number,
+                            payment: { netAmount: any }
+                        ) => sum + Number(payment.netAmount),
                         0
                     ) ?? 0;
 
@@ -750,8 +768,7 @@ export class MovimientosService {
             }))
             .sort(
                 (a, b) =>
-                    new Date(b.date).getTime() -
-                    new Date(a.date).getTime()
+                    b.date.localeCompare(a.date)
             );
 
         return {
