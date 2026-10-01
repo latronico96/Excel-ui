@@ -378,14 +378,6 @@ export type IncomeUncheckedUpdateManyWithoutUserNestedInput = {
   deleteMany?: Prisma.IncomeScalarWhereInput | Prisma.IncomeScalarWhereInput[]
 }
 
-export type DecimalFieldUpdateOperationsInput = {
-  set?: runtime.Decimal | runtime.DecimalJsLike | number | string
-  increment?: runtime.Decimal | runtime.DecimalJsLike | number | string
-  decrement?: runtime.Decimal | runtime.DecimalJsLike | number | string
-  multiply?: runtime.Decimal | runtime.DecimalJsLike | number | string
-  divide?: runtime.Decimal | runtime.DecimalJsLike | number | string
-}
-
 export type IncomeCreateNestedOneWithoutPaymentsInput = {
   create?: Prisma.XOR<Prisma.IncomeCreateWithoutPaymentsInput, Prisma.IncomeUncheckedCreateWithoutPaymentsInput>
   connectOrCreate?: Prisma.IncomeCreateOrConnectWithoutPaymentsInput

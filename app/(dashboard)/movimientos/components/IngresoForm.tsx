@@ -50,9 +50,9 @@ export default function IngresoForm({
             ),
         }));
 
-    const createForm = () => ({
+    const createForm = (defaultInvestmentPercentage = "50") => ({
         date: today,
-        investmentPercentage: "50",
+        investmentPercentage: defaultInvestmentPercentage,
         description: "",
         payments: createPayments(),
     });
@@ -62,60 +62,102 @@ export default function IngresoForm({
     const [form, setForm] = useState(createForm);
 
     useEffect(() => {
-        if (!movement) {
-            setForm(createForm());
-            return;
-        }
+        const loadForm = async () => {
+            // EDITAR
+            // Si estamos editando, usamos los datos que ya tiene
+            // el movimiento y NO la configuración actual.
+            if (movement) {
+                const movementDate = new Date(movement.date);
 
-        const movementDate = new Date(movement.date);
+                const formattedDate = Number.isNaN(
+                    movementDate.getTime()
+                )
+                    ? today
+                    : movementDate
+                        .toISOString()
+                        .split("T")[0];
 
-        const formattedDate = Number.isNaN(
-            movementDate.getTime()
-        )
-            ? today
-            : movementDate
-                .toISOString()
-                .split("T")[0];
+                const movementPayments =
+                    movement.payments ?? [];
 
-        const movementPayments =
-            movement.payments ?? [];
+                const payments = paymentMethods.map(
+                    (method) => {
+                        const existingPayment =
+                            movementPayments.find(
+                                (payment) =>
+                                    payment.paymentMethodId ===
+                                    method.id
+                            );
 
-        const payments = paymentMethods.map(
-            (method) => {
-                const existingPayment =
-                    movementPayments.find(
-                        (payment) =>
-                            payment.paymentMethodId ===
-                            method.id
-                    );
+                        return {
+                            paymentMethodId: method.id,
+                            amount: existingPayment
+                                ? String(existingPayment.amount)
+                                : "",
+                            commissionPercentage:
+                                existingPayment
+                                    ? String(
+                                        existingPayment.commissionPercentage
+                                    )
+                                    : String(
+                                        method.defaultCommissionPercentage ?? 0
+                                    ),
+                        };
+                    }
+                );
 
-                return {
-                    paymentMethodId: method.id,
-                    amount: existingPayment
-                        ? String(existingPayment.amount)
-                        : "",
-                    commissionPercentage:
-                        existingPayment
-                            ? String(
-                                existingPayment.commissionPercentage
-                            )
-                            : String(
-                                method.defaultCommissionPercentage ??
-                                0
-                            ),
-                };
+                setForm({
+                    date: formattedDate,
+                    investmentPercentage: String(
+                        movement.investmentPercentage ?? 50
+                    ),
+                    description:
+                        movement.description ?? "",
+                    payments,
+                });
+
+                return;
             }
-        );
 
-        setForm({
-            date: formattedDate,
-            investmentPercentage: String(
-                movement.investmentPercentage ?? 50
-            ),
-            description:
-                movement.description ?? "",
-            payments,
-        });
+            // NUEVO INGRESO
+            // Cargamos la configuración del usuario.
+            try {
+                const response = await fetch(
+                    "/api/configuracion"
+                );
+
+                if (!response.ok) {
+                    throw new Error(
+                        "No se pudo cargar la configuración"
+                    );
+                }
+
+                const data = await response.json();
+
+                const defaultInvestment =
+                    typeof data.defaultInvestmentPercentage ===
+                        "number"
+                        ? String(
+                            data.defaultInvestmentPercentage
+                        )
+                        : "50";
+
+                setForm(
+                    createForm(defaultInvestment)
+                );
+            } catch (error) {
+                console.error(
+                    "Error cargando configuración:",
+                    error
+                );
+
+                // Si falla, mantenemos el valor
+                // predeterminado de 50%.
+                setForm(createForm("50"));
+            }
+        };
+
+        loadForm();
     }, [movement, paymentMethods]);
 
     const updatePayment = (

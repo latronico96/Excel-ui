@@ -1,0 +1,391 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import {
+    CheckCircle2,
+    Loader2,
+    Save,
+    Settings,
+} from "lucide-react";
+
+interface Configuracion {
+    defaultInvestmentPercentage: number;
+    onboardingCompleted: boolean;
+}
+
+export default function ConfiguracionPage() {
+    const [config, setConfig] =
+        useState<Configuracion | null>(null);
+
+    const [investmentPercentage, setInvestmentPercentage] =
+        useState("");
+
+    const [loading, setLoading] = useState(true);
+    const [saving, setSaving] = useState(false);
+    const [message, setMessage] = useState("");
+    const [messageType, setMessageType] = useState<
+        "success" | "error" | ""
+    >("");
+
+    useEffect(() => {
+        loadConfig();
+    }, []);
+
+    async function loadConfig() {
+        try {
+            setLoading(true);
+
+            const response = await fetch(
+                "/api/configuracion"
+            );
+
+            if (!response.ok) {
+                throw new Error(
+                    "No se pudo cargar la configuración"
+                );
+            }
+
+            const data: Configuracion =
+                await response.json();
+
+            setConfig(data);
+            setInvestmentPercentage(
+                String(
+                    data.defaultInvestmentPercentage
+                )
+            );
+        } catch (error) {
+            console.error(error);
+
+            setMessage(
+                "No se pudo cargar la configuración."
+            );
+            setMessageType("error");
+        } finally {
+            setLoading(false);
+        }
+    }
+
+    async function handleSave() {
+        setMessage("");
+        setMessageType("");
+
+        const percentage = Number(
+            investmentPercentage
+        );
+
+        if (
+            !Number.isFinite(percentage) ||
+            percentage < 0 ||
+            percentage > 100
+        ) {
+            setMessage(
+                "El porcentaje debe estar entre 0 y 100."
+            );
+            setMessageType("error");
+            return;
+        }
+
+        try {
+            setSaving(true);
+
+            const response = await fetch(
+                "/api/configuracion",
+                {
+                    method: "PATCH",
+                    headers: {
+                        "Content-Type":
+                            "application/json",
+                    },
+                    body: JSON.stringify({
+                        defaultInvestmentPercentage:
+                            percentage,
+                    }),
+                }
+            );
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(
+                    data.error ||
+                        "No se pudo guardar la configuración"
+                );
+            }
+
+            setConfig(data);
+
+            setInvestmentPercentage(
+                String(
+                    data.defaultInvestmentPercentage
+                )
+            );
+
+            setMessage(
+                "Configuración guardada correctamente."
+            );
+            setMessageType("success");
+        } catch (error) {
+            console.error(error);
+
+            setMessage(
+                error instanceof Error
+                    ? error.message
+                    : "No se pudo guardar la configuración."
+            );
+            setMessageType("error");
+        } finally {
+            setSaving(false);
+        }
+    }
+
+    if (loading) {
+        return (
+            <div className="card">
+                <div
+                    style={{
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        gap: "0.5rem",
+                        padding: "2rem",
+                        color: "var(--text-muted)",
+                    }}
+                >
+                    <Loader2
+                        size={20}
+                        className="animate-fade"
+                    />
+                    <span>
+                        Cargando configuración...
+                    </span>
+                </div>
+            </div>
+        );
+    }
+
+    return (
+        <div className="config-section animate-fade">
+            {/* Header */}
+            <div className="config-header">
+                <div
+                    style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "0.75rem",
+                    }}
+                >
+                    <div
+                        className="payment-method-icon"
+                        style={{
+                            width: 44,
+                            height: 44,
+                            flexShrink: 0,
+                        }}
+                    >
+                        <Settings size={22} />
+                    </div>
+
+                    <div>
+                        <h1>Configuración</h1>
+
+                        <p>
+                            Personalizá los valores
+                            predeterminados de tu negocio.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            {/* Preferencias */}
+            <div className="card config-card">
+                <div>
+                    <h2>Preferencias del negocio</h2>
+
+                    <p
+                        style={{
+                            marginTop: "0.4rem",
+                            color: "var(--text-muted)",
+                            fontSize: "0.85rem",
+                        }}
+                    >
+                        Estos valores se utilizarán
+                        automáticamente al registrar
+                        nuevos movimientos.
+                    </p>
+                </div>
+
+                <div className="config-field">
+                    <label htmlFor="investmentPercentage">
+                        Inversión predeterminada
+                    </label>
+
+                    <small>
+                        Porcentaje de cada ingreso que se
+                        propone inicialmente como inversión.
+                    </small>
+
+                    <div
+                        style={{
+                            position: "relative",
+                            maxWidth: "260px",
+                            marginTop: "0.35rem",
+                        }}
+                    >
+                        <input
+                            id="investmentPercentage"
+                            type="number"
+                            min="0"
+                            max="100"
+                            step="0.01"
+                            value={
+                                investmentPercentage
+                            }
+                            onChange={(event) =>
+                                setInvestmentPercentage(
+                                    event.target.value
+                                )
+                            }
+                            className="input"
+                            style={{
+                                paddingRight: "3rem",
+                                fontSize: "1.1rem",
+                                fontWeight: 700,
+                            }}
+                        />
+
+                        <span
+                            style={{
+                                position: "absolute",
+                                right: "0.9rem",
+                                top: "50%",
+                                transform:
+                                    "translateY(-50%)",
+                                color: "var(--text-muted)",
+                                fontWeight: 700,
+                            }}
+                        >
+                            %
+                        </span>
+                    </div>
+                </div>
+
+                <div className="config-actions">
+                    <button
+                        type="button"
+                        onClick={handleSave}
+                        disabled={saving}
+                        className="btn btn-primary"
+                    >
+                        {saving ? (
+                            <Loader2
+                                size={17}
+                                className="animate-fade"
+                            />
+                        ) : (
+                            <Save size={17} />
+                        )}
+
+                        {saving
+                            ? "Guardando..."
+                            : "Guardar cambios"}
+                    </button>
+                </div>
+            </div>
+
+            {/* Estado inicial */}
+            <div
+                className="card"
+                style={{
+                    marginTop: "1rem",
+                }}
+            >
+                <div
+                    style={{
+                        display: "flex",
+                        alignItems: "flex-start",
+                        gap: "0.75rem",
+                    }}
+                >
+                    <div
+                        style={{
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            width: 40,
+                            height: 40,
+                            flexShrink: 0,
+                            borderRadius: 10,
+                            background:
+                                "var(--primary-light)",
+                            color: "var(--primary)",
+                        }}
+                    >
+                        <CheckCircle2 size={20} />
+                    </div>
+
+                    <div style={{ flex: 1 }}>
+                        <h2>
+                            Configuración inicial
+                        </h2>
+
+                        <p
+                            style={{
+                                marginTop: "0.4rem",
+                                color: "var(--text-muted)",
+                                fontSize: "0.85rem",
+                            }}
+                        >
+                            Este estado se utilizará
+                            cuando incorporemos la
+                            pantalla de bienvenida y
+                            configuración inicial.
+                        </p>
+
+                        <div
+                            style={{
+                                marginTop: "1rem",
+                            }}
+                        >
+                            <span className="config-status">
+                                <CheckCircle2 size={14} />
+
+                                {config?.onboardingCompleted
+                                    ? "Configuración inicial completada"
+                                    : "Configuración inicial pendiente"}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {/* Mensaje */}
+            {message && (
+                <div
+                    style={{
+                        marginTop: "1rem",
+                        padding: "0.75rem 1rem",
+                        borderRadius: "8px",
+                        background:
+                            messageType === "success"
+                                ? "rgb(16 185 129 / 0.1)"
+                                : "rgb(239 68 68 / 0.1)",
+                        border: `1px solid ${
+                            messageType === "success"
+                                ? "rgb(16 185 129 / 0.2)"
+                                : "rgb(239 68 68 / 0.2)"
+                        }`,
+                        color:
+                            messageType === "success"
+                                ? "var(--success)"
+                                : "var(--error)",
+                        fontSize: "0.85rem",
+                        fontWeight: 600,
+                    }}
+                >
+                    {message}
+                </div>
+            )}
+        </div>
+    );
+}

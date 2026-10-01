@@ -17,6 +17,7 @@ import {
     Plus,
     Receipt,
     Settings,
+    SlidersHorizontal,
     Tags,
     X,
 } from "lucide-react";
@@ -32,6 +33,7 @@ export default function DashboardLayout({
 
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const [quickMenuOpen, setQuickMenuOpen] = useState(false);
+    const [checkingOnboarding, setCheckingOnboarding] = useState(true);
 
     useEffect(() => {
         if (status === "unauthenticated") {
@@ -44,7 +46,57 @@ export default function DashboardLayout({
         setMobileMenuOpen(false);
     }, [pathname]);
 
-    if (status === "loading") {
+    useEffect(() => {
+        if (status !== "authenticated") {
+            return;
+        }
+
+        // No controlar el onboarding estando ya en él
+        if (pathname === "/onboarding") {
+            setCheckingOnboarding(false);
+            return;
+        }
+
+        const checkOnboarding = async () => {
+            try {
+                const response = await fetch(
+                    "/api/configuracion"
+                );
+
+                if (!response.ok) {
+                    throw new Error(
+                        "No se pudo verificar el onboarding"
+                    );
+                }
+
+                const data = await response.json();
+
+                if (!data.onboardingCompleted) {
+                    router.replace("/onboarding");
+                    return;
+                }
+
+                setCheckingOnboarding(false);
+            } catch (error) {
+                console.error(
+                    "Error verificando onboarding:",
+                    error
+                );
+
+                setCheckingOnboarding(false);
+            }
+        };
+
+        checkOnboarding();
+    }, [status, pathname, router]);
+
+
+    if (
+        status === "loading" ||
+        (status === "authenticated" &&
+            checkingOnboarding &&
+            pathname !== "/onboarding")
+    ) {
         return (
             <div
                 style={{
@@ -109,9 +161,8 @@ export default function DashboardLayout({
                     <nav className="sidebar-nav">
                         <Link
                             href="/hoy"
-                            className={`nav-link ${
-                                isActive("/hoy") ? "active" : ""
-                            }`}
+                            className={`nav-link ${isActive("/hoy") ? "active" : ""
+                                }`}
                         >
                             <LayoutDashboard size={20} />
                             Inicio
@@ -119,9 +170,8 @@ export default function DashboardLayout({
 
                         <Link
                             href="/resumen"
-                            className={`nav-link ${
-                                isActive("/resumen") ? "active" : ""
-                            }`}
+                            className={`nav-link ${isActive("/resumen") ? "active" : ""
+                                }`}
                         >
                             <PieChart size={20} />
                             Resumen
@@ -129,9 +179,8 @@ export default function DashboardLayout({
 
                         <Link
                             href="/movimientos"
-                            className={`nav-link ${
-                                isActive("/movimientos") ? "active" : ""
-                            }`}
+                            className={`nav-link ${isActive("/movimientos") ? "active" : ""
+                                }`}
                         >
                             <Receipt size={20} />
                             Movimientos
@@ -139,11 +188,10 @@ export default function DashboardLayout({
 
                         <Link
                             href="/gastos-mensuales"
-                            className={`nav-link ${
-                                isActive("/gastos-mensuales")
-                                    ? "active"
-                                    : ""
-                            }`}
+                            className={`nav-link ${isActive("/gastos-mensuales")
+                                ? "active"
+                                : ""
+                                }`}
                         >
                             <Calendar size={20} />
                             Gastos mensuales
@@ -154,14 +202,22 @@ export default function DashboardLayout({
                                 <Settings size={17} />
                                 Configuración
                             </div>
-
+                            <Link
+                                href="/configuracion"
+                                className={`nav-link nav-link-sub ${isActive("/configuracion")
+                                    ? "active"
+                                    : ""
+                                    }`}
+                            >
+                                <SlidersHorizontal size={19} />
+                                General
+                            </Link>
                             <Link
                                 href="/tipos-gasto"
-                                className={`nav-link nav-link-sub ${
-                                    isActive("/tipos-gasto")
-                                        ? "active"
-                                        : ""
-                                }`}
+                                className={`nav-link nav-link-sub ${isActive("/tipos-gasto")
+                                    ? "active"
+                                    : ""
+                                    }`}
                             >
                                 <Tags size={19} />
                                 Tipos de gasto
@@ -169,11 +225,10 @@ export default function DashboardLayout({
 
                             <Link
                                 href="/medios-pago"
-                                className={`nav-link nav-link-sub ${
-                                    isActive("/medios-pago")
-                                        ? "active"
-                                        : ""
-                                }`}
+                                className={`nav-link nav-link-sub ${isActive("/medios-pago")
+                                    ? "active"
+                                    : ""
+                                    }`}
                             >
                                 <CreditCard size={19} />
                                 Medios de pago
@@ -270,11 +325,10 @@ export default function DashboardLayout({
                             <Link
                                 href="/hoy"
                                 onClick={closeMenus}
-                                className={`nav-link ${
-                                    isActive("/hoy")
-                                        ? "active"
-                                        : ""
-                                }`}
+                                className={`nav-link ${isActive("/hoy")
+                                    ? "active"
+                                    : ""
+                                    }`}
                             >
                                 <LayoutDashboard size={20} />
                                 Inicio
@@ -283,11 +337,10 @@ export default function DashboardLayout({
                             <Link
                                 href="/resumen"
                                 onClick={closeMenus}
-                                className={`nav-link ${
-                                    isActive("/resumen")
-                                        ? "active"
-                                        : ""
-                                }`}
+                                className={`nav-link ${isActive("/resumen")
+                                    ? "active"
+                                    : ""
+                                    }`}
                             >
                                 <PieChart size={20} />
                                 Resumen
@@ -296,11 +349,10 @@ export default function DashboardLayout({
                             <Link
                                 href="/movimientos"
                                 onClick={closeMenus}
-                                className={`nav-link ${
-                                    isActive("/movimientos")
-                                        ? "active"
-                                        : ""
-                                }`}
+                                className={`nav-link ${isActive("/movimientos")
+                                    ? "active"
+                                    : ""
+                                    }`}
                             >
                                 <Receipt size={20} />
                                 Movimientos
@@ -309,13 +361,12 @@ export default function DashboardLayout({
                             <Link
                                 href="/gastos-mensuales"
                                 onClick={closeMenus}
-                                className={`nav-link ${
-                                    isActive(
-                                        "/gastos-mensuales"
-                                    )
-                                        ? "active"
-                                        : ""
-                                }`}
+                                className={`nav-link ${isActive(
+                                    "/gastos-mensuales"
+                                )
+                                    ? "active"
+                                    : ""
+                                    }`}
                             >
                                 <Calendar size={20} />
                                 Gastos mensuales
@@ -326,17 +377,25 @@ export default function DashboardLayout({
                                     <Settings size={17} />
                                     Configuración
                                 </div>
-
+                                <Link
+                                    href="/configuracion"
+                                    className={`nav-link nav-link-sub ${isActive("/configuracion")
+                                        ? "active"
+                                        : ""
+                                        }`}
+                                >
+                                    <SlidersHorizontal size={19} />
+                                    General
+                                </Link>
                                 <Link
                                     href="/tipos-gasto"
                                     onClick={closeMenus}
-                                    className={`nav-link nav-link-sub ${
-                                        isActive(
-                                            "/tipos-gasto"
-                                        )
-                                            ? "active"
-                                            : ""
-                                    }`}
+                                    className={`nav-link nav-link-sub ${isActive(
+                                        "/tipos-gasto"
+                                    )
+                                        ? "active"
+                                        : ""
+                                        }`}
                                 >
                                     <Tags size={19} />
                                     Tipos de gasto
@@ -345,13 +404,12 @@ export default function DashboardLayout({
                                 <Link
                                     href="/medios-pago"
                                     onClick={closeMenus}
-                                    className={`nav-link nav-link-sub ${
-                                        isActive(
-                                            "/medios-pago"
-                                        )
-                                            ? "active"
-                                            : ""
-                                    }`}
+                                    className={`nav-link nav-link-sub ${isActive(
+                                        "/medios-pago"
+                                    )
+                                        ? "active"
+                                        : ""
+                                        }`}
                                 >
                                     <CreditCard size={19} />
                                     Medios de pago
@@ -460,9 +518,8 @@ export default function DashboardLayout({
 
                 <button
                     type="button"
-                    className={`quick-action-button ${
-                        quickMenuOpen ? "open" : ""
-                    }`}
+                    className={`quick-action-button ${quickMenuOpen ? "open" : ""
+                        }`}
                     onClick={() =>
                         setQuickMenuOpen((value) => !value)
                     }
