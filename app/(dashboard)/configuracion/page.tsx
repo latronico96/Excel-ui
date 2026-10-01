@@ -11,21 +11,46 @@ import {
 interface Configuracion {
     defaultInvestmentPercentage: number;
     onboardingCompleted: boolean;
+    titheEnabled: boolean;
+    tithePercentage: number;
+    titheBase:
+        | "NET_INCOME"
+        | "AFTER_INVESTMENT";
 }
 
 export default function ConfiguracionPage() {
     const [config, setConfig] =
         useState<Configuracion | null>(null);
 
-    const [investmentPercentage, setInvestmentPercentage] =
+    const [
+        investmentPercentage,
+        setInvestmentPercentage,
+    ] = useState("");
+
+    const [titheEnabled, setTitheEnabled] =
+        useState(false);
+
+    const [tithePercentage, setTithePercentage] =
+        useState("10");
+
+    const [titheBase, setTitheBase] =
+        useState<
+            "NET_INCOME" | "AFTER_INVESTMENT"
+        >("NET_INCOME");
+
+    const [loading, setLoading] =
+        useState(true);
+
+    const [saving, setSaving] =
+        useState(false);
+
+    const [message, setMessage] =
         useState("");
 
-    const [loading, setLoading] = useState(true);
-    const [saving, setSaving] = useState(false);
-    const [message, setMessage] = useState("");
-    const [messageType, setMessageType] = useState<
-        "success" | "error" | ""
-    >("");
+    const [messageType, setMessageType] =
+        useState<
+            "success" | "error" | ""
+        >("");
 
     useEffect(() => {
         loadConfig();
@@ -49,10 +74,28 @@ export default function ConfiguracionPage() {
                 await response.json();
 
             setConfig(data);
+
             setInvestmentPercentage(
                 String(
                     data.defaultInvestmentPercentage
                 )
+            );
+
+            setTitheEnabled(
+                data.titheEnabled === true
+            );
+
+            setTithePercentage(
+                String(
+                    data.tithePercentage ?? 10
+                )
+            );
+
+            setTitheBase(
+                data.titheBase ===
+                    "AFTER_INVESTMENT"
+                    ? "AFTER_INVESTMENT"
+                    : "NET_INCOME"
             );
         } catch (error) {
             console.error(error);
@@ -60,6 +103,7 @@ export default function ConfiguracionPage() {
             setMessage(
                 "No se pudo cargar la configuración."
             );
+
             setMessageType("error");
         } finally {
             setLoading(false);
@@ -70,18 +114,36 @@ export default function ConfiguracionPage() {
         setMessage("");
         setMessageType("");
 
-        const percentage = Number(
-            investmentPercentage
-        );
+        const investment =
+            Number(
+                investmentPercentage
+            );
 
         if (
-            !Number.isFinite(percentage) ||
-            percentage < 0 ||
-            percentage > 100
+            !Number.isFinite(investment) ||
+            investment < 0 ||
+            investment > 100
         ) {
             setMessage(
-                "El porcentaje debe estar entre 0 y 100."
+                "El porcentaje de inversión debe estar entre 0 y 100."
             );
+
+            setMessageType("error");
+            return;
+        }
+
+        const tithe =
+            Number(tithePercentage);
+
+        if (
+            !Number.isFinite(tithe) ||
+            tithe < 0 ||
+            tithe > 100
+        ) {
+            setMessage(
+                "El porcentaje de diezmo debe estar entre 0 y 100."
+            );
+
             setMessageType("error");
             return;
         }
@@ -99,12 +161,20 @@ export default function ConfiguracionPage() {
                     },
                     body: JSON.stringify({
                         defaultInvestmentPercentage:
-                            percentage,
+                            investment,
+
+                        titheEnabled,
+
+                        tithePercentage:
+                            tithe,
+
+                        titheBase,
                     }),
                 }
             );
 
-            const data = await response.json();
+            const data =
+                await response.json();
 
             if (!response.ok) {
                 throw new Error(
@@ -121,9 +191,27 @@ export default function ConfiguracionPage() {
                 )
             );
 
+            setTitheEnabled(
+                data.titheEnabled === true
+            );
+
+            setTithePercentage(
+                String(
+                    data.tithePercentage ?? 10
+                )
+            );
+
+            setTitheBase(
+                data.titheBase ===
+                    "AFTER_INVESTMENT"
+                    ? "AFTER_INVESTMENT"
+                    : "NET_INCOME"
+            );
+
             setMessage(
                 "Configuración guardada correctamente."
             );
+
             setMessageType("success");
         } catch (error) {
             console.error(error);
@@ -133,6 +221,7 @@ export default function ConfiguracionPage() {
                     ? error.message
                     : "No se pudo guardar la configuración."
             );
+
             setMessageType("error");
         } finally {
             setSaving(false);
@@ -146,16 +235,19 @@ export default function ConfiguracionPage() {
                     style={{
                         display: "flex",
                         alignItems: "center",
-                        justifyContent: "center",
+                        justifyContent:
+                            "center",
                         gap: "0.5rem",
                         padding: "2rem",
-                        color: "var(--text-muted)",
+                        color:
+                            "var(--text-muted)",
                     }}
                 >
                     <Loader2
                         size={20}
                         className="animate-fade"
                     />
+
                     <span>
                         Cargando configuración...
                     </span>
@@ -167,11 +259,13 @@ export default function ConfiguracionPage() {
     return (
         <div className="config-section animate-fade">
             {/* Header */}
+
             <div className="config-header">
                 <div
                     style={{
                         display: "flex",
-                        alignItems: "center",
+                        alignItems:
+                            "center",
                         gap: "0.75rem",
                     }}
                 >
@@ -187,26 +281,35 @@ export default function ConfiguracionPage() {
                     </div>
 
                     <div>
-                        <h1>Configuración</h1>
+                        <h1>
+                            Configuración
+                        </h1>
 
                         <p>
                             Personalizá los valores
-                            predeterminados de tu negocio.
+                            predeterminados de tu
+                            negocio.
                         </p>
                     </div>
                 </div>
             </div>
 
             {/* Preferencias */}
+
             <div className="card config-card">
                 <div>
-                    <h2>Preferencias del negocio</h2>
+                    <h2>
+                        Preferencias del negocio
+                    </h2>
 
                     <p
                         style={{
-                            marginTop: "0.4rem",
-                            color: "var(--text-muted)",
-                            fontSize: "0.85rem",
+                            marginTop:
+                                "0.4rem",
+                            color:
+                                "var(--text-muted)",
+                            fontSize:
+                                "0.85rem",
                         }}
                     >
                         Estos valores se utilizarán
@@ -215,21 +318,26 @@ export default function ConfiguracionPage() {
                     </p>
                 </div>
 
+                {/* Inversión */}
+
                 <div className="config-field">
                     <label htmlFor="investmentPercentage">
                         Inversión predeterminada
                     </label>
 
                     <small>
-                        Porcentaje de cada ingreso que se
-                        propone inicialmente como inversión.
+                        Porcentaje de cada ingreso
+                        que se propone inicialmente
+                        como inversión.
                     </small>
 
                     <div
                         style={{
-                            position: "relative",
+                            position:
+                                "relative",
                             maxWidth: "260px",
-                            marginTop: "0.35rem",
+                            marginTop:
+                                "0.35rem",
                         }}
                     >
                         <input
@@ -243,25 +351,31 @@ export default function ConfiguracionPage() {
                             }
                             onChange={(event) =>
                                 setInvestmentPercentage(
-                                    event.target.value
+                                    event.target
+                                        .value
                                 )
                             }
                             className="input"
                             style={{
-                                paddingRight: "3rem",
-                                fontSize: "1.1rem",
+                                paddingRight:
+                                    "3rem",
+                                fontSize:
+                                    "1.1rem",
                                 fontWeight: 700,
                             }}
                         />
 
                         <span
                             style={{
-                                position: "absolute",
-                                right: "0.9rem",
+                                position:
+                                    "absolute",
+                                right:
+                                    "0.9rem",
                                 top: "50%",
                                 transform:
                                     "translateY(-50%)",
-                                color: "var(--text-muted)",
+                                color:
+                                    "var(--text-muted)",
                                 fontWeight: 700,
                             }}
                         >
@@ -269,6 +383,217 @@ export default function ConfiguracionPage() {
                         </span>
                     </div>
                 </div>
+
+                {/* Separador */}
+
+                <div
+                    style={{
+                        height: "1px",
+                        background:
+                            "var(--border)",
+                        margin:
+                            "0.5rem 0",
+                    }}
+                />
+
+                {/* Diezmo */}
+
+                <div className="config-field">
+                    <div
+                        style={{
+                            display: "flex",
+                            alignItems:
+                                "flex-start",
+                            gap: "0.75rem",
+                        }}
+                    >
+                        <input
+                            id="titheEnabled"
+                            type="checkbox"
+                            checked={
+                                titheEnabled
+                            }
+                            onChange={(event) =>
+                                setTitheEnabled(
+                                    event.target
+                                        .checked
+                                )
+                            }
+                            style={{
+                                width: 18,
+                                height: 18,
+                                marginTop:
+                                    "0.15rem",
+                                flexShrink: 0,
+                            }}
+                        />
+
+                        <div>
+                            <label
+                                htmlFor="titheEnabled"
+                                style={{
+                                    cursor:
+                                        "pointer",
+                                }}
+                            >
+                                Calcular diezmo
+                                automáticamente
+                            </label>
+
+                            <small
+                                style={{
+                                    display:
+                                        "block",
+                                    marginTop:
+                                        "0.25rem",
+                                }}
+                            >
+                                Calcula automáticamente
+                                el diezmo sobre cada
+                                ingreso según la
+                                configuración elegida.
+                            </small>
+                        </div>
+                    </div>
+
+                    {titheEnabled && (
+                        <div
+                            style={{
+                                marginTop:
+                                    "1rem",
+                                display:
+                                    "flex",
+                                flexDirection:
+                                    "column",
+                                gap:
+                                    "1rem",
+                            }}
+                        >
+                            {/* Porcentaje */}
+
+                            <div>
+                                <label htmlFor="tithePercentage">
+                                    Porcentaje de diezmo
+                                </label>
+
+                                <div
+                                    style={{
+                                        position:
+                                            "relative",
+                                        maxWidth:
+                                            "260px",
+                                        marginTop:
+                                            "0.35rem",
+                                    }}
+                                >
+                                    <input
+                                        id="tithePercentage"
+                                        type="number"
+                                        min="0"
+                                        max="100"
+                                        step="0.01"
+                                        value={
+                                            tithePercentage
+                                        }
+                                        onChange={(
+                                            event
+                                        ) =>
+                                            setTithePercentage(
+                                                event
+                                                    .target
+                                                    .value
+                                            )
+                                        }
+                                        className="input"
+                                        style={{
+                                            paddingRight:
+                                                "3rem",
+                                            fontSize:
+                                                "1.1rem",
+                                            fontWeight:
+                                                700,
+                                        }}
+                                    />
+
+                                    <span
+                                        style={{
+                                            position:
+                                                "absolute",
+                                            right:
+                                                "0.9rem",
+                                            top:
+                                                "50%",
+                                            transform:
+                                                "translateY(-50%)",
+                                            color:
+                                                "var(--text-muted)",
+                                            fontWeight:
+                                                700,
+                                        }}
+                                    >
+                                        %
+                                    </span>
+                                </div>
+                            </div>
+
+                            {/* Base */}
+
+                            <div>
+                                <label htmlFor="titheBase">
+                                    Calcular sobre
+                                </label>
+
+                                <small
+                                    style={{
+                                        display:
+                                            "block",
+                                        marginTop:
+                                            "0.25rem",
+                                        marginBottom:
+                                            "0.5rem",
+                                    }}
+                                >
+                                    Elegí qué importe se
+                                    utiliza como base para
+                                    calcular el diezmo.
+                                </small>
+
+                                <select
+                                    id="titheBase"
+                                    value={
+                                        titheBase
+                                    }
+                                    onChange={(
+                                        event
+                                    ) =>
+                                        setTitheBase(
+                                            event
+                                                .target
+                                                .value as
+                                                | "NET_INCOME"
+                                                | "AFTER_INVESTMENT"
+                                        )
+                                    }
+                                    className="input"
+                                    style={{
+                                        maxWidth:
+                                            "420px",
+                                    }}
+                                >
+                                    <option value="NET_INCOME">
+                                        Ingreso neto
+                                    </option>
+
+                                    <option value="AFTER_INVESTMENT">
+                                        Después de reinversión
+                                    </option>
+                                </select>
+                            </div>
+                        </div>
+                    )}
+                </div>
+
+                {/* Guardar */}
 
                 <div className="config-actions">
                     <button
@@ -294,6 +619,7 @@ export default function ConfiguracionPage() {
             </div>
 
             {/* Estado inicial */}
+
             <div
                 className="card"
                 style={{
@@ -303,37 +629,48 @@ export default function ConfiguracionPage() {
                 <div
                     style={{
                         display: "flex",
-                        alignItems: "flex-start",
+                        alignItems:
+                            "flex-start",
                         gap: "0.75rem",
                     }}
                 >
                     <div
                         style={{
                             display: "flex",
-                            alignItems: "center",
-                            justifyContent: "center",
+                            alignItems:
+                                "center",
+                            justifyContent:
+                                "center",
                             width: 40,
                             height: 40,
                             flexShrink: 0,
                             borderRadius: 10,
                             background:
                                 "var(--primary-light)",
-                            color: "var(--primary)",
+                            color:
+                                "var(--primary)",
                         }}
                     >
                         <CheckCircle2 size={20} />
                     </div>
 
-                    <div style={{ flex: 1 }}>
+                    <div
+                        style={{
+                            flex: 1,
+                        }}
+                    >
                         <h2>
                             Configuración inicial
                         </h2>
 
                         <p
                             style={{
-                                marginTop: "0.4rem",
-                                color: "var(--text-muted)",
-                                fontSize: "0.85rem",
+                                marginTop:
+                                    "0.4rem",
+                                color:
+                                    "var(--text-muted)",
+                                fontSize:
+                                    "0.85rem",
                             }}
                         >
                             Este estado se utilizará
@@ -344,11 +681,14 @@ export default function ConfiguracionPage() {
 
                         <div
                             style={{
-                                marginTop: "1rem",
+                                marginTop:
+                                    "1rem",
                             }}
                         >
                             <span className="config-status">
-                                <CheckCircle2 size={14} />
+                                <CheckCircle2
+                                    size={14}
+                                />
 
                                 {config?.onboardingCompleted
                                     ? "Configuración inicial completada"
@@ -360,26 +700,34 @@ export default function ConfiguracionPage() {
             </div>
 
             {/* Mensaje */}
+
             {message && (
                 <div
                     style={{
-                        marginTop: "1rem",
-                        padding: "0.75rem 1rem",
+                        marginTop:
+                            "1rem",
+                        padding:
+                            "0.75rem 1rem",
                         borderRadius: "8px",
                         background:
-                            messageType === "success"
+                            messageType ===
+                            "success"
                                 ? "rgb(16 185 129 / 0.1)"
                                 : "rgb(239 68 68 / 0.1)",
-                        border: `1px solid ${
-                            messageType === "success"
-                                ? "rgb(16 185 129 / 0.2)"
-                                : "rgb(239 68 68 / 0.2)"
-                        }`,
+                        border:
+                            `1px solid ${
+                                messageType ===
+                                "success"
+                                    ? "rgb(16 185 129 / 0.2)"
+                                    : "rgb(239 68 68 / 0.2)"
+                            }`,
                         color:
-                            messageType === "success"
+                            messageType ===
+                            "success"
                                 ? "var(--success)"
                                 : "var(--error)",
-                        fontSize: "0.85rem",
+                        fontSize:
+                            "0.85rem",
                         fontWeight: 600,
                     }}
                 >

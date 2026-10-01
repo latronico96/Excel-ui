@@ -1,11 +1,10 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import {
     ArrowDownCircle,
     ArrowUpCircle,
-    Calendar,
     ChevronRight,
     CreditCard,
     Receipt,
@@ -14,12 +13,15 @@ import {
 
 import { Movement } from "@/shared/types";
 
-function getLocalDateString(date = new Date()) {
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, "0");
-    const day = String(date.getDate()).padStart(2, "0");
-
-    return `${year}-${month}-${day}`;
+interface TodaySummary {
+    income: number;
+    expenses: number;
+    balance: number;
+    commissions: number;
+    netIncome: number;
+    investment: number;
+    tithe: number;
+    available: number;
 }
 
 function formatMoney(value: number) {
@@ -39,28 +41,54 @@ function formatToday() {
 
 export default function HoyPage() {
     const [movements, setMovements] = useState<Movement[]>([]);
+    const [summary, setSummary] =
+        useState<TodaySummary | null>(null);
+
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
 
     useEffect(() => {
-        const fetchMovements = async () => {
+        const loadData = async () => {
             try {
                 setLoading(true);
                 setError("");
 
-                const res = await fetch("/api/movimientos");
+                const [
+                    movementsRes,
+                    summaryRes,
+                ] = await Promise.all([
+                    fetch("/api/movimientos"),
+                    fetch("/api/resumen?period=day"),
+                ]);
 
-                const data = await res.json();
+                const movementsData =
+                    await movementsRes.json();
 
-                if (!res.ok) {
+                const summaryData =
+                    await summaryRes.json();
+
+                if (!movementsRes.ok) {
                     throw new Error(
-                        data.error ||
+                        movementsData.error ||
                             "No se pudieron cargar los movimientos"
                     );
                 }
 
+                if (!summaryRes.ok) {
+                    throw new Error(
+                        summaryData.error ||
+                            "No se pudo cargar el resumen"
+                    );
+                }
+
                 setMovements(
-                    Array.isArray(data) ? data : []
+                    Array.isArray(movementsData)
+                        ? movementsData
+                        : []
+                );
+
+                setSummary(
+                    summaryData.totals ?? null
                 );
             } catch (err) {
                 console.error(err);
@@ -68,63 +96,103 @@ export default function HoyPage() {
                 setError(
                     err instanceof Error
                         ? err.message
-                        : "No se pudieron cargar los movimientos"
+                        : "No se pudieron cargar los datos"
                 );
             } finally {
                 setLoading(false);
             }
         };
 
-        fetchMovements();
+        loadData();
     }, []);
 
-    const today = getLocalDateString();
+    /*
+     * La API devuelve todos los movimientos.
+     *
+     * Para la lista de "Movimientos de hoy"
+     * filtramos únicamente los del día actual.
+     *
+     * Los totales NO se calculan acá:
+     * vienen de /api/resumen?period=day
+     */
+    const today = new Intl.DateTimeFormat(
+        "en-CA",
+        {
+            timeZone:
+                "America/Argentina/Buenos_Aires",
+            year: "numeric",
+            month: "2-digit",
+            day: "2-digit",
+        }
+    ).format(new Date());
 
-    const todayMovements = useMemo(() => {
-        return movements.filter((movement) => {
-            return movement.date.slice(0, 10) === today;
-        });
-    }, [movements, today]);
+    const todayMovements =
+        movements.filter((movement) => {
+            const movementDate =
+                new Date(movement.date);
 
-    const totals = useMemo(() => {
-        return todayMovements.reduce(
-            (result, movement) => {
-                if (movement.type === "INGRESO") {
-                    result.income += movement.amount;
-                } else {
-                    result.expenses += movement.amount;
-                }
-
-                return result;
-            },
-            {
-                income: 0,
-                expenses: 0,
+            if (
+                Number.isNaN(
+                    movementDate.getTime()
+                )
+            ) {
+                return false;
             }
-        );
-    }, [todayMovements]);
 
-    const balance = totals.income - totals.expenses;
+            const movementDay =
+                new Intl.DateTimeFormat(
+                    "en-CA",
+                    {
+                        timeZone:
+                            "America/Argentina/Buenos_Aires",
+                        year: "numeric",
+                        month: "2-digit",
+                        day: "2-digit",
+                    }
+                ).format(movementDate);
 
-    const getPaymentMethod = (movement: Movement) => {
-        if (movement.type === "INGRESO") {
+            return movementDay === today;
+        });
+
+    const getPaymentMethod = (
+        movement: Movement
+    ) => {
+        if (
+            movement.type === "INGRESO"
+        ) {
             const paymentNames =
                 movement.payments
-                    ?.filter((payment) => payment.amount > 0)
-                    .map((payment) => payment.paymentMethodName);
+                    ?.filter(
+                        (payment) =>
+                            payment.amount > 0
+                    )
+                    .map(
+                        (payment) =>
+                            payment.paymentMethodName
+                    );
 
-            if (!paymentNames || paymentNames.length === 0) {
+            if (
+                !paymentNames ||
+                paymentNames.length === 0
+            ) {
                 return null;
             }
 
             return paymentNames.join(" · ");
         }
 
-        return movement.paymentMethod?.name ?? null;
+        return (
+            movement.paymentMethod?.name ??
+            null
+        );
     };
 
-    const getMovementTitle = (movement: Movement) => {
-        if (movement.description?.trim()) {
+    const getMovementTitle = (
+        movement: Movement
+    ) => {
+        if (
+            movement.description?.trim()
+        ) {
             return movement.description;
         }
 
@@ -144,15 +212,22 @@ export default function HoyPage() {
         <div className="animate-fade hoy-page">
             <div className="hoy-header">
                 <div>
-                    <h1 style={{ marginBottom: "0.25rem" }}>
+                    <h1
+                        style={{
+                            marginBottom:
+                                "0.25rem",
+                        }}
+                    >
                         Inicio
                     </h1>
 
                     <p
                         style={{
                             margin: 0,
-                            color: "var(--text-muted)",
-                            textTransform: "capitalize",
+                            color:
+                                "var(--text-muted)",
+                            textTransform:
+                                "capitalize",
                         }}
                     >
                         {formatToday()}
@@ -178,10 +253,11 @@ export default function HoyPage() {
                         style={{
                             padding: "1.5rem",
                             textAlign: "center",
-                            color: "var(--text-muted)",
+                            color:
+                                "var(--text-muted)",
                         }}
                     >
-                        Cargando movimientos...
+                        Cargando resumen...
                     </div>
                 </div>
             ) : (
@@ -193,23 +269,35 @@ export default function HoyPage() {
                     <div className="hoy-summary-grid">
                         <div className="card hoy-summary-card income">
                             <div className="hoy-summary-label">
-                                <ArrowUpCircle size={18} />
+                                <ArrowUpCircle
+                                    size={18}
+                                />
                                 Ingresos
                             </div>
 
                             <strong>
-                                ${formatMoney(totals.income)}
+                                $
+                                {formatMoney(
+                                    summary?.income ??
+                                        0
+                                )}
                             </strong>
                         </div>
 
                         <div className="card hoy-summary-card expense">
                             <div className="hoy-summary-label">
-                                <ArrowDownCircle size={18} />
+                                <ArrowDownCircle
+                                    size={18}
+                                />
                                 Gastos
                             </div>
 
                             <strong>
-                                ${formatMoney(totals.expenses)}
+                                $
+                                {formatMoney(
+                                    summary?.expenses ??
+                                        0
+                                )}
                             </strong>
                         </div>
                     </div>
@@ -226,14 +314,22 @@ export default function HoyPage() {
 
                             <strong
                                 className={
-                                    balance >= 0
+                                    (summary?.balance ??
+                                        0) >= 0
                                         ? "hoy-positive"
                                         : "hoy-negative"
                                 }
                             >
-                                {balance >= 0 ? "+" : "-"}$
+                                {(summary?.balance ??
+                                    0) >= 0
+                                    ? "+"
+                                    : "-"}
+                                $
                                 {formatMoney(
-                                    Math.abs(balance)
+                                    Math.abs(
+                                        summary?.balance ??
+                                            0
+                                    )
                                 )}
                             </strong>
                         </div>
@@ -242,20 +338,118 @@ export default function HoyPage() {
                     </div>
 
                     {/* =========================================
+                        DISTRIBUCIÓN
+                    ========================================= */}
+
+                    {summary &&
+                        (summary.investment >
+                            0 ||
+                            summary.tithe > 0) && (
+                            <div className="card">
+                                <div
+                                    style={{
+                                        display:
+                                            "flex",
+                                        flexDirection:
+                                            "column",
+                                        gap: "0.75rem",
+                                    }}
+                                >
+                                    <div
+                                        style={{
+                                            display:
+                                                "flex",
+                                            justifyContent:
+                                                "space-between",
+                                            gap: "1rem",
+                                        }}
+                                    >
+                                        <span>
+                                            Reinversión
+                                        </span>
+
+                                        <strong>
+                                            $
+                                            {formatMoney(
+                                                summary.investment
+                                            )}
+                                        </strong>
+                                    </div>
+
+                                    {summary.tithe >
+                                        0 && (
+                                        <div
+                                            style={{
+                                                display:
+                                                    "flex",
+                                                justifyContent:
+                                                    "space-between",
+                                                gap: "1rem",
+                                            }}
+                                        >
+                                            <span>
+                                                Diezmo
+                                            </span>
+
+                                            <strong>
+                                                $
+                                                {formatMoney(
+                                                    summary.tithe
+                                                )}
+                                            </strong>
+                                        </div>
+                                    )}
+
+                                    <div
+                                        style={{
+                                            borderTop:
+                                                "1px solid var(--border)",
+                                            paddingTop:
+                                                "0.75rem",
+                                            display:
+                                                "flex",
+                                            justifyContent:
+                                                "space-between",
+                                            gap: "1rem",
+                                        }}
+                                    >
+                                        <strong>
+                                            Disponible
+                                        </strong>
+
+                                        <strong>
+                                            $
+                                            {formatMoney(
+                                                summary.available
+                                            )}
+                                        </strong>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
+                    {/* =========================================
                         MOVIMIENTOS
                     ========================================= */}
 
                     <div className="card hoy-movements-card">
                         <div className="hoy-section-header">
                             <div>
-                                <h3 style={{ margin: 0 }}>
+                                <h3
+                                    style={{
+                                        margin: 0,
+                                    }}
+                                >
                                     Movimientos de hoy
                                 </h3>
 
                                 <p>
-                                    {todayMovements.length === 0
+                                    {todayMovements.length ===
+                                    0
                                         ? "Todavía no registraste movimientos"
-                                        : `${todayMovements.length} movimiento${
+                                        : `${
+                                              todayMovements.length
+                                          } movimiento${
                                               todayMovements.length ===
                                               1
                                                   ? ""
@@ -264,36 +458,44 @@ export default function HoyPage() {
                                 </p>
                             </div>
 
-                            {todayMovements.length > 0 && (
+                            {todayMovements.length >
+                                0 && (
                                 <Link
                                     href="/movimientos"
                                     className="hoy-see-all"
                                 >
                                     Ver todos
-                                    <ChevronRight size={17} />
+                                    <ChevronRight
+                                        size={17}
+                                    />
                                 </Link>
                             )}
                         </div>
 
-                        {todayMovements.length === 0 ? (
+                        {todayMovements.length ===
+                        0 ? (
                             <div className="hoy-empty">
-                                <Receipt size={32} />
+                                <Receipt
+                                    size={32}
+                                />
 
                                 <strong>
-                                    Hoy todavía no pasó nada
-                                    registrado.
+                                    Hoy todavía no pasó
+                                    nada registrado.
                                 </strong>
 
                                 <span>
-                                    Usá el botón + para registrar
-                                    un ingreso, egreso o pago
-                                    mensual.
+                                    Usá el botón + para
+                                    registrar un ingreso,
+                                    egreso o pago mensual.
                                 </span>
                             </div>
                         ) : (
                             <div className="hoy-movements-list">
                                 {todayMovements.map(
-                                    (movement) => {
+                                    (
+                                        movement
+                                    ) => {
                                         const isIncome =
                                             movement.type ===
                                             "INGRESO";

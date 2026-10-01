@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
+
 import { authOptions } from "../auth/auth-options";
 import { MovimientosService } from "@/server/services/movimientos.service";
 import { prisma } from "@/prisma/prisma";
@@ -31,27 +32,35 @@ export async function GET(request: NextRequest) {
             );
         }
 
-        const periodParam = request.nextUrl.searchParams.get("period");
+        const periodParam =
+            request.nextUrl.searchParams.get("period");
 
         const period =
-            periodParam === "week" ||
-            periodParam === "month" ||
-            periodParam === "year"
+            periodParam === "day" ||
+                periodParam === "week" ||
+                periodParam === "month" ||
+                periodParam === "year"
                 ? periodParam
                 : "month";
 
-        const summary = await MovimientosService.fetchSummary(
-            user.id,
-            period
-        );
+        const summary =
+            await MovimientosService.fetchSummary(
+                user.id,
+                period
+            );
 
         return NextResponse.json(summary);
     } catch (error: any) {
-        console.error("Error fetching summary:", error);
+        console.error(
+            "Error fetching summary:",
+            error
+        );
 
         return NextResponse.json(
             {
-                error: error.message || "Error fetching summary",
+                error:
+                    error.message ||
+                    "Error fetching summary",
             },
             { status: 500 }
         );

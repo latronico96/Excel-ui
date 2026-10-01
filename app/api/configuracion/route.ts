@@ -4,6 +4,13 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/auth-options";
 import { prisma } from "@/prisma/prisma";
 
+const VALID_TITHE_BASES = [
+    "NET_INCOME",
+    "AFTER_INVESTMENT",
+] as const;
+
+type TitheBase = (typeof VALID_TITHE_BASES)[number];
+
 export async function GET() {
     try {
         const session = await getServerSession(
@@ -24,6 +31,9 @@ export async function GET() {
             select: {
                 defaultInvestmentPercentage: true,
                 onboardingCompleted: true,
+                titheEnabled: true,
+                tithePercentage: true,
+                titheBase: true,
             },
         });
 
@@ -40,6 +50,11 @@ export async function GET() {
             ),
             onboardingCompleted:
                 user.onboardingCompleted,
+            titheEnabled: user.titheEnabled,
+            tithePercentage: Number(
+                user.tithePercentage
+            ),
+            titheBase: user.titheBase,
         });
     } catch (error) {
         console.error(
@@ -91,6 +106,9 @@ export async function PATCH(request: Request) {
         const data: {
             defaultInvestmentPercentage?: number;
             onboardingCompleted?: boolean;
+            titheEnabled?: boolean;
+            tithePercentage?: number;
+            titheBase?: TitheBase;
         } = {};
 
         /*
@@ -145,6 +163,74 @@ export async function PATCH(request: Request) {
                 body.onboardingCompleted;
         }
 
+        /*
+         * Activar / desactivar diezmo
+         */
+        if (body.titheEnabled !== undefined) {
+            if (
+                typeof body.titheEnabled !==
+                "boolean"
+            ) {
+                return NextResponse.json(
+                    {
+                        error:
+                            "titheEnabled debe ser boolean",
+                    },
+                    { status: 400 }
+                );
+            }
+
+            data.titheEnabled = body.titheEnabled;
+        }
+
+        /*
+         * Porcentaje de diezmo
+         */
+        if (
+            body.tithePercentage !== undefined
+        ) {
+            const percentage = Number(
+                body.tithePercentage
+            );
+
+            if (
+                !Number.isFinite(percentage) ||
+                percentage < 0 ||
+                percentage > 100
+            ) {
+                return NextResponse.json(
+                    {
+                        error:
+                            "El porcentaje de diezmo debe estar entre 0 y 100",
+                    },
+                    { status: 400 }
+                );
+            }
+
+            data.tithePercentage = percentage;
+        }
+
+        /*
+         * Base del cálculo del diezmo
+         */
+        if (body.titheBase !== undefined) {
+            if (
+                !VALID_TITHE_BASES.includes(
+                    body.titheBase
+                )
+            ) {
+                return NextResponse.json(
+                    {
+                        error:
+                            "La base del diezmo no es válida",
+                    },
+                    { status: 400 }
+                );
+            }
+
+            data.titheBase = body.titheBase;
+        }
+
         if (Object.keys(data).length === 0) {
             return NextResponse.json(
                 {
@@ -164,6 +250,9 @@ export async function PATCH(request: Request) {
                 select: {
                     defaultInvestmentPercentage: true,
                     onboardingCompleted: true,
+                    titheEnabled: true,
+                    tithePercentage: true,
+                    titheBase: true,
                 },
             });
 
@@ -173,6 +262,12 @@ export async function PATCH(request: Request) {
             ),
             onboardingCompleted:
                 updatedUser.onboardingCompleted,
+            titheEnabled:
+                updatedUser.titheEnabled,
+            tithePercentage: Number(
+                updatedUser.tithePercentage
+            ),
+            titheBase: updatedUser.titheBase,
         });
     } catch (error) {
         console.error(

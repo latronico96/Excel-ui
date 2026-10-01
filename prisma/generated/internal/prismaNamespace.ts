@@ -1364,7 +1364,10 @@ export const UserScalarFieldEnum = {
   updatedAt: 'updatedAt',
   emailVerified: 'emailVerified',
   onboardingCompleted: 'onboardingCompleted',
-  defaultInvestmentPercentage: 'defaultInvestmentPercentage'
+  defaultInvestmentPercentage: 'defaultInvestmentPercentage',
+  titheEnabled: 'titheEnabled',
+  tithePercentage: 'tithePercentage',
+  titheBase: 'titheBase'
 } as const
 
 export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]

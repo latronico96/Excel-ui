@@ -585,41 +585,53 @@ export class MovimientosService {
 
     static async fetchSummary(
         userId: string,
-        period: "week" | "month" | "year" = "month"
+        period: "day" | "week" | "month" | "year" = "month"
     ) {
         const now = new Date();
-
-        // Obtenemos la fecha actual según Argentina.
         const argentinaToday = getArgentinaDateString(now);
-        const [year, month, day] = argentinaToday
-            .split("-")
-            .map(Number);
+        const [year, month, day] = argentinaToday.split("-").map(Number);
 
         let startDate: Date;
 
-        if (period === "week") {
+        if (period === "day") {
+            // Inicio del día actual en Argentina.
+            startDate = parseMovementDate(
+                argentinaToday
+            );
+        } else if (period === "week") {
             // Día de la semana según calendario argentino.
-            // Creamos una fecha neutra para calcular el lunes.
             const argentinaDate = new Date(
                 `${argentinaToday}T12:00:00${ARGENTINA_OFFSET}`
             );
 
-            const dayOfWeek = argentinaDate.getUTCDay();
-            const daysFromMonday =
-                dayOfWeek === 0 ? 6 : dayOfWeek - 1;
+            const dayOfWeek =
+                argentinaDate.getUTCDay();
 
-            const monday = new Date(argentinaDate);
+            const daysFromMonday =
+                dayOfWeek === 0
+                    ? 6
+                    : dayOfWeek - 1;
+
+            const monday =
+                new Date(argentinaDate);
+
             monday.setUTCDate(
-                monday.getUTCDate() - daysFromMonday
+                monday.getUTCDate() -
+                daysFromMonday
             );
 
             const mondayString = [
                 monday.getUTCFullYear(),
-                String(monday.getUTCMonth() + 1).padStart(2, "0"),
-                String(monday.getUTCDate()).padStart(2, "0"),
+                String(
+                    monday.getUTCMonth() + 1
+                ).padStart(2, "0"),
+                String(
+                    monday.getUTCDate()
+                ).padStart(2, "0"),
             ].join("-");
 
-            startDate = parseMovementDate(mondayString);
+            startDate =
+                parseMovementDate(mondayString);
         } else if (period === "month") {
             const monthString = [
                 year,
@@ -627,41 +639,61 @@ export class MovimientosService {
                 "01",
             ].join("-");
 
-            startDate = parseMovementDate(monthString);
+            startDate =
+                parseMovementDate(monthString);
         } else {
             const yearString = `${year}-01-01`;
 
-            startDate = parseMovementDate(yearString);
+            startDate =
+                parseMovementDate(yearString);
         }
 
-        const movements = await prisma.movement.findMany({
+        /*
+         * Configuración financiera del usuario.
+         *
+         * El diezmo se calcula acá, en el backend,
+         * y no en cada pantalla.
+         */
+        const user = await prisma.user.findUnique({
             where: {
-                userId,
-                date: {
-                    gte: startDate,
-                    lte: now,
-                },
+                id: userId,
             },
             select: {
-                type: true,
-                amount: true,
-                date: true,
-                income: {
-                    select: {
-                        investmentPercentage: true,
-                        payments: {
-                            select: {
-                                commissionAmount: true,
-                                netAmount: true,
+                titheEnabled: true,
+                tithePercentage: true,
+                titheBase: true,
+            },
+        });
+
+        const movements =
+            await prisma.movement.findMany({
+                where: {
+                    userId,
+                    date: {
+                        gte: startDate,
+                        lte: now,
+                    },
+                },
+                select: {
+                    type: true,
+                    amount: true,
+                    date: true,
+                    income: {
+                        select: {
+                            investmentPercentage: true,
+                            payments: {
+                                select: {
+                                    commissionAmount: true,
+                                    netAmount: true,
+                                },
                             },
                         },
                     },
                 },
-            },
-            orderBy: {
-                date: "desc",
-            },
-        });
+                orderBy: {
+                    date: "desc",
+                },
+            });
 
         const totals = {
             income: 0,
@@ -670,6 +702,8 @@ export class MovimientosService {
             commissions: 0,
             netIncome: 0,
             investment: 0,
+            tithe: 0,
+            available: 0,
         };
 
         const breakdown: Record<
@@ -680,20 +714,33 @@ export class MovimientosService {
                 commissions: number;
                 netIncome: number;
                 investment: number;
+                tithe: number;
+                available: number;
             }
         > = {};
 
         for (const movement of movements) {
-            const movementDate = movement.date;
+            const movementDate =
+                movement.date;
 
             let key: string;
 
-            if (period === "week" || period === "month") {
+            if (
+                period === "day" ||
+                period === "week" ||
+                period === "month"
+            ) {
                 // Agrupar por día argentino.
-                key = getArgentinaDateString(movementDate);
+                key =
+                    getArgentinaDateString(
+                        movementDate
+                    );
             } else {
                 // Agrupar por mes argentino.
-                key = getArgentinaDateString(movementDate).slice(0, 7);
+                key =
+                    getArgentinaDateString(
+                        movementDate
+                    ).slice(0, 7);
             }
 
             if (!breakdown[key]) {
@@ -703,18 +750,25 @@ export class MovimientosService {
                     commissions: 0,
                     netIncome: 0,
                     investment: 0,
+                    tithe: 0,
+                    available: 0,
                 };
             }
 
             if (movement.type === "INGRESO") {
-                const grossIncome = Number(movement.amount);
+                const grossIncome =
+                    Number(movement.amount);
 
                 const commissions =
                     movement.income?.payments.reduce(
                         (
                             sum: number,
-                            payment: { commissionAmount: any }
-                        ) => sum + Number(payment.commissionAmount),
+                            payment
+                        ) =>
+                            sum +
+                            Number(
+                                payment.commissionAmount
+                            ),
                         0
                     ) ?? 0;
 
@@ -722,57 +776,229 @@ export class MovimientosService {
                     movement.income?.payments.reduce(
                         (
                             sum: number,
-                            payment: { netAmount: any }
-                        ) => sum + Number(payment.netAmount),
+                            payment
+                        ) =>
+                            sum +
+                            Number(
+                                payment.netAmount
+                            ),
                         0
                     ) ?? 0;
 
-                const investmentPercentage = Number(
-                    movement.income?.investmentPercentage ?? 0
-                );
+                const investmentPercentage =
+                    Number(
+                        movement.income
+                            ?.investmentPercentage ??
+                        0
+                    );
 
                 const investment =
                     Math.round(
-                        ((netIncome * investmentPercentage) / 100) * 100
+                        (
+                            (netIncome *
+                                investmentPercentage) /
+                            100
+                        ) * 100
                     ) / 100;
 
-                totals.income += grossIncome;
-                totals.commissions += commissions;
-                totals.netIncome += netIncome;
-                totals.investment += investment;
+                /*
+                 * DIEZMO
+                 *
+                 * Se calcula por ingreso.
+                 *
+                 * NET_INCOME:
+                 *   diezmo = ingreso neto × porcentaje
+                 *
+                 * AFTER_INVESTMENT:
+                 *   diezmo =
+                 *   (ingreso neto - reinversión)
+                 *   × porcentaje
+                 */
+                let tithe = 0;
 
-                breakdown[key].income += grossIncome;
-                breakdown[key].commissions += commissions;
-                breakdown[key].netIncome += netIncome;
-                breakdown[key].investment += investment;
+                if (
+                    user?.titheEnabled
+                ) {
+                    const tithePercentage =
+                        Number(
+                            user.tithePercentage
+                        );
+
+                    const titheBase =
+                        user.titheBase ===
+                            "AFTER_INVESTMENT"
+                            ? Math.max(
+                                0,
+                                netIncome -
+                                investment
+                            )
+                            : netIncome;
+
+                    tithe =
+                        Math.round(
+                            (
+                                (titheBase *
+                                    tithePercentage) /
+                                100
+                            ) * 100
+                        ) / 100;
+                }
+
+                /*
+                 * Disponible después de:
+                 *
+                 * ingreso neto
+                 * - reinversión
+                 * - diezmo
+                 */
+                const available =
+                    Math.round(
+                        (
+                            netIncome -
+                            investment -
+                            tithe
+                        ) * 100
+                    ) / 100;
+
+                totals.income +=
+                    grossIncome;
+
+                totals.commissions +=
+                    commissions;
+
+                totals.netIncome +=
+                    netIncome;
+
+                totals.investment +=
+                    investment;
+
+                totals.tithe += tithe;
+
+                totals.available +=
+                    available;
+
+                breakdown[key].income +=
+                    grossIncome;
+
+                breakdown[key].commissions +=
+                    commissions;
+
+                breakdown[key].netIncome +=
+                    netIncome;
+
+                breakdown[key].investment +=
+                    investment;
+
+                breakdown[key].tithe +=
+                    tithe;
+
+                breakdown[key].available +=
+                    available;
             } else {
-                const expense = Number(movement.amount);
+                const expense =
+                    Number(movement.amount);
 
-                totals.expenses += expense;
+                totals.expenses +=
+                    expense;
 
-                breakdown[key].expenses += expense;
+                breakdown[key].expenses +=
+                    expense;
             }
         }
 
-        totals.balance = totals.income - totals.expenses;
+        totals.balance =
+            totals.income -
+            totals.expenses;
 
-        const result = Object.entries(breakdown)
+        /*
+         * Redondeamos los acumulados.
+         * Evita pequeños errores de coma flotante.
+         */
+        totals.income =
+            Math.round(
+                totals.income * 100
+            ) / 100;
+
+        totals.expenses =
+            Math.round(
+                totals.expenses * 100
+            ) / 100;
+
+        totals.balance =
+            Math.round(
+                totals.balance * 100
+            ) / 100;
+
+        totals.commissions =
+            Math.round(
+                totals.commissions * 100
+            ) / 100;
+
+        totals.netIncome =
+            Math.round(
+                totals.netIncome * 100
+            ) / 100;
+
+        totals.investment =
+            Math.round(
+                totals.investment * 100
+            ) / 100;
+
+        totals.tithe =
+            Math.round(
+                totals.tithe * 100
+            ) / 100;
+
+        totals.available =
+            Math.round(
+                totals.available * 100
+            ) / 100;
+
+        const result = Object.entries(
+            breakdown
+        )
             .map(([date, data]) => ({
                 date,
-                totalIncome: data.income,
-                totalExpenses: data.expenses,
-                commissions: data.commissions,
-                netIncome: data.netIncome,
-                investment: data.investment,
-                netDaily: data.income - data.expenses,
+                totalIncome:
+                    data.income,
+                totalExpenses:
+                    data.expenses,
+                commissions:
+                    data.commissions,
+                netIncome:
+                    data.netIncome,
+                investment:
+                    data.investment,
+                tithe:
+                    data.tithe,
+                available:
+                    data.available,
+                netDaily:
+                    data.income -
+                    data.expenses,
             }))
             .sort(
                 (a, b) =>
-                    b.date.localeCompare(a.date)
+                    b.date.localeCompare(
+                        a.date
+                    )
             );
 
         return {
             period,
+            tithe: {
+                enabled:
+                    user?.titheEnabled ??
+                    false,
+                percentage:
+                    Number(
+                        user?.tithePercentage ??
+                        0
+                    ),
+                base:
+                    user?.titheBase ??
+                    "NET_INCOME",
+            },
             totals,
             breakdown: result,
         };
