@@ -49,6 +49,7 @@ export type UserMinAggregateOutputType = {
   titheEnabled: boolean | null
   tithePercentage: runtime.Decimal | null
   titheBase: string | null
+  isDemo: boolean | null
 }
 
 export type UserMaxAggregateOutputType = {
@@ -64,6 +65,7 @@ export type UserMaxAggregateOutputType = {
   titheEnabled: boolean | null
   tithePercentage: runtime.Decimal | null
   titheBase: string | null
+  isDemo: boolean | null
 }
 
 export type UserCountAggregateOutputType = {
@@ -79,6 +81,7 @@ export type UserCountAggregateOutputType = {
   titheEnabled: number
   tithePercentage: number
   titheBase: number
+  isDemo: number
   _all: number
 }
 
@@ -106,6 +109,7 @@ export type UserMinAggregateInputType = {
   titheEnabled?: true
   tithePercentage?: true
   titheBase?: true
+  isDemo?: true
 }
 
 export type UserMaxAggregateInputType = {
@@ -121,6 +125,7 @@ export type UserMaxAggregateInputType = {
   titheEnabled?: true
   tithePercentage?: true
   titheBase?: true
+  isDemo?: true
 }
 
 export type UserCountAggregateInputType = {
@@ -136,6 +141,7 @@ export type UserCountAggregateInputType = {
   titheEnabled?: true
   tithePercentage?: true
   titheBase?: true
+  isDemo?: true
   _all?: true
 }
 
@@ -238,6 +244,7 @@ export type UserGroupByOutputType = {
   titheEnabled: boolean
   tithePercentage: runtime.Decimal
   titheBase: string
+  isDemo: boolean
   _count: UserCountAggregateOutputType | null
   _avg: UserAvgAggregateOutputType | null
   _sum: UserSumAggregateOutputType | null
@@ -276,6 +283,7 @@ export type UserWhereInput = {
   titheEnabled?: Prisma.BoolFilter<"User"> | boolean
   tithePercentage?: Prisma.DecimalFilter<"User"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   titheBase?: Prisma.StringFilter<"User"> | string
+  isDemo?: Prisma.BoolFilter<"User"> | boolean
   accounts?: Prisma.AccountListRelationFilter
   expenses?: Prisma.ExpenseListRelationFilter
   expenseTypes?: Prisma.ExpenseTypeListRelationFilter
@@ -299,6 +307,7 @@ export type UserOrderByWithRelationInput = {
   titheEnabled?: Prisma.SortOrder
   tithePercentage?: Prisma.SortOrder
   titheBase?: Prisma.SortOrder
+  isDemo?: Prisma.SortOrder
   accounts?: Prisma.AccountOrderByRelationAggregateInput
   expenses?: Prisma.ExpenseOrderByRelationAggregateInput
   expenseTypes?: Prisma.ExpenseTypeOrderByRelationAggregateInput
@@ -325,6 +334,7 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   titheEnabled?: Prisma.BoolFilter<"User"> | boolean
   tithePercentage?: Prisma.DecimalFilter<"User"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   titheBase?: Prisma.StringFilter<"User"> | string
+  isDemo?: Prisma.BoolFilter<"User"> | boolean
   accounts?: Prisma.AccountListRelationFilter
   expenses?: Prisma.ExpenseListRelationFilter
   expenseTypes?: Prisma.ExpenseTypeListRelationFilter
@@ -348,6 +358,7 @@ export type UserOrderByWithAggregationInput = {
   titheEnabled?: Prisma.SortOrder
   tithePercentage?: Prisma.SortOrder
   titheBase?: Prisma.SortOrder
+  isDemo?: Prisma.SortOrder
   _count?: Prisma.UserCountOrderByAggregateInput
   _avg?: Prisma.UserAvgOrderByAggregateInput
   _max?: Prisma.UserMaxOrderByAggregateInput
@@ -371,6 +382,7 @@ export type UserScalarWhereWithAggregatesInput = {
   titheEnabled?: Prisma.BoolWithAggregatesFilter<"User"> | boolean
   tithePercentage?: Prisma.DecimalWithAggregatesFilter<"User"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   titheBase?: Prisma.StringWithAggregatesFilter<"User"> | string
+  isDemo?: Prisma.BoolWithAggregatesFilter<"User"> | boolean
 }
 
 export type UserCreateInput = {
@@ -386,6 +398,7 @@ export type UserCreateInput = {
   titheEnabled?: boolean
   tithePercentage?: runtime.Decimal | runtime.DecimalJsLike | number | string
   titheBase?: string
+  isDemo?: boolean
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
   expenses?: Prisma.ExpenseCreateNestedManyWithoutUserInput
   expenseTypes?: Prisma.ExpenseTypeCreateNestedManyWithoutUserInput
@@ -409,6 +422,7 @@ export type UserUncheckedCreateInput = {
   titheEnabled?: boolean
   tithePercentage?: runtime.Decimal | runtime.DecimalJsLike | number | string
   titheBase?: string
+  isDemo?: boolean
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
   expenses?: Prisma.ExpenseUncheckedCreateNestedManyWithoutUserInput
   expenseTypes?: Prisma.ExpenseTypeUncheckedCreateNestedManyWithoutUserInput
@@ -432,6 +446,7 @@ export type UserUpdateInput = {
   titheEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   tithePercentage?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   titheBase?: Prisma.StringFieldUpdateOperationsInput | string
+  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
   expenses?: Prisma.ExpenseUpdateManyWithoutUserNestedInput
   expenseTypes?: Prisma.ExpenseTypeUpdateManyWithoutUserNestedInput
@@ -455,6 +470,7 @@ export type UserUncheckedUpdateInput = {
   titheEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   tithePercentage?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   titheBase?: Prisma.StringFieldUpdateOperationsInput | string
+  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
   expenses?: Prisma.ExpenseUncheckedUpdateManyWithoutUserNestedInput
   expenseTypes?: Prisma.ExpenseTypeUncheckedUpdateManyWithoutUserNestedInput
@@ -478,6 +494,7 @@ export type UserCreateManyInput = {
   titheEnabled?: boolean
   tithePercentage?: runtime.Decimal | runtime.DecimalJsLike | number | string
   titheBase?: string
+  isDemo?: boolean
 }
 
 export type UserUpdateManyMutationInput = {
@@ -493,6 +510,7 @@ export type UserUpdateManyMutationInput = {
   titheEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   tithePercentage?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   titheBase?: Prisma.StringFieldUpdateOperationsInput | string
+  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
 }
 
 export type UserUncheckedUpdateManyInput = {
@@ -508,6 +526,7 @@ export type UserUncheckedUpdateManyInput = {
   titheEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   tithePercentage?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   titheBase?: Prisma.StringFieldUpdateOperationsInput | string
+  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
 }
 
 export type UserCountOrderByAggregateInput = {
@@ -523,6 +542,7 @@ export type UserCountOrderByAggregateInput = {
   titheEnabled?: Prisma.SortOrder
   tithePercentage?: Prisma.SortOrder
   titheBase?: Prisma.SortOrder
+  isDemo?: Prisma.SortOrder
 }
 
 export type UserAvgOrderByAggregateInput = {
@@ -543,6 +563,7 @@ export type UserMaxOrderByAggregateInput = {
   titheEnabled?: Prisma.SortOrder
   tithePercentage?: Prisma.SortOrder
   titheBase?: Prisma.SortOrder
+  isDemo?: Prisma.SortOrder
 }
 
 export type UserMinOrderByAggregateInput = {
@@ -558,6 +579,7 @@ export type UserMinOrderByAggregateInput = {
   titheEnabled?: Prisma.SortOrder
   tithePercentage?: Prisma.SortOrder
   titheBase?: Prisma.SortOrder
+  isDemo?: Prisma.SortOrder
 }
 
 export type UserSumOrderByAggregateInput = {
@@ -732,6 +754,7 @@ export type UserCreateWithoutAccountsInput = {
   titheEnabled?: boolean
   tithePercentage?: runtime.Decimal | runtime.DecimalJsLike | number | string
   titheBase?: string
+  isDemo?: boolean
   expenses?: Prisma.ExpenseCreateNestedManyWithoutUserInput
   expenseTypes?: Prisma.ExpenseTypeCreateNestedManyWithoutUserInput
   incomes?: Prisma.IncomeCreateNestedManyWithoutUserInput
@@ -754,6 +777,7 @@ export type UserUncheckedCreateWithoutAccountsInput = {
   titheEnabled?: boolean
   tithePercentage?: runtime.Decimal | runtime.DecimalJsLike | number | string
   titheBase?: string
+  isDemo?: boolean
   expenses?: Prisma.ExpenseUncheckedCreateNestedManyWithoutUserInput
   expenseTypes?: Prisma.ExpenseTypeUncheckedCreateNestedManyWithoutUserInput
   incomes?: Prisma.IncomeUncheckedCreateNestedManyWithoutUserInput
@@ -792,6 +816,7 @@ export type UserUpdateWithoutAccountsInput = {
   titheEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   tithePercentage?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   titheBase?: Prisma.StringFieldUpdateOperationsInput | string
+  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
   expenses?: Prisma.ExpenseUpdateManyWithoutUserNestedInput
   expenseTypes?: Prisma.ExpenseTypeUpdateManyWithoutUserNestedInput
   incomes?: Prisma.IncomeUpdateManyWithoutUserNestedInput
@@ -814,6 +839,7 @@ export type UserUncheckedUpdateWithoutAccountsInput = {
   titheEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   tithePercentage?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   titheBase?: Prisma.StringFieldUpdateOperationsInput | string
+  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
   expenses?: Prisma.ExpenseUncheckedUpdateManyWithoutUserNestedInput
   expenseTypes?: Prisma.ExpenseTypeUncheckedUpdateManyWithoutUserNestedInput
   incomes?: Prisma.IncomeUncheckedUpdateManyWithoutUserNestedInput
@@ -836,6 +862,7 @@ export type UserCreateWithoutSessionsInput = {
   titheEnabled?: boolean
   tithePercentage?: runtime.Decimal | runtime.DecimalJsLike | number | string
   titheBase?: string
+  isDemo?: boolean
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
   expenses?: Prisma.ExpenseCreateNestedManyWithoutUserInput
   expenseTypes?: Prisma.ExpenseTypeCreateNestedManyWithoutUserInput
@@ -858,6 +885,7 @@ export type UserUncheckedCreateWithoutSessionsInput = {
   titheEnabled?: boolean
   tithePercentage?: runtime.Decimal | runtime.DecimalJsLike | number | string
   titheBase?: string
+  isDemo?: boolean
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
   expenses?: Prisma.ExpenseUncheckedCreateNestedManyWithoutUserInput
   expenseTypes?: Prisma.ExpenseTypeUncheckedCreateNestedManyWithoutUserInput
@@ -896,6 +924,7 @@ export type UserUpdateWithoutSessionsInput = {
   titheEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   tithePercentage?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   titheBase?: Prisma.StringFieldUpdateOperationsInput | string
+  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
   expenses?: Prisma.ExpenseUpdateManyWithoutUserNestedInput
   expenseTypes?: Prisma.ExpenseTypeUpdateManyWithoutUserNestedInput
@@ -918,6 +947,7 @@ export type UserUncheckedUpdateWithoutSessionsInput = {
   titheEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   tithePercentage?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   titheBase?: Prisma.StringFieldUpdateOperationsInput | string
+  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
   expenses?: Prisma.ExpenseUncheckedUpdateManyWithoutUserNestedInput
   expenseTypes?: Prisma.ExpenseTypeUncheckedUpdateManyWithoutUserNestedInput
@@ -940,6 +970,7 @@ export type UserCreateWithoutExpenseTypesInput = {
   titheEnabled?: boolean
   tithePercentage?: runtime.Decimal | runtime.DecimalJsLike | number | string
   titheBase?: string
+  isDemo?: boolean
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
   expenses?: Prisma.ExpenseCreateNestedManyWithoutUserInput
   incomes?: Prisma.IncomeCreateNestedManyWithoutUserInput
@@ -962,6 +993,7 @@ export type UserUncheckedCreateWithoutExpenseTypesInput = {
   titheEnabled?: boolean
   tithePercentage?: runtime.Decimal | runtime.DecimalJsLike | number | string
   titheBase?: string
+  isDemo?: boolean
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
   expenses?: Prisma.ExpenseUncheckedCreateNestedManyWithoutUserInput
   incomes?: Prisma.IncomeUncheckedCreateNestedManyWithoutUserInput
@@ -1000,6 +1032,7 @@ export type UserUpdateWithoutExpenseTypesInput = {
   titheEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   tithePercentage?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   titheBase?: Prisma.StringFieldUpdateOperationsInput | string
+  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
   expenses?: Prisma.ExpenseUpdateManyWithoutUserNestedInput
   incomes?: Prisma.IncomeUpdateManyWithoutUserNestedInput
@@ -1022,6 +1055,7 @@ export type UserUncheckedUpdateWithoutExpenseTypesInput = {
   titheEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   tithePercentage?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   titheBase?: Prisma.StringFieldUpdateOperationsInput | string
+  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
   expenses?: Prisma.ExpenseUncheckedUpdateManyWithoutUserNestedInput
   incomes?: Prisma.IncomeUncheckedUpdateManyWithoutUserNestedInput
@@ -1044,6 +1078,7 @@ export type UserCreateWithoutIncomesInput = {
   titheEnabled?: boolean
   tithePercentage?: runtime.Decimal | runtime.DecimalJsLike | number | string
   titheBase?: string
+  isDemo?: boolean
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
   expenses?: Prisma.ExpenseCreateNestedManyWithoutUserInput
   expenseTypes?: Prisma.ExpenseTypeCreateNestedManyWithoutUserInput
@@ -1066,6 +1101,7 @@ export type UserUncheckedCreateWithoutIncomesInput = {
   titheEnabled?: boolean
   tithePercentage?: runtime.Decimal | runtime.DecimalJsLike | number | string
   titheBase?: string
+  isDemo?: boolean
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
   expenses?: Prisma.ExpenseUncheckedCreateNestedManyWithoutUserInput
   expenseTypes?: Prisma.ExpenseTypeUncheckedCreateNestedManyWithoutUserInput
@@ -1104,6 +1140,7 @@ export type UserUpdateWithoutIncomesInput = {
   titheEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   tithePercentage?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   titheBase?: Prisma.StringFieldUpdateOperationsInput | string
+  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
   expenses?: Prisma.ExpenseUpdateManyWithoutUserNestedInput
   expenseTypes?: Prisma.ExpenseTypeUpdateManyWithoutUserNestedInput
@@ -1126,6 +1163,7 @@ export type UserUncheckedUpdateWithoutIncomesInput = {
   titheEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   tithePercentage?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   titheBase?: Prisma.StringFieldUpdateOperationsInput | string
+  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
   expenses?: Prisma.ExpenseUncheckedUpdateManyWithoutUserNestedInput
   expenseTypes?: Prisma.ExpenseTypeUncheckedUpdateManyWithoutUserNestedInput
@@ -1148,6 +1186,7 @@ export type UserCreateWithoutMovementsInput = {
   titheEnabled?: boolean
   tithePercentage?: runtime.Decimal | runtime.DecimalJsLike | number | string
   titheBase?: string
+  isDemo?: boolean
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
   expenses?: Prisma.ExpenseCreateNestedManyWithoutUserInput
   expenseTypes?: Prisma.ExpenseTypeCreateNestedManyWithoutUserInput
@@ -1170,6 +1209,7 @@ export type UserUncheckedCreateWithoutMovementsInput = {
   titheEnabled?: boolean
   tithePercentage?: runtime.Decimal | runtime.DecimalJsLike | number | string
   titheBase?: string
+  isDemo?: boolean
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
   expenses?: Prisma.ExpenseUncheckedCreateNestedManyWithoutUserInput
   expenseTypes?: Prisma.ExpenseTypeUncheckedCreateNestedManyWithoutUserInput
@@ -1208,6 +1248,7 @@ export type UserUpdateWithoutMovementsInput = {
   titheEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   tithePercentage?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   titheBase?: Prisma.StringFieldUpdateOperationsInput | string
+  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
   expenses?: Prisma.ExpenseUpdateManyWithoutUserNestedInput
   expenseTypes?: Prisma.ExpenseTypeUpdateManyWithoutUserNestedInput
@@ -1230,6 +1271,7 @@ export type UserUncheckedUpdateWithoutMovementsInput = {
   titheEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   tithePercentage?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   titheBase?: Prisma.StringFieldUpdateOperationsInput | string
+  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
   expenses?: Prisma.ExpenseUncheckedUpdateManyWithoutUserNestedInput
   expenseTypes?: Prisma.ExpenseTypeUncheckedUpdateManyWithoutUserNestedInput
@@ -1252,6 +1294,7 @@ export type UserCreateWithoutExpensesInput = {
   titheEnabled?: boolean
   tithePercentage?: runtime.Decimal | runtime.DecimalJsLike | number | string
   titheBase?: string
+  isDemo?: boolean
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
   expenseTypes?: Prisma.ExpenseTypeCreateNestedManyWithoutUserInput
   incomes?: Prisma.IncomeCreateNestedManyWithoutUserInput
@@ -1274,6 +1317,7 @@ export type UserUncheckedCreateWithoutExpensesInput = {
   titheEnabled?: boolean
   tithePercentage?: runtime.Decimal | runtime.DecimalJsLike | number | string
   titheBase?: string
+  isDemo?: boolean
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
   expenseTypes?: Prisma.ExpenseTypeUncheckedCreateNestedManyWithoutUserInput
   incomes?: Prisma.IncomeUncheckedCreateNestedManyWithoutUserInput
@@ -1312,6 +1356,7 @@ export type UserUpdateWithoutExpensesInput = {
   titheEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   tithePercentage?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   titheBase?: Prisma.StringFieldUpdateOperationsInput | string
+  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
   expenseTypes?: Prisma.ExpenseTypeUpdateManyWithoutUserNestedInput
   incomes?: Prisma.IncomeUpdateManyWithoutUserNestedInput
@@ -1334,6 +1379,7 @@ export type UserUncheckedUpdateWithoutExpensesInput = {
   titheEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   tithePercentage?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   titheBase?: Prisma.StringFieldUpdateOperationsInput | string
+  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
   expenseTypes?: Prisma.ExpenseTypeUncheckedUpdateManyWithoutUserNestedInput
   incomes?: Prisma.IncomeUncheckedUpdateManyWithoutUserNestedInput
@@ -1356,6 +1402,7 @@ export type UserCreateWithoutPaymentMethodsInput = {
   titheEnabled?: boolean
   tithePercentage?: runtime.Decimal | runtime.DecimalJsLike | number | string
   titheBase?: string
+  isDemo?: boolean
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
   expenses?: Prisma.ExpenseCreateNestedManyWithoutUserInput
   expenseTypes?: Prisma.ExpenseTypeCreateNestedManyWithoutUserInput
@@ -1378,6 +1425,7 @@ export type UserUncheckedCreateWithoutPaymentMethodsInput = {
   titheEnabled?: boolean
   tithePercentage?: runtime.Decimal | runtime.DecimalJsLike | number | string
   titheBase?: string
+  isDemo?: boolean
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
   expenses?: Prisma.ExpenseUncheckedCreateNestedManyWithoutUserInput
   expenseTypes?: Prisma.ExpenseTypeUncheckedCreateNestedManyWithoutUserInput
@@ -1416,6 +1464,7 @@ export type UserUpdateWithoutPaymentMethodsInput = {
   titheEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   tithePercentage?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   titheBase?: Prisma.StringFieldUpdateOperationsInput | string
+  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
   expenses?: Prisma.ExpenseUpdateManyWithoutUserNestedInput
   expenseTypes?: Prisma.ExpenseTypeUpdateManyWithoutUserNestedInput
@@ -1438,6 +1487,7 @@ export type UserUncheckedUpdateWithoutPaymentMethodsInput = {
   titheEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   tithePercentage?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   titheBase?: Prisma.StringFieldUpdateOperationsInput | string
+  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
   expenses?: Prisma.ExpenseUncheckedUpdateManyWithoutUserNestedInput
   expenseTypes?: Prisma.ExpenseTypeUncheckedUpdateManyWithoutUserNestedInput
@@ -1460,6 +1510,7 @@ export type UserCreateWithoutRecurringExpensesInput = {
   titheEnabled?: boolean
   tithePercentage?: runtime.Decimal | runtime.DecimalJsLike | number | string
   titheBase?: string
+  isDemo?: boolean
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
   expenses?: Prisma.ExpenseCreateNestedManyWithoutUserInput
   expenseTypes?: Prisma.ExpenseTypeCreateNestedManyWithoutUserInput
@@ -1482,6 +1533,7 @@ export type UserUncheckedCreateWithoutRecurringExpensesInput = {
   titheEnabled?: boolean
   tithePercentage?: runtime.Decimal | runtime.DecimalJsLike | number | string
   titheBase?: string
+  isDemo?: boolean
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
   expenses?: Prisma.ExpenseUncheckedCreateNestedManyWithoutUserInput
   expenseTypes?: Prisma.ExpenseTypeUncheckedCreateNestedManyWithoutUserInput
@@ -1520,6 +1572,7 @@ export type UserUpdateWithoutRecurringExpensesInput = {
   titheEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   tithePercentage?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   titheBase?: Prisma.StringFieldUpdateOperationsInput | string
+  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
   expenses?: Prisma.ExpenseUpdateManyWithoutUserNestedInput
   expenseTypes?: Prisma.ExpenseTypeUpdateManyWithoutUserNestedInput
@@ -1542,6 +1595,7 @@ export type UserUncheckedUpdateWithoutRecurringExpensesInput = {
   titheEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   tithePercentage?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   titheBase?: Prisma.StringFieldUpdateOperationsInput | string
+  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
   expenses?: Prisma.ExpenseUncheckedUpdateManyWithoutUserNestedInput
   expenseTypes?: Prisma.ExpenseTypeUncheckedUpdateManyWithoutUserNestedInput
@@ -1658,6 +1712,7 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   titheEnabled?: boolean
   tithePercentage?: boolean
   titheBase?: boolean
+  isDemo?: boolean
   accounts?: boolean | Prisma.User$accountsArgs<ExtArgs>
   expenses?: boolean | Prisma.User$expensesArgs<ExtArgs>
   expenseTypes?: boolean | Prisma.User$expenseTypesArgs<ExtArgs>
@@ -1682,6 +1737,7 @@ export type UserSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   titheEnabled?: boolean
   tithePercentage?: boolean
   titheBase?: boolean
+  isDemo?: boolean
 }, ExtArgs["result"]["user"]>
 
 export type UserSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -1697,6 +1753,7 @@ export type UserSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   titheEnabled?: boolean
   tithePercentage?: boolean
   titheBase?: boolean
+  isDemo?: boolean
 }, ExtArgs["result"]["user"]>
 
 export type UserSelectScalar = {
@@ -1712,9 +1769,10 @@ export type UserSelectScalar = {
   titheEnabled?: boolean
   tithePercentage?: boolean
   titheBase?: boolean
+  isDemo?: boolean
 }
 
-export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "email" | "image" | "createdAt" | "updatedAt" | "emailVerified" | "onboardingCompleted" | "defaultInvestmentPercentage" | "titheEnabled" | "tithePercentage" | "titheBase", ExtArgs["result"]["user"]>
+export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "email" | "image" | "createdAt" | "updatedAt" | "emailVerified" | "onboardingCompleted" | "defaultInvestmentPercentage" | "titheEnabled" | "tithePercentage" | "titheBase" | "isDemo", ExtArgs["result"]["user"]>
 export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   accounts?: boolean | Prisma.User$accountsArgs<ExtArgs>
   expenses?: boolean | Prisma.User$expensesArgs<ExtArgs>
@@ -1754,6 +1812,7 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     titheEnabled: boolean
     tithePercentage: runtime.Decimal
     titheBase: string
+    isDemo: boolean
   }, ExtArgs["result"]["user"]>
   composites: {}
 }
@@ -2197,6 +2256,7 @@ export interface UserFieldRefs {
   readonly titheEnabled: Prisma.FieldRef<"User", 'Boolean'>
   readonly tithePercentage: Prisma.FieldRef<"User", 'Decimal'>
   readonly titheBase: Prisma.FieldRef<"User", 'String'>
+  readonly isDemo: Prisma.FieldRef<"User", 'Boolean'>
 }
     
 

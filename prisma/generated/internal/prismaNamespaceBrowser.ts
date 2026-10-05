@@ -93,7 +93,8 @@ export const UserScalarFieldEnum = {
   defaultInvestmentPercentage: 'defaultInvestmentPercentage',
   titheEnabled: 'titheEnabled',
   tithePercentage: 'tithePercentage',
-  titheBase: 'titheBase'
+  titheBase: 'titheBase',
+  isDemo: 'isDemo'
 } as const
 
 export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]

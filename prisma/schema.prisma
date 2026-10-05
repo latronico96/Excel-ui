@@ -20,6 +20,7 @@ model User {
   titheEnabled Boolean @default(false)
   tithePercentage Decimal @default(10) @db.Decimal(5, 2)
   titheBase String @default("NET_INCOME")
+  isDemo Boolean @default(false)
   
   accounts       Account[]
   expenses       Expense[]

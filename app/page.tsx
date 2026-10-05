@@ -24,6 +24,16 @@ export default function RootPage() {
         signIn('google', { callbackUrl: '/hoy' });
     };
 
+    const handleDemoLogin = async () => {
+        const response = await fetch("/api/auth/demo", {
+            method: "POST",
+        });
+
+        if (response.ok) {
+            window.location.href = "/hoy";
+        }
+    };
+
     return (
         <main
             style={{
@@ -192,7 +202,18 @@ export default function RootPage() {
 
                     Continuar con Google
                 </button>
-
+                <button
+                    onClick={handleDemoLogin}
+                    className="btn"
+                    style={{
+                        width: '100%',
+                        marginTop: '0.75rem',
+                        minHeight: '48px',
+                        fontSize: '0.95rem',
+                    }}
+                >
+                    Probar demo
+                </button>
                 <p
                     style={{
                         marginTop: '1rem',
