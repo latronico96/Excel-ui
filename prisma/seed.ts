@@ -81,9 +81,12 @@ async function main() {
             `No existe el usuario DEMO: ${DEMO_EMAIL}`
         );
     }
-
+    if (!user.id) {
+        throw new Error(`No existe el usuario demo: ${DEMO_EMAIL}`);
+    }
+    const userId = user.id;
     console.log(`Usuario encontrado: ${user.email}`);
-    console.log(`User ID: ${user.id}`);
+    console.log(`User ID: ${userId}`);
 
     console.log("");
     console.log("Eliminando datos anteriores de la DEMO...");
@@ -99,7 +102,7 @@ async function main() {
     await prisma.recurringExpensePayment.deleteMany({
         where: {
             movement: {
-                userId: user.id,
+                userId: userId,
             },
         },
     });
@@ -107,44 +110,44 @@ async function main() {
     await prisma.incomePayment.deleteMany({
         where: {
             income: {
-                userId: user.id,
+                userId: userId,
             },
         },
     });
 
     await prisma.expense.deleteMany({
         where: {
-            userId: user.id,
+            userId: userId,
         },
     });
 
     await prisma.income.deleteMany({
         where: {
-            userId: user.id,
+            userId: userId,
         },
     });
 
     await prisma.movement.deleteMany({
         where: {
-            userId: user.id,
+            userId: userId,
         },
     });
 
     await prisma.recurringExpense.deleteMany({
         where: {
-            userId: user.id,
+            userId: userId,
         },
     });
 
     await prisma.expenseType.deleteMany({
         where: {
-            userId: user.id,
+            userId: userId,
         },
     });
 
     await prisma.paymentMethod.deleteMany({
         where: {
-            userId: user.id,
+            userId: userId,
         },
     });
 
@@ -156,7 +159,7 @@ async function main() {
 
     await prisma.user.update({
         where: {
-            id: user.id,
+            id: userId,
         },
         data: {
             onboardingCompleted: true,
@@ -175,7 +178,7 @@ async function main() {
 
     const efectivo = await prisma.paymentMethod.create({
         data: {
-            userId: user.id,
+            userId: userId,
             name: "Efectivo",
             active: true,
             defaultCommissionPercentage: 0,
@@ -184,7 +187,7 @@ async function main() {
 
     const transferencia = await prisma.paymentMethod.create({
         data: {
-            userId: user.id,
+            userId: userId,
             name: "Transferencia",
             active: true,
             defaultCommissionPercentage: 0,
@@ -193,7 +196,7 @@ async function main() {
 
     const credito = await prisma.paymentMethod.create({
         data: {
-            userId: user.id,
+            userId: userId,
             name: "Crédito",
             active: true,
             defaultCommissionPercentage: 23,
@@ -202,7 +205,7 @@ async function main() {
 
     const debito = await prisma.paymentMethod.create({
         data: {
-            userId: user.id,
+            userId: userId,
             name: "Débito",
             active: true,
             defaultCommissionPercentage: 0,
@@ -244,7 +247,7 @@ async function main() {
     for (const name of expenseTypeNames) {
         const type = await prisma.expenseType.create({
             data: {
-                userId: user.id,
+                userId: userId,
                 name,
                 active: true,
             },
@@ -314,7 +317,7 @@ async function main() {
     ) {
         const movement = await prisma.movement.create({
             data: {
-                userId: user.id,
+                userId: userId,
                 type: "INGRESO",
                 amount: ARS(amount),
                 date,
@@ -327,7 +330,7 @@ async function main() {
         const income = await prisma.income.create({
             data: {
                 movementId: movement.id,
-                userId: user.id,
+                userId: userId,
                 investmentPercentage: random(45, 55),
             },
         });
@@ -554,7 +557,7 @@ async function main() {
         const movement =
             await prisma.movement.create({
                 data: {
-                    userId: user.id,
+                    userId: userId,
                     type: "EGRESO",
                     amount: ARS(amount),
                     date,
@@ -565,7 +568,7 @@ async function main() {
         await prisma.expense.create({
             data: {
                 movementId: movement.id,
-                userId: user.id,
+                userId: userId,
                 expenseTypeId:
                     expenseTypes[typeName].id,
                 paymentMethodId:
@@ -996,7 +999,7 @@ async function main() {
     const incomeResult =
         await prisma.movement.aggregate({
             where: {
-                userId: user.id,
+                userId: userId,
                 type: "INGRESO",
             },
             _sum: {
@@ -1008,7 +1011,7 @@ async function main() {
     const expenseResult =
         await prisma.movement.aggregate({
             where: {
-                userId: user.id,
+                userId: userId,
                 type: "EGRESO",
             },
             _sum: {
