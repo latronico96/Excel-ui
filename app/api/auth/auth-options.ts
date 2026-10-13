@@ -20,19 +20,11 @@ export const authOptions: NextAuthOptions = {
 
             async authorize() {
                 const demoUser = await prisma.user.upsert({
-                    where: {
-                        email: "demo@excel-ui.demo",
-                    },
+                    where: { email: "demo@excel-ui.demo" },
                     update: {},
                     create: {
                         email: "demo@excel-ui.demo",
                         name: "Usuario Demo",
-                        isDemo: true,
-                        onboardingCompleted: true,
-                        defaultInvestmentPercentage: 50,
-                        titheEnabled: false,
-                        tithePercentage: 10,
-                        titheBase: "NET_INCOME",
                     },
                 });
 

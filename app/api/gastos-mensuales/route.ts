@@ -1,8 +1,8 @@
-import { NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
 
-import { authOptions } from "@/app/api/auth/auth-options";
+import { NextResponse } from "next/server";
+
 import { prisma } from "@/prisma/prisma";
+import { getCurrentWorkspace } from "@/server/services/workspace.service";
 
 const serializeExpense = (expense: any) => ({
     id: expense.id,
@@ -23,9 +23,7 @@ const serializeExpense = (expense: any) => ({
     lastPayment: expense.payments?.[0]
         ? {
               id: expense.payments[0].id,
-              amount: Number(
-                  expense.payments[0].amount
-              ),
+              amount: Number(expense.payments[0].amount),
               paidAt: expense.payments[0].paidAt,
               period: expense.payments[0].period,
           }
@@ -63,71 +61,35 @@ const expenseInclude = {
 
 export async function GET(request: Request) {
     try {
-        const session = await getServerSession(
-            authOptions
-        );
+        const current = await getCurrentWorkspace();
 
-        if (!session?.user?.email) {
+        if (!current) {
             return NextResponse.json(
                 { error: "No autenticado" },
                 { status: 401 }
             );
         }
 
-        const user = await prisma.user.findUnique({
+        const { searchParams } = new URL(request.url);
+        const all = searchParams.get("all") === "true";
+
+        const expenses = await prisma.recurringExpense.findMany({
             where: {
-                email: session.user.email,
+                workspaceId: current.workspaceId,
+                ...(all ? {} : { active: true }),
             },
-            select: {
-                id: true,
+            include: expenseInclude,
+            orderBy: {
+                name: "asc",
             },
         });
 
-        if (!user) {
-            return NextResponse.json(
-                { error: "Usuario no encontrado" },
-                { status: 404 }
-            );
-        }
-
-        const { searchParams } =
-            new URL(request.url);
-
-        const all =
-            searchParams.get("all") === "true";
-
-        const expenses =
-            await prisma.recurringExpense.findMany({
-                where: {
-                    userId: user.id,
-                    ...(all
-                        ? {}
-                        : {
-                              active: true,
-                          }),
-                },
-
-                include: expenseInclude,
-
-                orderBy: {
-                    name: "asc",
-                },
-            });
-
-        return NextResponse.json(
-            expenses.map(serializeExpense)
-        );
+        return NextResponse.json(expenses.map(serializeExpense));
     } catch (error) {
-        console.error(
-            "GET /api/gastos-mensuales:",
-            error
-        );
+        console.error("GET /api/gastos-mensuales:", error);
 
         return NextResponse.json(
-            {
-                error:
-                    "No se pudieron cargar los gastos mensuales",
-            },
+            { error: "No se pudieron cargar los gastos mensuales" },
             { status: 500 }
         );
     }
@@ -135,33 +97,16 @@ export async function GET(request: Request) {
 
 export async function POST(request: Request) {
     try {
-        const session = await getServerSession(
-            authOptions
-        );
+        const current = await getCurrentWorkspace();
 
-        if (!session?.user?.email) {
+        if (!current) {
             return NextResponse.json(
                 { error: "No autenticado" },
                 { status: 401 }
             );
         }
 
-        const user = await prisma.user.findUnique({
-            where: {
-                email: session.user.email,
-            },
-            select: {
-                id: true,
-            },
-        });
-
-        if (!user) {
-            return NextResponse.json(
-                { error: "Usuario no encontrado" },
-                { status: 404 }
-            );
-        }
-
+        const { workspaceId } = current;
         const body = await request.json();
 
         const name =
@@ -189,25 +134,20 @@ export async function POST(request: Request) {
                 : "";
 
         const paymentMethodId =
-            typeof body.paymentMethodId ===
-            "string"
+            typeof body.paymentMethodId === "string"
                 ? body.paymentMethodId
                 : "";
 
         if (!name) {
             return NextResponse.json(
-                {
-                    error:
-                        "El nombre es obligatorio",
-                },
+                { error: "El nombre es obligatorio" },
                 { status: 400 }
             );
         }
 
         if (
             amount !== null &&
-            (!Number.isFinite(amount) ||
-                amount < 0)
+            (!Number.isFinite(amount) || amount < 0)
         ) {
             return NextResponse.json(
                 { error: "Monto inválido" },
@@ -232,59 +172,46 @@ export async function POST(request: Request) {
 
         if (!expenseTypeId) {
             return NextResponse.json(
-                {
-                    error:
-                        "El tipo de gasto es obligatorio",
-                },
+                { error: "El tipo de gasto es obligatorio" },
                 { status: 400 }
             );
         }
 
         if (!paymentMethodId) {
             return NextResponse.json(
-                {
-                    error:
-                        "El medio de pago es obligatorio",
-                },
+                { error: "El medio de pago es obligatorio" },
                 { status: 400 }
             );
         }
 
-        const [expenseType, paymentMethod] =
-            await Promise.all([
-                prisma.expenseType.findFirst({
-                    where: {
-                        id: expenseTypeId,
-                        userId: user.id,
-                        active: true,
-                    },
-                }),
+        const [expenseType, paymentMethod] = await Promise.all([
+            prisma.expenseType.findFirst({
+                where: {
+                    id: expenseTypeId,
+                    workspaceId,
+                    active: true,
+                },
+            }),
 
-                prisma.paymentMethod.findFirst({
-                    where: {
-                        id: paymentMethodId,
-                        userId: user.id,
-                        active: true,
-                    },
-                }),
-            ]);
+            prisma.paymentMethod.findFirst({
+                where: {
+                    id: paymentMethodId,
+                    workspaceId,
+                    active: true,
+                },
+            }),
+        ]);
 
         if (!expenseType) {
             return NextResponse.json(
-                {
-                    error:
-                        "Tipo de gasto inválido",
-                },
+                { error: "Tipo de gasto inválido" },
                 { status: 400 }
             );
         }
 
         if (!paymentMethod) {
             return NextResponse.json(
-                {
-                    error:
-                        "Medio de pago inválido",
-                },
+                { error: "Medio de pago inválido" },
                 { status: 400 }
             );
         }
@@ -292,14 +219,13 @@ export async function POST(request: Request) {
         const recurringExpense =
             await prisma.recurringExpense.create({
                 data: {
-                    userId: user.id,
+                    workspaceId,
                     name,
                     amount,
                     dueDay,
                     expenseTypeId,
                     paymentMethodId,
                 },
-
                 include: expenseInclude,
             });
 
@@ -308,10 +234,7 @@ export async function POST(request: Request) {
             { status: 201 }
         );
     } catch (error: any) {
-        console.error(
-            "POST /api/gastos-mensuales:",
-            error
-        );
+        console.error("POST /api/gastos-mensuales:", error);
 
         if (error?.code === "P2002") {
             return NextResponse.json(
@@ -324,10 +247,7 @@ export async function POST(request: Request) {
         }
 
         return NextResponse.json(
-            {
-                error:
-                    "No se pudo crear el gasto mensual",
-            },
+            { error: "No se pudo crear el gasto mensual" },
             { status: 500 }
         );
     }
@@ -335,33 +255,16 @@ export async function POST(request: Request) {
 
 export async function PATCH(request: Request) {
     try {
-        const session = await getServerSession(
-            authOptions
-        );
+        const current = await getCurrentWorkspace();
 
-        if (!session?.user?.email) {
+        if (!current) {
             return NextResponse.json(
                 { error: "No autenticado" },
                 { status: 401 }
             );
         }
 
-        const user = await prisma.user.findUnique({
-            where: {
-                email: session.user.email,
-            },
-            select: {
-                id: true,
-            },
-        });
-
-        if (!user) {
-            return NextResponse.json(
-                { error: "Usuario no encontrado" },
-                { status: 404 }
-            );
-        }
-
+        const { workspaceId } = current;
         const body = await request.json();
 
         const id =
@@ -376,41 +279,36 @@ export async function PATCH(request: Request) {
             );
         }
 
-        const existing =
-            await prisma.recurringExpense.findFirst({
-                where: {
-                    id,
-                    userId: user.id,
-                },
-            });
+        const existing = await prisma.recurringExpense.findFirst({
+            where: {
+                id,
+                workspaceId,
+            },
+        });
 
         if (!existing) {
             return NextResponse.json(
-                {
-                    error:
-                        "Gasto mensual no encontrado",
-                },
+                { error: "Gasto mensual no encontrado" },
                 { status: 404 }
             );
         }
 
-        // Activar / desactivar
+        // Activar o desactivar
         if (
             typeof body.active === "boolean" &&
             Object.keys(body).length === 2
         ) {
-            const updated =
-                await prisma.recurringExpense.update({
-                    where: { id },
-                    data: {
-                        active: body.active,
-                    },
-                    include: expenseInclude,
-                });
+            const updated = await prisma.recurringExpense.update({
+                where: {
+                    id: existing.id,
+                },
+                data: {
+                    active: body.active,
+                },
+                include: expenseInclude,
+            });
 
-            return NextResponse.json(
-                serializeExpense(updated)
-            );
+            return NextResponse.json(serializeExpense(updated));
         }
 
         const name =
@@ -433,27 +331,21 @@ export async function PATCH(request: Request) {
                 : Number(body.dueDay);
 
         const expenseTypeId =
-            body.expenseTypeId ??
-            existing.expenseTypeId;
+            body.expenseTypeId ?? existing.expenseTypeId;
 
         const paymentMethodId =
-            body.paymentMethodId ??
-            existing.paymentMethodId;
+            body.paymentMethodId ?? existing.paymentMethodId;
 
         if (!name) {
             return NextResponse.json(
-                {
-                    error:
-                        "El nombre es obligatorio",
-                },
+                { error: "El nombre es obligatorio" },
                 { status: 400 }
             );
         }
 
         if (
             amount !== null &&
-            (!Number.isFinite(amount) ||
-                amount < 0)
+            (!Number.isFinite(amount) || amount < 0)
         ) {
             return NextResponse.json(
                 { error: "Monto inválido" },
@@ -476,31 +368,56 @@ export async function PATCH(request: Request) {
             );
         }
 
-        const updated =
-            await prisma.recurringExpense.update({
+        // Verificar que ambos recursos pertenezcan al espacio actual.
+        const [expenseType, paymentMethod] = await Promise.all([
+            prisma.expenseType.findFirst({
                 where: {
-                    id,
+                    id: expenseTypeId,
+                    workspaceId,
+                    active: true,
                 },
+            }),
 
-                data: {
-                    name,
-                    amount,
-                    dueDay,
-                    expenseTypeId,
-                    paymentMethodId,
+            prisma.paymentMethod.findFirst({
+                where: {
+                    id: paymentMethodId,
+                    workspaceId,
+                    active: true,
                 },
+            }),
+        ]);
 
-                include: expenseInclude,
-            });
+        if (!expenseType) {
+            return NextResponse.json(
+                { error: "Tipo de gasto inválido" },
+                { status: 400 }
+            );
+        }
 
-        return NextResponse.json(
-            serializeExpense(updated)
-        );
+        if (!paymentMethod) {
+            return NextResponse.json(
+                { error: "Medio de pago inválido" },
+                { status: 400 }
+            );
+        }
+
+        const updated = await prisma.recurringExpense.update({
+            where: {
+                id: existing.id,
+            },
+            data: {
+                name,
+                amount,
+                dueDay,
+                expenseTypeId,
+                paymentMethodId,
+            },
+            include: expenseInclude,
+        });
+
+        return NextResponse.json(serializeExpense(updated));
     } catch (error: any) {
-        console.error(
-            "PATCH /api/gastos-mensuales:",
-            error
-        );
+        console.error("PATCH /api/gastos-mensuales:", error);
 
         if (error?.code === "P2002") {
             return NextResponse.json(
@@ -513,10 +430,7 @@ export async function PATCH(request: Request) {
         }
 
         return NextResponse.json(
-            {
-                error:
-                    "No se pudo actualizar el gasto mensual",
-            },
+            { error: "No se pudo actualizar el gasto mensual" },
             { status: 500 }
         );
     }

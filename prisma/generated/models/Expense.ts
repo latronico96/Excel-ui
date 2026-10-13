@@ -25,21 +25,18 @@ export type AggregateExpense = {
 }
 
 export type ExpenseMinAggregateOutputType = {
-  userId: string | null
   expenseTypeId: string | null
   paymentMethodId: string | null
   movementId: string | null
 }
 
 export type ExpenseMaxAggregateOutputType = {
-  userId: string | null
   expenseTypeId: string | null
   paymentMethodId: string | null
   movementId: string | null
 }
 
 export type ExpenseCountAggregateOutputType = {
-  userId: number
   expenseTypeId: number
   paymentMethodId: number
   movementId: number
@@ -48,21 +45,18 @@ export type ExpenseCountAggregateOutputType = {
 
 
 export type ExpenseMinAggregateInputType = {
-  userId?: true
   expenseTypeId?: true
   paymentMethodId?: true
   movementId?: true
 }
 
 export type ExpenseMaxAggregateInputType = {
-  userId?: true
   expenseTypeId?: true
   paymentMethodId?: true
   movementId?: true
 }
 
 export type ExpenseCountAggregateInputType = {
-  userId?: true
   expenseTypeId?: true
   paymentMethodId?: true
   movementId?: true
@@ -142,7 +136,6 @@ export type ExpenseGroupByArgs<ExtArgs extends runtime.Types.Extensions.Internal
 }
 
 export type ExpenseGroupByOutputType = {
-  userId: string | null
   expenseTypeId: string
   paymentMethodId: string
   movementId: string
@@ -170,25 +163,21 @@ export type ExpenseWhereInput = {
   AND?: Prisma.ExpenseWhereInput | Prisma.ExpenseWhereInput[]
   OR?: Prisma.ExpenseWhereInput[]
   NOT?: Prisma.ExpenseWhereInput | Prisma.ExpenseWhereInput[]
-  userId?: Prisma.StringNullableFilter<"Expense"> | string | null
   expenseTypeId?: Prisma.StringFilter<"Expense"> | string
   paymentMethodId?: Prisma.StringFilter<"Expense"> | string
   movementId?: Prisma.StringFilter<"Expense"> | string
   expenseType?: Prisma.XOR<Prisma.ExpenseTypeScalarRelationFilter, Prisma.ExpenseTypeWhereInput>
   movement?: Prisma.XOR<Prisma.MovementScalarRelationFilter, Prisma.MovementWhereInput>
   paymentMethod?: Prisma.XOR<Prisma.PaymentMethodScalarRelationFilter, Prisma.PaymentMethodWhereInput>
-  user?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
 }
 
 export type ExpenseOrderByWithRelationInput = {
-  userId?: Prisma.SortOrderInput | Prisma.SortOrder
   expenseTypeId?: Prisma.SortOrder
   paymentMethodId?: Prisma.SortOrder
   movementId?: Prisma.SortOrder
   expenseType?: Prisma.ExpenseTypeOrderByWithRelationInput
   movement?: Prisma.MovementOrderByWithRelationInput
   paymentMethod?: Prisma.PaymentMethodOrderByWithRelationInput
-  user?: Prisma.UserOrderByWithRelationInput
 }
 
 export type ExpenseWhereUniqueInput = Prisma.AtLeast<{
@@ -196,17 +185,14 @@ export type ExpenseWhereUniqueInput = Prisma.AtLeast<{
   AND?: Prisma.ExpenseWhereInput | Prisma.ExpenseWhereInput[]
   OR?: Prisma.ExpenseWhereInput[]
   NOT?: Prisma.ExpenseWhereInput | Prisma.ExpenseWhereInput[]
-  userId?: Prisma.StringNullableFilter<"Expense"> | string | null
   expenseTypeId?: Prisma.StringFilter<"Expense"> | string
   paymentMethodId?: Prisma.StringFilter<"Expense"> | string
   expenseType?: Prisma.XOR<Prisma.ExpenseTypeScalarRelationFilter, Prisma.ExpenseTypeWhereInput>
   movement?: Prisma.XOR<Prisma.MovementScalarRelationFilter, Prisma.MovementWhereInput>
   paymentMethod?: Prisma.XOR<Prisma.PaymentMethodScalarRelationFilter, Prisma.PaymentMethodWhereInput>
-  user?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
 }, "movementId">
 
 export type ExpenseOrderByWithAggregationInput = {
-  userId?: Prisma.SortOrderInput | Prisma.SortOrder
   expenseTypeId?: Prisma.SortOrder
   paymentMethodId?: Prisma.SortOrder
   movementId?: Prisma.SortOrder
@@ -219,7 +205,6 @@ export type ExpenseScalarWhereWithAggregatesInput = {
   AND?: Prisma.ExpenseScalarWhereWithAggregatesInput | Prisma.ExpenseScalarWhereWithAggregatesInput[]
   OR?: Prisma.ExpenseScalarWhereWithAggregatesInput[]
   NOT?: Prisma.ExpenseScalarWhereWithAggregatesInput | Prisma.ExpenseScalarWhereWithAggregatesInput[]
-  userId?: Prisma.StringNullableWithAggregatesFilter<"Expense"> | string | null
   expenseTypeId?: Prisma.StringWithAggregatesFilter<"Expense"> | string
   paymentMethodId?: Prisma.StringWithAggregatesFilter<"Expense"> | string
   movementId?: Prisma.StringWithAggregatesFilter<"Expense"> | string
@@ -229,11 +214,9 @@ export type ExpenseCreateInput = {
   expenseType: Prisma.ExpenseTypeCreateNestedOneWithoutExpensesInput
   movement: Prisma.MovementCreateNestedOneWithoutExpenseInput
   paymentMethod: Prisma.PaymentMethodCreateNestedOneWithoutExpensesInput
-  user?: Prisma.UserCreateNestedOneWithoutExpensesInput
 }
 
 export type ExpenseUncheckedCreateInput = {
-  userId?: string | null
   expenseTypeId: string
   paymentMethodId: string
   movementId: string
@@ -243,18 +226,15 @@ export type ExpenseUpdateInput = {
   expenseType?: Prisma.ExpenseTypeUpdateOneRequiredWithoutExpensesNestedInput
   movement?: Prisma.MovementUpdateOneRequiredWithoutExpenseNestedInput
   paymentMethod?: Prisma.PaymentMethodUpdateOneRequiredWithoutExpensesNestedInput
-  user?: Prisma.UserUpdateOneWithoutExpensesNestedInput
 }
 
 export type ExpenseUncheckedUpdateInput = {
-  userId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   expenseTypeId?: Prisma.StringFieldUpdateOperationsInput | string
   paymentMethodId?: Prisma.StringFieldUpdateOperationsInput | string
   movementId?: Prisma.StringFieldUpdateOperationsInput | string
 }
 
 export type ExpenseCreateManyInput = {
-  userId?: string | null
   expenseTypeId: string
   paymentMethodId: string
   movementId: string
@@ -265,7 +245,6 @@ export type ExpenseUpdateManyMutationInput = {
 }
 
 export type ExpenseUncheckedUpdateManyInput = {
-  userId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   expenseTypeId?: Prisma.StringFieldUpdateOperationsInput | string
   paymentMethodId?: Prisma.StringFieldUpdateOperationsInput | string
   movementId?: Prisma.StringFieldUpdateOperationsInput | string
@@ -287,66 +266,21 @@ export type ExpenseNullableScalarRelationFilter = {
 }
 
 export type ExpenseCountOrderByAggregateInput = {
-  userId?: Prisma.SortOrder
   expenseTypeId?: Prisma.SortOrder
   paymentMethodId?: Prisma.SortOrder
   movementId?: Prisma.SortOrder
 }
 
 export type ExpenseMaxOrderByAggregateInput = {
-  userId?: Prisma.SortOrder
   expenseTypeId?: Prisma.SortOrder
   paymentMethodId?: Prisma.SortOrder
   movementId?: Prisma.SortOrder
 }
 
 export type ExpenseMinOrderByAggregateInput = {
-  userId?: Prisma.SortOrder
   expenseTypeId?: Prisma.SortOrder
   paymentMethodId?: Prisma.SortOrder
   movementId?: Prisma.SortOrder
-}
-
-export type ExpenseCreateNestedManyWithoutUserInput = {
-  create?: Prisma.XOR<Prisma.ExpenseCreateWithoutUserInput, Prisma.ExpenseUncheckedCreateWithoutUserInput> | Prisma.ExpenseCreateWithoutUserInput[] | Prisma.ExpenseUncheckedCreateWithoutUserInput[]
-  connectOrCreate?: Prisma.ExpenseCreateOrConnectWithoutUserInput | Prisma.ExpenseCreateOrConnectWithoutUserInput[]
-  createMany?: Prisma.ExpenseCreateManyUserInputEnvelope
-  connect?: Prisma.ExpenseWhereUniqueInput | Prisma.ExpenseWhereUniqueInput[]
-}
-
-export type ExpenseUncheckedCreateNestedManyWithoutUserInput = {
-  create?: Prisma.XOR<Prisma.ExpenseCreateWithoutUserInput, Prisma.ExpenseUncheckedCreateWithoutUserInput> | Prisma.ExpenseCreateWithoutUserInput[] | Prisma.ExpenseUncheckedCreateWithoutUserInput[]
-  connectOrCreate?: Prisma.ExpenseCreateOrConnectWithoutUserInput | Prisma.ExpenseCreateOrConnectWithoutUserInput[]
-  createMany?: Prisma.ExpenseCreateManyUserInputEnvelope
-  connect?: Prisma.ExpenseWhereUniqueInput | Prisma.ExpenseWhereUniqueInput[]
-}
-
-export type ExpenseUpdateManyWithoutUserNestedInput = {
-  create?: Prisma.XOR<Prisma.ExpenseCreateWithoutUserInput, Prisma.ExpenseUncheckedCreateWithoutUserInput> | Prisma.ExpenseCreateWithoutUserInput[] | Prisma.ExpenseUncheckedCreateWithoutUserInput[]
-  connectOrCreate?: Prisma.ExpenseCreateOrConnectWithoutUserInput | Prisma.ExpenseCreateOrConnectWithoutUserInput[]
-  upsert?: Prisma.ExpenseUpsertWithWhereUniqueWithoutUserInput | Prisma.ExpenseUpsertWithWhereUniqueWithoutUserInput[]
-  createMany?: Prisma.ExpenseCreateManyUserInputEnvelope
-  set?: Prisma.ExpenseWhereUniqueInput | Prisma.ExpenseWhereUniqueInput[]
-  disconnect?: Prisma.ExpenseWhereUniqueInput | Prisma.ExpenseWhereUniqueInput[]
-  delete?: Prisma.ExpenseWhereUniqueInput | Prisma.ExpenseWhereUniqueInput[]
-  connect?: Prisma.ExpenseWhereUniqueInput | Prisma.ExpenseWhereUniqueInput[]
-  update?: Prisma.ExpenseUpdateWithWhereUniqueWithoutUserInput | Prisma.ExpenseUpdateWithWhereUniqueWithoutUserInput[]
-  updateMany?: Prisma.ExpenseUpdateManyWithWhereWithoutUserInput | Prisma.ExpenseUpdateManyWithWhereWithoutUserInput[]
-  deleteMany?: Prisma.ExpenseScalarWhereInput | Prisma.ExpenseScalarWhereInput[]
-}
-
-export type ExpenseUncheckedUpdateManyWithoutUserNestedInput = {
-  create?: Prisma.XOR<Prisma.ExpenseCreateWithoutUserInput, Prisma.ExpenseUncheckedCreateWithoutUserInput> | Prisma.ExpenseCreateWithoutUserInput[] | Prisma.ExpenseUncheckedCreateWithoutUserInput[]
-  connectOrCreate?: Prisma.ExpenseCreateOrConnectWithoutUserInput | Prisma.ExpenseCreateOrConnectWithoutUserInput[]
-  upsert?: Prisma.ExpenseUpsertWithWhereUniqueWithoutUserInput | Prisma.ExpenseUpsertWithWhereUniqueWithoutUserInput[]
-  createMany?: Prisma.ExpenseCreateManyUserInputEnvelope
-  set?: Prisma.ExpenseWhereUniqueInput | Prisma.ExpenseWhereUniqueInput[]
-  disconnect?: Prisma.ExpenseWhereUniqueInput | Prisma.ExpenseWhereUniqueInput[]
-  delete?: Prisma.ExpenseWhereUniqueInput | Prisma.ExpenseWhereUniqueInput[]
-  connect?: Prisma.ExpenseWhereUniqueInput | Prisma.ExpenseWhereUniqueInput[]
-  update?: Prisma.ExpenseUpdateWithWhereUniqueWithoutUserInput | Prisma.ExpenseUpdateWithWhereUniqueWithoutUserInput[]
-  updateMany?: Prisma.ExpenseUpdateManyWithWhereWithoutUserInput | Prisma.ExpenseUpdateManyWithWhereWithoutUserInput[]
-  deleteMany?: Prisma.ExpenseScalarWhereInput | Prisma.ExpenseScalarWhereInput[]
 }
 
 export type ExpenseCreateNestedManyWithoutExpenseTypeInput = {
@@ -465,62 +399,12 @@ export type ExpenseUncheckedUpdateManyWithoutPaymentMethodNestedInput = {
   deleteMany?: Prisma.ExpenseScalarWhereInput | Prisma.ExpenseScalarWhereInput[]
 }
 
-export type ExpenseCreateWithoutUserInput = {
-  expenseType: Prisma.ExpenseTypeCreateNestedOneWithoutExpensesInput
-  movement: Prisma.MovementCreateNestedOneWithoutExpenseInput
-  paymentMethod: Prisma.PaymentMethodCreateNestedOneWithoutExpensesInput
-}
-
-export type ExpenseUncheckedCreateWithoutUserInput = {
-  expenseTypeId: string
-  paymentMethodId: string
-  movementId: string
-}
-
-export type ExpenseCreateOrConnectWithoutUserInput = {
-  where: Prisma.ExpenseWhereUniqueInput
-  create: Prisma.XOR<Prisma.ExpenseCreateWithoutUserInput, Prisma.ExpenseUncheckedCreateWithoutUserInput>
-}
-
-export type ExpenseCreateManyUserInputEnvelope = {
-  data: Prisma.ExpenseCreateManyUserInput | Prisma.ExpenseCreateManyUserInput[]
-  skipDuplicates?: boolean
-}
-
-export type ExpenseUpsertWithWhereUniqueWithoutUserInput = {
-  where: Prisma.ExpenseWhereUniqueInput
-  update: Prisma.XOR<Prisma.ExpenseUpdateWithoutUserInput, Prisma.ExpenseUncheckedUpdateWithoutUserInput>
-  create: Prisma.XOR<Prisma.ExpenseCreateWithoutUserInput, Prisma.ExpenseUncheckedCreateWithoutUserInput>
-}
-
-export type ExpenseUpdateWithWhereUniqueWithoutUserInput = {
-  where: Prisma.ExpenseWhereUniqueInput
-  data: Prisma.XOR<Prisma.ExpenseUpdateWithoutUserInput, Prisma.ExpenseUncheckedUpdateWithoutUserInput>
-}
-
-export type ExpenseUpdateManyWithWhereWithoutUserInput = {
-  where: Prisma.ExpenseScalarWhereInput
-  data: Prisma.XOR<Prisma.ExpenseUpdateManyMutationInput, Prisma.ExpenseUncheckedUpdateManyWithoutUserInput>
-}
-
-export type ExpenseScalarWhereInput = {
-  AND?: Prisma.ExpenseScalarWhereInput | Prisma.ExpenseScalarWhereInput[]
-  OR?: Prisma.ExpenseScalarWhereInput[]
-  NOT?: Prisma.ExpenseScalarWhereInput | Prisma.ExpenseScalarWhereInput[]
-  userId?: Prisma.StringNullableFilter<"Expense"> | string | null
-  expenseTypeId?: Prisma.StringFilter<"Expense"> | string
-  paymentMethodId?: Prisma.StringFilter<"Expense"> | string
-  movementId?: Prisma.StringFilter<"Expense"> | string
-}
-
 export type ExpenseCreateWithoutExpenseTypeInput = {
   movement: Prisma.MovementCreateNestedOneWithoutExpenseInput
   paymentMethod: Prisma.PaymentMethodCreateNestedOneWithoutExpensesInput
-  user?: Prisma.UserCreateNestedOneWithoutExpensesInput
 }
 
 export type ExpenseUncheckedCreateWithoutExpenseTypeInput = {
-  userId?: string | null
   paymentMethodId: string
   movementId: string
 }
@@ -551,14 +435,21 @@ export type ExpenseUpdateManyWithWhereWithoutExpenseTypeInput = {
   data: Prisma.XOR<Prisma.ExpenseUpdateManyMutationInput, Prisma.ExpenseUncheckedUpdateManyWithoutExpenseTypeInput>
 }
 
+export type ExpenseScalarWhereInput = {
+  AND?: Prisma.ExpenseScalarWhereInput | Prisma.ExpenseScalarWhereInput[]
+  OR?: Prisma.ExpenseScalarWhereInput[]
+  NOT?: Prisma.ExpenseScalarWhereInput | Prisma.ExpenseScalarWhereInput[]
+  expenseTypeId?: Prisma.StringFilter<"Expense"> | string
+  paymentMethodId?: Prisma.StringFilter<"Expense"> | string
+  movementId?: Prisma.StringFilter<"Expense"> | string
+}
+
 export type ExpenseCreateWithoutMovementInput = {
   expenseType: Prisma.ExpenseTypeCreateNestedOneWithoutExpensesInput
   paymentMethod: Prisma.PaymentMethodCreateNestedOneWithoutExpensesInput
-  user?: Prisma.UserCreateNestedOneWithoutExpensesInput
 }
 
 export type ExpenseUncheckedCreateWithoutMovementInput = {
-  userId?: string | null
   expenseTypeId: string
   paymentMethodId: string
 }
@@ -582,11 +473,9 @@ export type ExpenseUpdateToOneWithWhereWithoutMovementInput = {
 export type ExpenseUpdateWithoutMovementInput = {
   expenseType?: Prisma.ExpenseTypeUpdateOneRequiredWithoutExpensesNestedInput
   paymentMethod?: Prisma.PaymentMethodUpdateOneRequiredWithoutExpensesNestedInput
-  user?: Prisma.UserUpdateOneWithoutExpensesNestedInput
 }
 
 export type ExpenseUncheckedUpdateWithoutMovementInput = {
-  userId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   expenseTypeId?: Prisma.StringFieldUpdateOperationsInput | string
   paymentMethodId?: Prisma.StringFieldUpdateOperationsInput | string
 }
@@ -594,11 +483,9 @@ export type ExpenseUncheckedUpdateWithoutMovementInput = {
 export type ExpenseCreateWithoutPaymentMethodInput = {
   expenseType: Prisma.ExpenseTypeCreateNestedOneWithoutExpensesInput
   movement: Prisma.MovementCreateNestedOneWithoutExpenseInput
-  user?: Prisma.UserCreateNestedOneWithoutExpensesInput
 }
 
 export type ExpenseUncheckedCreateWithoutPaymentMethodInput = {
-  userId?: string | null
   expenseTypeId: string
   movementId: string
 }
@@ -629,32 +516,7 @@ export type ExpenseUpdateManyWithWhereWithoutPaymentMethodInput = {
   data: Prisma.XOR<Prisma.ExpenseUpdateManyMutationInput, Prisma.ExpenseUncheckedUpdateManyWithoutPaymentMethodInput>
 }
 
-export type ExpenseCreateManyUserInput = {
-  expenseTypeId: string
-  paymentMethodId: string
-  movementId: string
-}
-
-export type ExpenseUpdateWithoutUserInput = {
-  expenseType?: Prisma.ExpenseTypeUpdateOneRequiredWithoutExpensesNestedInput
-  movement?: Prisma.MovementUpdateOneRequiredWithoutExpenseNestedInput
-  paymentMethod?: Prisma.PaymentMethodUpdateOneRequiredWithoutExpensesNestedInput
-}
-
-export type ExpenseUncheckedUpdateWithoutUserInput = {
-  expenseTypeId?: Prisma.StringFieldUpdateOperationsInput | string
-  paymentMethodId?: Prisma.StringFieldUpdateOperationsInput | string
-  movementId?: Prisma.StringFieldUpdateOperationsInput | string
-}
-
-export type ExpenseUncheckedUpdateManyWithoutUserInput = {
-  expenseTypeId?: Prisma.StringFieldUpdateOperationsInput | string
-  paymentMethodId?: Prisma.StringFieldUpdateOperationsInput | string
-  movementId?: Prisma.StringFieldUpdateOperationsInput | string
-}
-
 export type ExpenseCreateManyExpenseTypeInput = {
-  userId?: string | null
   paymentMethodId: string
   movementId: string
 }
@@ -662,23 +524,19 @@ export type ExpenseCreateManyExpenseTypeInput = {
 export type ExpenseUpdateWithoutExpenseTypeInput = {
   movement?: Prisma.MovementUpdateOneRequiredWithoutExpenseNestedInput
   paymentMethod?: Prisma.PaymentMethodUpdateOneRequiredWithoutExpensesNestedInput
-  user?: Prisma.UserUpdateOneWithoutExpensesNestedInput
 }
 
 export type ExpenseUncheckedUpdateWithoutExpenseTypeInput = {
-  userId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   paymentMethodId?: Prisma.StringFieldUpdateOperationsInput | string
   movementId?: Prisma.StringFieldUpdateOperationsInput | string
 }
 
 export type ExpenseUncheckedUpdateManyWithoutExpenseTypeInput = {
-  userId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   paymentMethodId?: Prisma.StringFieldUpdateOperationsInput | string
   movementId?: Prisma.StringFieldUpdateOperationsInput | string
 }
 
 export type ExpenseCreateManyPaymentMethodInput = {
-  userId?: string | null
   expenseTypeId: string
   movementId: string
 }
@@ -686,17 +544,14 @@ export type ExpenseCreateManyPaymentMethodInput = {
 export type ExpenseUpdateWithoutPaymentMethodInput = {
   expenseType?: Prisma.ExpenseTypeUpdateOneRequiredWithoutExpensesNestedInput
   movement?: Prisma.MovementUpdateOneRequiredWithoutExpenseNestedInput
-  user?: Prisma.UserUpdateOneWithoutExpensesNestedInput
 }
 
 export type ExpenseUncheckedUpdateWithoutPaymentMethodInput = {
-  userId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   expenseTypeId?: Prisma.StringFieldUpdateOperationsInput | string
   movementId?: Prisma.StringFieldUpdateOperationsInput | string
 }
 
 export type ExpenseUncheckedUpdateManyWithoutPaymentMethodInput = {
-  userId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   expenseTypeId?: Prisma.StringFieldUpdateOperationsInput | string
   movementId?: Prisma.StringFieldUpdateOperationsInput | string
 }
@@ -704,63 +559,53 @@ export type ExpenseUncheckedUpdateManyWithoutPaymentMethodInput = {
 
 
 export type ExpenseSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
-  userId?: boolean
   expenseTypeId?: boolean
   paymentMethodId?: boolean
   movementId?: boolean
   expenseType?: boolean | Prisma.ExpenseTypeDefaultArgs<ExtArgs>
   movement?: boolean | Prisma.MovementDefaultArgs<ExtArgs>
   paymentMethod?: boolean | Prisma.PaymentMethodDefaultArgs<ExtArgs>
-  user?: boolean | Prisma.Expense$userArgs<ExtArgs>
 }, ExtArgs["result"]["expense"]>
 
 export type ExpenseSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
-  userId?: boolean
   expenseTypeId?: boolean
   paymentMethodId?: boolean
   movementId?: boolean
   expenseType?: boolean | Prisma.ExpenseTypeDefaultArgs<ExtArgs>
   movement?: boolean | Prisma.MovementDefaultArgs<ExtArgs>
   paymentMethod?: boolean | Prisma.PaymentMethodDefaultArgs<ExtArgs>
-  user?: boolean | Prisma.Expense$userArgs<ExtArgs>
 }, ExtArgs["result"]["expense"]>
 
 export type ExpenseSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
-  userId?: boolean
   expenseTypeId?: boolean
   paymentMethodId?: boolean
   movementId?: boolean
   expenseType?: boolean | Prisma.ExpenseTypeDefaultArgs<ExtArgs>
   movement?: boolean | Prisma.MovementDefaultArgs<ExtArgs>
   paymentMethod?: boolean | Prisma.PaymentMethodDefaultArgs<ExtArgs>
-  user?: boolean | Prisma.Expense$userArgs<ExtArgs>
 }, ExtArgs["result"]["expense"]>
 
 export type ExpenseSelectScalar = {
-  userId?: boolean
   expenseTypeId?: boolean
   paymentMethodId?: boolean
   movementId?: boolean
 }
 
-export type ExpenseOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"userId" | "expenseTypeId" | "paymentMethodId" | "movementId", ExtArgs["result"]["expense"]>
+export type ExpenseOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"expenseTypeId" | "paymentMethodId" | "movementId", ExtArgs["result"]["expense"]>
 export type ExpenseInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   expenseType?: boolean | Prisma.ExpenseTypeDefaultArgs<ExtArgs>
   movement?: boolean | Prisma.MovementDefaultArgs<ExtArgs>
   paymentMethod?: boolean | Prisma.PaymentMethodDefaultArgs<ExtArgs>
-  user?: boolean | Prisma.Expense$userArgs<ExtArgs>
 }
 export type ExpenseIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   expenseType?: boolean | Prisma.ExpenseTypeDefaultArgs<ExtArgs>
   movement?: boolean | Prisma.MovementDefaultArgs<ExtArgs>
   paymentMethod?: boolean | Prisma.PaymentMethodDefaultArgs<ExtArgs>
-  user?: boolean | Prisma.Expense$userArgs<ExtArgs>
 }
 export type ExpenseIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   expenseType?: boolean | Prisma.ExpenseTypeDefaultArgs<ExtArgs>
   movement?: boolean | Prisma.MovementDefaultArgs<ExtArgs>
   paymentMethod?: boolean | Prisma.PaymentMethodDefaultArgs<ExtArgs>
-  user?: boolean | Prisma.Expense$userArgs<ExtArgs>
 }
 
 export type $ExpensePayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -769,10 +614,8 @@ export type $ExpensePayload<ExtArgs extends runtime.Types.Extensions.InternalArg
     expenseType: Prisma.$ExpenseTypePayload<ExtArgs>
     movement: Prisma.$MovementPayload<ExtArgs>
     paymentMethod: Prisma.$PaymentMethodPayload<ExtArgs>
-    user: Prisma.$UserPayload<ExtArgs> | null
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
-    userId: string | null
     expenseTypeId: string
     paymentMethodId: string
     movementId: string
@@ -859,8 +702,8 @@ export interface ExpenseDelegate<ExtArgs extends runtime.Types.Extensions.Intern
    * // Get first 10 Expenses
    * const expenses = await prisma.expense.findMany({ take: 10 })
    * 
-   * // Only select the `userId`
-   * const expenseWithUserIdOnly = await prisma.expense.findMany({ select: { userId: true } })
+   * // Only select the `expenseTypeId`
+   * const expenseWithExpenseTypeIdOnly = await prisma.expense.findMany({ select: { expenseTypeId: true } })
    * 
    */
   findMany<T extends ExpenseFindManyArgs>(args?: Prisma.SelectSubset<T, ExpenseFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ExpensePayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
@@ -904,9 +747,9 @@ export interface ExpenseDelegate<ExtArgs extends runtime.Types.Extensions.Intern
    *   ]
    * })
    * 
-   * // Create many Expenses and only return the `userId`
-   * const expenseWithUserIdOnly = await prisma.expense.createManyAndReturn({
-   *   select: { userId: true },
+   * // Create many Expenses and only return the `expenseTypeId`
+   * const expenseWithExpenseTypeIdOnly = await prisma.expense.createManyAndReturn({
+   *   select: { expenseTypeId: true },
    *   data: [
    *     // ... provide data here
    *   ]
@@ -995,9 +838,9 @@ export interface ExpenseDelegate<ExtArgs extends runtime.Types.Extensions.Intern
    *   ]
    * })
    * 
-   * // Update zero or more Expenses and only return the `userId`
-   * const expenseWithUserIdOnly = await prisma.expense.updateManyAndReturn({
-   *   select: { userId: true },
+   * // Update zero or more Expenses and only return the `expenseTypeId`
+   * const expenseWithExpenseTypeIdOnly = await prisma.expense.updateManyAndReturn({
+   *   select: { expenseTypeId: true },
    *   where: {
    *     // ... provide filter here
    *   },
@@ -1173,7 +1016,6 @@ export interface Prisma__ExpenseClient<T, Null = never, ExtArgs extends runtime.
   expenseType<T extends Prisma.ExpenseTypeDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ExpenseTypeDefaultArgs<ExtArgs>>): Prisma.Prisma__ExpenseTypeClient<runtime.Types.Result.GetResult<Prisma.$ExpenseTypePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   movement<T extends Prisma.MovementDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.MovementDefaultArgs<ExtArgs>>): Prisma.Prisma__MovementClient<runtime.Types.Result.GetResult<Prisma.$MovementPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   paymentMethod<T extends Prisma.PaymentMethodDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.PaymentMethodDefaultArgs<ExtArgs>>): Prisma.Prisma__PaymentMethodClient<runtime.Types.Result.GetResult<Prisma.$PaymentMethodPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
-  user<T extends Prisma.Expense$userArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Expense$userArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1203,7 +1045,6 @@ export interface Prisma__ExpenseClient<T, Null = never, ExtArgs extends runtime.
  * Fields of the Expense model
  */
 export interface ExpenseFieldRefs {
-  readonly userId: Prisma.FieldRef<"Expense", 'String'>
   readonly expenseTypeId: Prisma.FieldRef<"Expense", 'String'>
   readonly paymentMethodId: Prisma.FieldRef<"Expense", 'String'>
   readonly movementId: Prisma.FieldRef<"Expense", 'String'>
@@ -1605,25 +1446,6 @@ export type ExpenseDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.Inter
    * Limit how many Expenses to delete.
    */
   limit?: number
-}
-
-/**
- * Expense.user
- */
-export type Expense$userArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the User
-   */
-  select?: Prisma.UserSelect<ExtArgs> | null
-  /**
-   * Omit specific fields from the User
-   */
-  omit?: Prisma.UserOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.UserInclude<ExtArgs> | null
-  where?: Prisma.UserWhereInput
 }
 
 /**

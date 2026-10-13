@@ -1,36 +1,105 @@
 "use client";
 
 import { useState } from "react";
-import { ArrowRight, CheckCircle2, Percent } from "lucide-react";
+import {
+    ArrowRight,
+    CheckCircle2,
+    Percent,
+} from "lucide-react";
 import { useRouter } from "next/navigation";
 
 export default function OnboardingPage() {
     const router = useRouter();
 
     const [step, setStep] = useState(1);
+
     const [investmentPercentage, setInvestmentPercentage] =
         useState("50");
+
+    const [titheEnabled, setTitheEnabled] =
+        useState(false);
+
+    const [tithePercentage, setTithePercentage] =
+        useState("10");
+
     const [saving, setSaving] = useState(false);
     const [error, setError] = useState("");
+
+    const validatePercentage = (
+        value: string,
+        fieldName: string
+    ) => {
+        const percentage = Number(value);
+
+        if (
+            Number.isNaN(percentage) ||
+            percentage < 0 ||
+            percentage > 100
+        ) {
+            setError(
+                `${fieldName} debe estar entre 0 y 100.`
+            );
+            return false;
+        }
+
+        return true;
+    };
+
+    const handleContinue = () => {
+        setError("");
+
+        if (
+            !validatePercentage(
+                investmentPercentage,
+                "El porcentaje de reinversión"
+            )
+        ) {
+            return;
+        }
+
+        if (
+            titheEnabled &&
+            !validatePercentage(
+                tithePercentage,
+                "El porcentaje de diezmo"
+            )
+        ) {
+            return;
+        }
+
+        setStep(3);
+    };
 
     const finishOnboarding = async () => {
         try {
             setSaving(true);
             setError("");
 
-            const percentage = Number(
+            const investment = Number(
                 investmentPercentage
             );
 
+            const tithe = Number(tithePercentage);
+
             if (
-                Number.isNaN(percentage) ||
-                percentage < 0 ||
-                percentage > 100
+                Number.isNaN(investment) ||
+                investment < 0 ||
+                investment > 100
             ) {
-                setError(
-                    "El porcentaje debe estar entre 0 y 100."
+                throw new Error(
+                    "El porcentaje de reinversión debe estar entre 0 y 100."
                 );
-                return;
+            }
+
+            if (
+                titheEnabled &&
+                (Number.isNaN(tithe) ||
+                    tithe < 0 ||
+                    tithe > 100)
+            ) {
+                throw new Error(
+                    "El porcentaje de diezmo debe estar entre 0 y 100."
+                );
             }
 
             const response = await fetch(
@@ -43,7 +112,13 @@ export default function OnboardingPage() {
                     },
                     body: JSON.stringify({
                         defaultInvestmentPercentage:
-                            percentage,
+                            investment,
+                        titheEnabled,
+                        tithePercentage:
+                            titheEnabled
+                                ? tithe
+                                : 0,
+                        titheBase: "NET_INCOME",
                         onboardingCompleted: true,
                     }),
                 }
@@ -103,9 +178,7 @@ export default function OnboardingPage() {
                             }}
                         />
 
-                        <h1>
-                            ¡Bienvenido!
-                        </h1>
+                        <h1>¡Bienvenido!</h1>
 
                         <p
                             style={{
@@ -123,9 +196,10 @@ export default function OnboardingPage() {
                         <button
                             type="button"
                             className="btn btn-primary"
-                            onClick={() =>
-                                setStep(2)
-                            }
+                            onClick={() => {
+                                setError("");
+                                setStep(2);
+                            }}
                             style={{
                                 marginTop: "1.5rem",
                                 width: "100%",
@@ -151,7 +225,7 @@ export default function OnboardingPage() {
                             />
 
                             <h2>
-                                Inversión del negocio
+                                Configuración inicial
                             </h2>
 
                             <p
@@ -160,16 +234,17 @@ export default function OnboardingPage() {
                                         "var(--text-muted)",
                                 }}
                             >
-                                ¿Qué porcentaje de tus
-                                ingresos netos querés
+                                Definí cuánto querés
                                 reservar para reinvertir
-                                en el negocio?
+                                y, si querés, el porcentaje
+                                de diezmo.
                             </p>
                         </div>
 
+                        {/* REINVERSIÓN */}
                         <div className="form-group">
                             <label>
-                                Porcentaje predeterminado
+                                Reinversión del negocio
                             </label>
 
                             <div
@@ -188,11 +263,12 @@ export default function OnboardingPage() {
                                     value={
                                         investmentPercentage
                                     }
-                                    onChange={(e) =>
+                                    onChange={(e) => {
                                         setInvestmentPercentage(
                                             e.target.value
-                                        )
-                                    }
+                                        );
+                                        setError("");
+                                    }}
                                 />
 
                                 <strong>%</strong>
@@ -204,9 +280,93 @@ export default function OnboardingPage() {
                                         "var(--text-muted)",
                                 }}
                             >
-                                Podrás modificarlo después
-                                desde Configuración.
+                                Porcentaje predeterminado
+                                de tus ingresos netos que
+                                querés reservar para
+                                reinvertir.
                             </small>
+                        </div>
+
+                        {/* DIEZMO */}
+                        <div
+                            className="form-group"
+                            style={{
+                                marginTop: "1.5rem",
+                            }}
+                        >
+                            <label
+                                style={{
+                                    display: "flex",
+                                    alignItems: "center",
+                                    gap: "0.5rem",
+                                    cursor: "pointer",
+                                }}
+                            >
+                                <input
+                                    type="checkbox"
+                                    checked={titheEnabled}
+                                    onChange={(e) => {
+                                        setTitheEnabled(
+                                            e.target.checked
+                                        );
+                                        setError("");
+                                    }}
+                                />
+
+                                Separar diezmo
+                            </label>
+
+                            {titheEnabled && (
+                                <div
+                                    style={{
+                                        marginTop:
+                                            "0.75rem",
+                                    }}
+                                >
+                                    <div
+                                        style={{
+                                            display: "flex",
+                                            alignItems:
+                                                "center",
+                                            gap: "0.75rem",
+                                        }}
+                                    >
+                                        <input
+                                            type="number"
+                                            min="0"
+                                            max="100"
+                                            step="1"
+                                            className="input"
+                                            value={
+                                                tithePercentage
+                                            }
+                                            onChange={(
+                                                e
+                                            ) => {
+                                                setTithePercentage(
+                                                    e.target
+                                                        .value
+                                                );
+                                                setError(
+                                                    ""
+                                                );
+                                            }}
+                                        />
+
+                                        <strong>%</strong>
+                                    </div>
+
+                                    <small
+                                        style={{
+                                            color:
+                                                "var(--text-muted)",
+                                        }}
+                                    >
+                                        Se calculará sobre
+                                        el ingreso neto.
+                                    </small>
+                                </div>
+                            )}
                         </div>
 
                         {error && (
@@ -214,6 +374,8 @@ export default function OnboardingPage() {
                                 style={{
                                     color:
                                         "var(--error)",
+                                    marginTop:
+                                        "1rem",
                                 }}
                             >
                                 {error}
@@ -230,9 +392,10 @@ export default function OnboardingPage() {
                             <button
                                 type="button"
                                 className="btn btn-outline"
-                                onClick={() =>
-                                    setStep(1)
-                                }
+                                onClick={() => {
+                                    setError("");
+                                    setStep(1);
+                                }}
                                 disabled={saving}
                             >
                                 Atrás
@@ -241,8 +404,8 @@ export default function OnboardingPage() {
                             <button
                                 type="button"
                                 className="btn btn-primary"
-                                onClick={() =>
-                                    setStep(3)
+                                onClick={
+                                    handleContinue
                                 }
                                 disabled={saving}
                                 style={{
@@ -270,9 +433,7 @@ export default function OnboardingPage() {
                             color="var(--success)"
                         />
 
-                        <h2>
-                            ¡Ya está!
-                        </h2>
+                        <h2>¡Todo listo!</h2>
 
                         <p
                             style={{

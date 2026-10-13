@@ -19,6 +19,7 @@ import {
     Settings,
     SlidersHorizontal,
     Tags,
+    Users,
     X,
 } from "lucide-react";
 
@@ -34,12 +35,69 @@ export default function DashboardLayout({
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const [quickMenuOpen, setQuickMenuOpen] = useState(false);
     const [checkingOnboarding, setCheckingOnboarding] = useState(true);
+    const [workspaceName, setWorkspaceName] = useState("");
 
     useEffect(() => {
         if (status === "unauthenticated") {
             router.push("/");
         }
     }, [status, router]);
+
+    useEffect(() => {
+        if (status !== "authenticated") {
+            return;
+        }
+
+        let cancelled = false;
+
+        const loadWorkspaceName = async () => {
+            try {
+                const response = await fetch("/api/configuracion");
+
+                if (!response.ok) {
+                    throw new Error("No se pudo cargar el workspace");
+                }
+
+                const data = await response.json();
+
+                if (!cancelled && typeof data.name === "string") {
+                    setWorkspaceName(data.name);
+                }
+            } catch (error) {
+                console.error("Error cargando el workspace:", error);
+            }
+        };
+
+        const handleWorkspaceUpdate = (event: Event) => {
+            const customEvent = event as CustomEvent<{ name: string }>;
+
+            if (typeof customEvent.detail?.name === "string") {
+                setWorkspaceName(customEvent.detail.name);
+            }
+        };
+
+        loadWorkspaceName();
+
+        window.addEventListener(
+            "workspace-updated",
+            handleWorkspaceUpdate
+        );
+
+
+        return () => {
+            cancelled = true;
+            window.removeEventListener(
+                "workspace-updated",
+                handleWorkspaceUpdate
+            );
+        };
+    }, [status]);
+
+    useEffect(() => {
+        document.title = workspaceName
+            ? `${workspaceName} | Excel Pro`
+            : "Excel Pro";
+    }, [workspaceName]);
 
     // Cerrar el menú móvil al cambiar de página
     useEffect(() => {
@@ -154,7 +212,7 @@ export default function DashboardLayout({
                             color="var(--primary)"
                         />
 
-                        {process.env.NEXT_PUBLIC_APP_TITLE ||
+                        {workspaceName || process.env.NEXT_PUBLIC_APP_TITLE ||
                             "Mi Comercio"}
                     </div>
 
@@ -232,6 +290,16 @@ export default function DashboardLayout({
                             >
                                 <CreditCard size={19} />
                                 Medios de pago
+                            </Link>
+                            <Link
+                                href="/miembros"
+                                className={`nav-link nav-link-sub ${isActive("/miembros")
+                                    ? "active"
+                                    : ""
+                                    }`}
+                            >
+                                <Users size={19} />
+                                Miembros
                             </Link>
                         </div>
                     </nav>
@@ -413,6 +481,19 @@ export default function DashboardLayout({
                                 >
                                     <CreditCard size={19} />
                                     Medios de pago
+                                </Link>
+                                <Link
+                                    href="/miembros"
+                                    onClick={closeMenus}
+                                    className={`nav-link nav-link-sub ${isActive(
+                                        "/miembros"
+                                    )
+                                        ? "active"
+                                        : ""
+                                        }`}
+                                >
+                                    <Users size={19} />
+                                    Miembros
                                 </Link>
                             </div>
                         </nav>

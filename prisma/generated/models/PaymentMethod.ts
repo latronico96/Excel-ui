@@ -36,7 +36,7 @@ export type PaymentMethodSumAggregateOutputType = {
 
 export type PaymentMethodMinAggregateOutputType = {
   id: string | null
-  userId: string | null
+  workspaceId: string | null
   name: string | null
   active: boolean | null
   createdAt: Date | null
@@ -46,7 +46,7 @@ export type PaymentMethodMinAggregateOutputType = {
 
 export type PaymentMethodMaxAggregateOutputType = {
   id: string | null
-  userId: string | null
+  workspaceId: string | null
   name: string | null
   active: boolean | null
   createdAt: Date | null
@@ -56,7 +56,7 @@ export type PaymentMethodMaxAggregateOutputType = {
 
 export type PaymentMethodCountAggregateOutputType = {
   id: number
-  userId: number
+  workspaceId: number
   name: number
   active: number
   createdAt: number
@@ -76,7 +76,7 @@ export type PaymentMethodSumAggregateInputType = {
 
 export type PaymentMethodMinAggregateInputType = {
   id?: true
-  userId?: true
+  workspaceId?: true
   name?: true
   active?: true
   createdAt?: true
@@ -86,7 +86,7 @@ export type PaymentMethodMinAggregateInputType = {
 
 export type PaymentMethodMaxAggregateInputType = {
   id?: true
-  userId?: true
+  workspaceId?: true
   name?: true
   active?: true
   createdAt?: true
@@ -96,7 +96,7 @@ export type PaymentMethodMaxAggregateInputType = {
 
 export type PaymentMethodCountAggregateInputType = {
   id?: true
-  userId?: true
+  workspaceId?: true
   name?: true
   active?: true
   createdAt?: true
@@ -193,7 +193,7 @@ export type PaymentMethodGroupByArgs<ExtArgs extends runtime.Types.Extensions.In
 
 export type PaymentMethodGroupByOutputType = {
   id: string
-  userId: string
+  workspaceId: string
   name: string
   active: boolean
   createdAt: Date
@@ -226,7 +226,7 @@ export type PaymentMethodWhereInput = {
   OR?: Prisma.PaymentMethodWhereInput[]
   NOT?: Prisma.PaymentMethodWhereInput | Prisma.PaymentMethodWhereInput[]
   id?: Prisma.StringFilter<"PaymentMethod"> | string
-  userId?: Prisma.StringFilter<"PaymentMethod"> | string
+  workspaceId?: Prisma.StringFilter<"PaymentMethod"> | string
   name?: Prisma.StringFilter<"PaymentMethod"> | string
   active?: Prisma.BoolFilter<"PaymentMethod"> | boolean
   createdAt?: Prisma.DateTimeFilter<"PaymentMethod"> | Date | string
@@ -234,13 +234,13 @@ export type PaymentMethodWhereInput = {
   defaultCommissionPercentage?: Prisma.DecimalFilter<"PaymentMethod"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   expenses?: Prisma.ExpenseListRelationFilter
   incomePayments?: Prisma.IncomePaymentListRelationFilter
-  user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
+  workspace?: Prisma.XOR<Prisma.WorkspaceScalarRelationFilter, Prisma.WorkspaceWhereInput>
   recurringExpenses?: Prisma.RecurringExpenseListRelationFilter
 }
 
 export type PaymentMethodOrderByWithRelationInput = {
   id?: Prisma.SortOrder
-  userId?: Prisma.SortOrder
+  workspaceId?: Prisma.SortOrder
   name?: Prisma.SortOrder
   active?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -248,17 +248,17 @@ export type PaymentMethodOrderByWithRelationInput = {
   defaultCommissionPercentage?: Prisma.SortOrder
   expenses?: Prisma.ExpenseOrderByRelationAggregateInput
   incomePayments?: Prisma.IncomePaymentOrderByRelationAggregateInput
-  user?: Prisma.UserOrderByWithRelationInput
+  workspace?: Prisma.WorkspaceOrderByWithRelationInput
   recurringExpenses?: Prisma.RecurringExpenseOrderByRelationAggregateInput
 }
 
 export type PaymentMethodWhereUniqueInput = Prisma.AtLeast<{
   id?: string
-  userId_name?: Prisma.PaymentMethodUserIdNameCompoundUniqueInput
+  workspaceId_name?: Prisma.PaymentMethodWorkspaceIdNameCompoundUniqueInput
   AND?: Prisma.PaymentMethodWhereInput | Prisma.PaymentMethodWhereInput[]
   OR?: Prisma.PaymentMethodWhereInput[]
   NOT?: Prisma.PaymentMethodWhereInput | Prisma.PaymentMethodWhereInput[]
-  userId?: Prisma.StringFilter<"PaymentMethod"> | string
+  workspaceId?: Prisma.StringFilter<"PaymentMethod"> | string
   name?: Prisma.StringFilter<"PaymentMethod"> | string
   active?: Prisma.BoolFilter<"PaymentMethod"> | boolean
   createdAt?: Prisma.DateTimeFilter<"PaymentMethod"> | Date | string
@@ -266,13 +266,13 @@ export type PaymentMethodWhereUniqueInput = Prisma.AtLeast<{
   defaultCommissionPercentage?: Prisma.DecimalFilter<"PaymentMethod"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   expenses?: Prisma.ExpenseListRelationFilter
   incomePayments?: Prisma.IncomePaymentListRelationFilter
-  user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
+  workspace?: Prisma.XOR<Prisma.WorkspaceScalarRelationFilter, Prisma.WorkspaceWhereInput>
   recurringExpenses?: Prisma.RecurringExpenseListRelationFilter
-}, "id" | "userId_name">
+}, "id" | "workspaceId_name">
 
 export type PaymentMethodOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
-  userId?: Prisma.SortOrder
+  workspaceId?: Prisma.SortOrder
   name?: Prisma.SortOrder
   active?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -290,7 +290,7 @@ export type PaymentMethodScalarWhereWithAggregatesInput = {
   OR?: Prisma.PaymentMethodScalarWhereWithAggregatesInput[]
   NOT?: Prisma.PaymentMethodScalarWhereWithAggregatesInput | Prisma.PaymentMethodScalarWhereWithAggregatesInput[]
   id?: Prisma.StringWithAggregatesFilter<"PaymentMethod"> | string
-  userId?: Prisma.StringWithAggregatesFilter<"PaymentMethod"> | string
+  workspaceId?: Prisma.StringWithAggregatesFilter<"PaymentMethod"> | string
   name?: Prisma.StringWithAggregatesFilter<"PaymentMethod"> | string
   active?: Prisma.BoolWithAggregatesFilter<"PaymentMethod"> | boolean
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"PaymentMethod"> | Date | string
@@ -307,13 +307,13 @@ export type PaymentMethodCreateInput = {
   defaultCommissionPercentage?: runtime.Decimal | runtime.DecimalJsLike | number | string
   expenses?: Prisma.ExpenseCreateNestedManyWithoutPaymentMethodInput
   incomePayments?: Prisma.IncomePaymentCreateNestedManyWithoutPaymentMethodInput
-  user: Prisma.UserCreateNestedOneWithoutPaymentMethodsInput
+  workspace: Prisma.WorkspaceCreateNestedOneWithoutPaymentMethodsInput
   recurringExpenses?: Prisma.RecurringExpenseCreateNestedManyWithoutPaymentMethodInput
 }
 
 export type PaymentMethodUncheckedCreateInput = {
   id?: string
-  userId: string
+  workspaceId: string
   name: string
   active?: boolean
   createdAt?: Date | string
@@ -333,13 +333,13 @@ export type PaymentMethodUpdateInput = {
   defaultCommissionPercentage?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   expenses?: Prisma.ExpenseUpdateManyWithoutPaymentMethodNestedInput
   incomePayments?: Prisma.IncomePaymentUpdateManyWithoutPaymentMethodNestedInput
-  user?: Prisma.UserUpdateOneRequiredWithoutPaymentMethodsNestedInput
+  workspace?: Prisma.WorkspaceUpdateOneRequiredWithoutPaymentMethodsNestedInput
   recurringExpenses?: Prisma.RecurringExpenseUpdateManyWithoutPaymentMethodNestedInput
 }
 
 export type PaymentMethodUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  userId?: Prisma.StringFieldUpdateOperationsInput | string
+  workspaceId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -352,7 +352,7 @@ export type PaymentMethodUncheckedUpdateInput = {
 
 export type PaymentMethodCreateManyInput = {
   id?: string
-  userId: string
+  workspaceId: string
   name: string
   active?: boolean
   createdAt?: Date | string
@@ -371,7 +371,7 @@ export type PaymentMethodUpdateManyMutationInput = {
 
 export type PaymentMethodUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  userId?: Prisma.StringFieldUpdateOperationsInput | string
+  workspaceId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -379,29 +379,19 @@ export type PaymentMethodUncheckedUpdateManyInput = {
   defaultCommissionPercentage?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
 }
 
-export type PaymentMethodListRelationFilter = {
-  every?: Prisma.PaymentMethodWhereInput
-  some?: Prisma.PaymentMethodWhereInput
-  none?: Prisma.PaymentMethodWhereInput
-}
-
-export type PaymentMethodOrderByRelationAggregateInput = {
-  _count?: Prisma.SortOrder
-}
-
 export type PaymentMethodScalarRelationFilter = {
   is?: Prisma.PaymentMethodWhereInput
   isNot?: Prisma.PaymentMethodWhereInput
 }
 
-export type PaymentMethodUserIdNameCompoundUniqueInput = {
-  userId: string
+export type PaymentMethodWorkspaceIdNameCompoundUniqueInput = {
+  workspaceId: string
   name: string
 }
 
 export type PaymentMethodCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
-  userId?: Prisma.SortOrder
+  workspaceId?: Prisma.SortOrder
   name?: Prisma.SortOrder
   active?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -415,7 +405,7 @@ export type PaymentMethodAvgOrderByAggregateInput = {
 
 export type PaymentMethodMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
-  userId?: Prisma.SortOrder
+  workspaceId?: Prisma.SortOrder
   name?: Prisma.SortOrder
   active?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -425,7 +415,7 @@ export type PaymentMethodMaxOrderByAggregateInput = {
 
 export type PaymentMethodMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
-  userId?: Prisma.SortOrder
+  workspaceId?: Prisma.SortOrder
   name?: Prisma.SortOrder
   active?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -437,46 +427,14 @@ export type PaymentMethodSumOrderByAggregateInput = {
   defaultCommissionPercentage?: Prisma.SortOrder
 }
 
-export type PaymentMethodCreateNestedManyWithoutUserInput = {
-  create?: Prisma.XOR<Prisma.PaymentMethodCreateWithoutUserInput, Prisma.PaymentMethodUncheckedCreateWithoutUserInput> | Prisma.PaymentMethodCreateWithoutUserInput[] | Prisma.PaymentMethodUncheckedCreateWithoutUserInput[]
-  connectOrCreate?: Prisma.PaymentMethodCreateOrConnectWithoutUserInput | Prisma.PaymentMethodCreateOrConnectWithoutUserInput[]
-  createMany?: Prisma.PaymentMethodCreateManyUserInputEnvelope
-  connect?: Prisma.PaymentMethodWhereUniqueInput | Prisma.PaymentMethodWhereUniqueInput[]
+export type PaymentMethodListRelationFilter = {
+  every?: Prisma.PaymentMethodWhereInput
+  some?: Prisma.PaymentMethodWhereInput
+  none?: Prisma.PaymentMethodWhereInput
 }
 
-export type PaymentMethodUncheckedCreateNestedManyWithoutUserInput = {
-  create?: Prisma.XOR<Prisma.PaymentMethodCreateWithoutUserInput, Prisma.PaymentMethodUncheckedCreateWithoutUserInput> | Prisma.PaymentMethodCreateWithoutUserInput[] | Prisma.PaymentMethodUncheckedCreateWithoutUserInput[]
-  connectOrCreate?: Prisma.PaymentMethodCreateOrConnectWithoutUserInput | Prisma.PaymentMethodCreateOrConnectWithoutUserInput[]
-  createMany?: Prisma.PaymentMethodCreateManyUserInputEnvelope
-  connect?: Prisma.PaymentMethodWhereUniqueInput | Prisma.PaymentMethodWhereUniqueInput[]
-}
-
-export type PaymentMethodUpdateManyWithoutUserNestedInput = {
-  create?: Prisma.XOR<Prisma.PaymentMethodCreateWithoutUserInput, Prisma.PaymentMethodUncheckedCreateWithoutUserInput> | Prisma.PaymentMethodCreateWithoutUserInput[] | Prisma.PaymentMethodUncheckedCreateWithoutUserInput[]
-  connectOrCreate?: Prisma.PaymentMethodCreateOrConnectWithoutUserInput | Prisma.PaymentMethodCreateOrConnectWithoutUserInput[]
-  upsert?: Prisma.PaymentMethodUpsertWithWhereUniqueWithoutUserInput | Prisma.PaymentMethodUpsertWithWhereUniqueWithoutUserInput[]
-  createMany?: Prisma.PaymentMethodCreateManyUserInputEnvelope
-  set?: Prisma.PaymentMethodWhereUniqueInput | Prisma.PaymentMethodWhereUniqueInput[]
-  disconnect?: Prisma.PaymentMethodWhereUniqueInput | Prisma.PaymentMethodWhereUniqueInput[]
-  delete?: Prisma.PaymentMethodWhereUniqueInput | Prisma.PaymentMethodWhereUniqueInput[]
-  connect?: Prisma.PaymentMethodWhereUniqueInput | Prisma.PaymentMethodWhereUniqueInput[]
-  update?: Prisma.PaymentMethodUpdateWithWhereUniqueWithoutUserInput | Prisma.PaymentMethodUpdateWithWhereUniqueWithoutUserInput[]
-  updateMany?: Prisma.PaymentMethodUpdateManyWithWhereWithoutUserInput | Prisma.PaymentMethodUpdateManyWithWhereWithoutUserInput[]
-  deleteMany?: Prisma.PaymentMethodScalarWhereInput | Prisma.PaymentMethodScalarWhereInput[]
-}
-
-export type PaymentMethodUncheckedUpdateManyWithoutUserNestedInput = {
-  create?: Prisma.XOR<Prisma.PaymentMethodCreateWithoutUserInput, Prisma.PaymentMethodUncheckedCreateWithoutUserInput> | Prisma.PaymentMethodCreateWithoutUserInput[] | Prisma.PaymentMethodUncheckedCreateWithoutUserInput[]
-  connectOrCreate?: Prisma.PaymentMethodCreateOrConnectWithoutUserInput | Prisma.PaymentMethodCreateOrConnectWithoutUserInput[]
-  upsert?: Prisma.PaymentMethodUpsertWithWhereUniqueWithoutUserInput | Prisma.PaymentMethodUpsertWithWhereUniqueWithoutUserInput[]
-  createMany?: Prisma.PaymentMethodCreateManyUserInputEnvelope
-  set?: Prisma.PaymentMethodWhereUniqueInput | Prisma.PaymentMethodWhereUniqueInput[]
-  disconnect?: Prisma.PaymentMethodWhereUniqueInput | Prisma.PaymentMethodWhereUniqueInput[]
-  delete?: Prisma.PaymentMethodWhereUniqueInput | Prisma.PaymentMethodWhereUniqueInput[]
-  connect?: Prisma.PaymentMethodWhereUniqueInput | Prisma.PaymentMethodWhereUniqueInput[]
-  update?: Prisma.PaymentMethodUpdateWithWhereUniqueWithoutUserInput | Prisma.PaymentMethodUpdateWithWhereUniqueWithoutUserInput[]
-  updateMany?: Prisma.PaymentMethodUpdateManyWithWhereWithoutUserInput | Prisma.PaymentMethodUpdateManyWithWhereWithoutUserInput[]
-  deleteMany?: Prisma.PaymentMethodScalarWhereInput | Prisma.PaymentMethodScalarWhereInput[]
+export type PaymentMethodOrderByRelationAggregateInput = {
+  _count?: Prisma.SortOrder
 }
 
 export type PaymentMethodCreateNestedOneWithoutIncomePaymentsInput = {
@@ -521,67 +479,46 @@ export type PaymentMethodUpdateOneRequiredWithoutRecurringExpensesNestedInput = 
   update?: Prisma.XOR<Prisma.XOR<Prisma.PaymentMethodUpdateToOneWithWhereWithoutRecurringExpensesInput, Prisma.PaymentMethodUpdateWithoutRecurringExpensesInput>, Prisma.PaymentMethodUncheckedUpdateWithoutRecurringExpensesInput>
 }
 
-export type PaymentMethodCreateWithoutUserInput = {
-  id?: string
-  name: string
-  active?: boolean
-  createdAt?: Date | string
-  updatedAt?: Date | string
-  defaultCommissionPercentage?: runtime.Decimal | runtime.DecimalJsLike | number | string
-  expenses?: Prisma.ExpenseCreateNestedManyWithoutPaymentMethodInput
-  incomePayments?: Prisma.IncomePaymentCreateNestedManyWithoutPaymentMethodInput
-  recurringExpenses?: Prisma.RecurringExpenseCreateNestedManyWithoutPaymentMethodInput
+export type PaymentMethodCreateNestedManyWithoutWorkspaceInput = {
+  create?: Prisma.XOR<Prisma.PaymentMethodCreateWithoutWorkspaceInput, Prisma.PaymentMethodUncheckedCreateWithoutWorkspaceInput> | Prisma.PaymentMethodCreateWithoutWorkspaceInput[] | Prisma.PaymentMethodUncheckedCreateWithoutWorkspaceInput[]
+  connectOrCreate?: Prisma.PaymentMethodCreateOrConnectWithoutWorkspaceInput | Prisma.PaymentMethodCreateOrConnectWithoutWorkspaceInput[]
+  createMany?: Prisma.PaymentMethodCreateManyWorkspaceInputEnvelope
+  connect?: Prisma.PaymentMethodWhereUniqueInput | Prisma.PaymentMethodWhereUniqueInput[]
 }
 
-export type PaymentMethodUncheckedCreateWithoutUserInput = {
-  id?: string
-  name: string
-  active?: boolean
-  createdAt?: Date | string
-  updatedAt?: Date | string
-  defaultCommissionPercentage?: runtime.Decimal | runtime.DecimalJsLike | number | string
-  expenses?: Prisma.ExpenseUncheckedCreateNestedManyWithoutPaymentMethodInput
-  incomePayments?: Prisma.IncomePaymentUncheckedCreateNestedManyWithoutPaymentMethodInput
-  recurringExpenses?: Prisma.RecurringExpenseUncheckedCreateNestedManyWithoutPaymentMethodInput
+export type PaymentMethodUncheckedCreateNestedManyWithoutWorkspaceInput = {
+  create?: Prisma.XOR<Prisma.PaymentMethodCreateWithoutWorkspaceInput, Prisma.PaymentMethodUncheckedCreateWithoutWorkspaceInput> | Prisma.PaymentMethodCreateWithoutWorkspaceInput[] | Prisma.PaymentMethodUncheckedCreateWithoutWorkspaceInput[]
+  connectOrCreate?: Prisma.PaymentMethodCreateOrConnectWithoutWorkspaceInput | Prisma.PaymentMethodCreateOrConnectWithoutWorkspaceInput[]
+  createMany?: Prisma.PaymentMethodCreateManyWorkspaceInputEnvelope
+  connect?: Prisma.PaymentMethodWhereUniqueInput | Prisma.PaymentMethodWhereUniqueInput[]
 }
 
-export type PaymentMethodCreateOrConnectWithoutUserInput = {
-  where: Prisma.PaymentMethodWhereUniqueInput
-  create: Prisma.XOR<Prisma.PaymentMethodCreateWithoutUserInput, Prisma.PaymentMethodUncheckedCreateWithoutUserInput>
+export type PaymentMethodUpdateManyWithoutWorkspaceNestedInput = {
+  create?: Prisma.XOR<Prisma.PaymentMethodCreateWithoutWorkspaceInput, Prisma.PaymentMethodUncheckedCreateWithoutWorkspaceInput> | Prisma.PaymentMethodCreateWithoutWorkspaceInput[] | Prisma.PaymentMethodUncheckedCreateWithoutWorkspaceInput[]
+  connectOrCreate?: Prisma.PaymentMethodCreateOrConnectWithoutWorkspaceInput | Prisma.PaymentMethodCreateOrConnectWithoutWorkspaceInput[]
+  upsert?: Prisma.PaymentMethodUpsertWithWhereUniqueWithoutWorkspaceInput | Prisma.PaymentMethodUpsertWithWhereUniqueWithoutWorkspaceInput[]
+  createMany?: Prisma.PaymentMethodCreateManyWorkspaceInputEnvelope
+  set?: Prisma.PaymentMethodWhereUniqueInput | Prisma.PaymentMethodWhereUniqueInput[]
+  disconnect?: Prisma.PaymentMethodWhereUniqueInput | Prisma.PaymentMethodWhereUniqueInput[]
+  delete?: Prisma.PaymentMethodWhereUniqueInput | Prisma.PaymentMethodWhereUniqueInput[]
+  connect?: Prisma.PaymentMethodWhereUniqueInput | Prisma.PaymentMethodWhereUniqueInput[]
+  update?: Prisma.PaymentMethodUpdateWithWhereUniqueWithoutWorkspaceInput | Prisma.PaymentMethodUpdateWithWhereUniqueWithoutWorkspaceInput[]
+  updateMany?: Prisma.PaymentMethodUpdateManyWithWhereWithoutWorkspaceInput | Prisma.PaymentMethodUpdateManyWithWhereWithoutWorkspaceInput[]
+  deleteMany?: Prisma.PaymentMethodScalarWhereInput | Prisma.PaymentMethodScalarWhereInput[]
 }
 
-export type PaymentMethodCreateManyUserInputEnvelope = {
-  data: Prisma.PaymentMethodCreateManyUserInput | Prisma.PaymentMethodCreateManyUserInput[]
-  skipDuplicates?: boolean
-}
-
-export type PaymentMethodUpsertWithWhereUniqueWithoutUserInput = {
-  where: Prisma.PaymentMethodWhereUniqueInput
-  update: Prisma.XOR<Prisma.PaymentMethodUpdateWithoutUserInput, Prisma.PaymentMethodUncheckedUpdateWithoutUserInput>
-  create: Prisma.XOR<Prisma.PaymentMethodCreateWithoutUserInput, Prisma.PaymentMethodUncheckedCreateWithoutUserInput>
-}
-
-export type PaymentMethodUpdateWithWhereUniqueWithoutUserInput = {
-  where: Prisma.PaymentMethodWhereUniqueInput
-  data: Prisma.XOR<Prisma.PaymentMethodUpdateWithoutUserInput, Prisma.PaymentMethodUncheckedUpdateWithoutUserInput>
-}
-
-export type PaymentMethodUpdateManyWithWhereWithoutUserInput = {
-  where: Prisma.PaymentMethodScalarWhereInput
-  data: Prisma.XOR<Prisma.PaymentMethodUpdateManyMutationInput, Prisma.PaymentMethodUncheckedUpdateManyWithoutUserInput>
-}
-
-export type PaymentMethodScalarWhereInput = {
-  AND?: Prisma.PaymentMethodScalarWhereInput | Prisma.PaymentMethodScalarWhereInput[]
-  OR?: Prisma.PaymentMethodScalarWhereInput[]
-  NOT?: Prisma.PaymentMethodScalarWhereInput | Prisma.PaymentMethodScalarWhereInput[]
-  id?: Prisma.StringFilter<"PaymentMethod"> | string
-  userId?: Prisma.StringFilter<"PaymentMethod"> | string
-  name?: Prisma.StringFilter<"PaymentMethod"> | string
-  active?: Prisma.BoolFilter<"PaymentMethod"> | boolean
-  createdAt?: Prisma.DateTimeFilter<"PaymentMethod"> | Date | string
-  updatedAt?: Prisma.DateTimeFilter<"PaymentMethod"> | Date | string
-  defaultCommissionPercentage?: Prisma.DecimalFilter<"PaymentMethod"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+export type PaymentMethodUncheckedUpdateManyWithoutWorkspaceNestedInput = {
+  create?: Prisma.XOR<Prisma.PaymentMethodCreateWithoutWorkspaceInput, Prisma.PaymentMethodUncheckedCreateWithoutWorkspaceInput> | Prisma.PaymentMethodCreateWithoutWorkspaceInput[] | Prisma.PaymentMethodUncheckedCreateWithoutWorkspaceInput[]
+  connectOrCreate?: Prisma.PaymentMethodCreateOrConnectWithoutWorkspaceInput | Prisma.PaymentMethodCreateOrConnectWithoutWorkspaceInput[]
+  upsert?: Prisma.PaymentMethodUpsertWithWhereUniqueWithoutWorkspaceInput | Prisma.PaymentMethodUpsertWithWhereUniqueWithoutWorkspaceInput[]
+  createMany?: Prisma.PaymentMethodCreateManyWorkspaceInputEnvelope
+  set?: Prisma.PaymentMethodWhereUniqueInput | Prisma.PaymentMethodWhereUniqueInput[]
+  disconnect?: Prisma.PaymentMethodWhereUniqueInput | Prisma.PaymentMethodWhereUniqueInput[]
+  delete?: Prisma.PaymentMethodWhereUniqueInput | Prisma.PaymentMethodWhereUniqueInput[]
+  connect?: Prisma.PaymentMethodWhereUniqueInput | Prisma.PaymentMethodWhereUniqueInput[]
+  update?: Prisma.PaymentMethodUpdateWithWhereUniqueWithoutWorkspaceInput | Prisma.PaymentMethodUpdateWithWhereUniqueWithoutWorkspaceInput[]
+  updateMany?: Prisma.PaymentMethodUpdateManyWithWhereWithoutWorkspaceInput | Prisma.PaymentMethodUpdateManyWithWhereWithoutWorkspaceInput[]
+  deleteMany?: Prisma.PaymentMethodScalarWhereInput | Prisma.PaymentMethodScalarWhereInput[]
 }
 
 export type PaymentMethodCreateWithoutIncomePaymentsInput = {
@@ -592,13 +529,13 @@ export type PaymentMethodCreateWithoutIncomePaymentsInput = {
   updatedAt?: Date | string
   defaultCommissionPercentage?: runtime.Decimal | runtime.DecimalJsLike | number | string
   expenses?: Prisma.ExpenseCreateNestedManyWithoutPaymentMethodInput
-  user: Prisma.UserCreateNestedOneWithoutPaymentMethodsInput
+  workspace: Prisma.WorkspaceCreateNestedOneWithoutPaymentMethodsInput
   recurringExpenses?: Prisma.RecurringExpenseCreateNestedManyWithoutPaymentMethodInput
 }
 
 export type PaymentMethodUncheckedCreateWithoutIncomePaymentsInput = {
   id?: string
-  userId: string
+  workspaceId: string
   name: string
   active?: boolean
   createdAt?: Date | string
@@ -632,13 +569,13 @@ export type PaymentMethodUpdateWithoutIncomePaymentsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   defaultCommissionPercentage?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   expenses?: Prisma.ExpenseUpdateManyWithoutPaymentMethodNestedInput
-  user?: Prisma.UserUpdateOneRequiredWithoutPaymentMethodsNestedInput
+  workspace?: Prisma.WorkspaceUpdateOneRequiredWithoutPaymentMethodsNestedInput
   recurringExpenses?: Prisma.RecurringExpenseUpdateManyWithoutPaymentMethodNestedInput
 }
 
 export type PaymentMethodUncheckedUpdateWithoutIncomePaymentsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  userId?: Prisma.StringFieldUpdateOperationsInput | string
+  workspaceId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -656,13 +593,13 @@ export type PaymentMethodCreateWithoutExpensesInput = {
   updatedAt?: Date | string
   defaultCommissionPercentage?: runtime.Decimal | runtime.DecimalJsLike | number | string
   incomePayments?: Prisma.IncomePaymentCreateNestedManyWithoutPaymentMethodInput
-  user: Prisma.UserCreateNestedOneWithoutPaymentMethodsInput
+  workspace: Prisma.WorkspaceCreateNestedOneWithoutPaymentMethodsInput
   recurringExpenses?: Prisma.RecurringExpenseCreateNestedManyWithoutPaymentMethodInput
 }
 
 export type PaymentMethodUncheckedCreateWithoutExpensesInput = {
   id?: string
-  userId: string
+  workspaceId: string
   name: string
   active?: boolean
   createdAt?: Date | string
@@ -696,13 +633,13 @@ export type PaymentMethodUpdateWithoutExpensesInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   defaultCommissionPercentage?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   incomePayments?: Prisma.IncomePaymentUpdateManyWithoutPaymentMethodNestedInput
-  user?: Prisma.UserUpdateOneRequiredWithoutPaymentMethodsNestedInput
+  workspace?: Prisma.WorkspaceUpdateOneRequiredWithoutPaymentMethodsNestedInput
   recurringExpenses?: Prisma.RecurringExpenseUpdateManyWithoutPaymentMethodNestedInput
 }
 
 export type PaymentMethodUncheckedUpdateWithoutExpensesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  userId?: Prisma.StringFieldUpdateOperationsInput | string
+  workspaceId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -721,12 +658,12 @@ export type PaymentMethodCreateWithoutRecurringExpensesInput = {
   defaultCommissionPercentage?: runtime.Decimal | runtime.DecimalJsLike | number | string
   expenses?: Prisma.ExpenseCreateNestedManyWithoutPaymentMethodInput
   incomePayments?: Prisma.IncomePaymentCreateNestedManyWithoutPaymentMethodInput
-  user: Prisma.UserCreateNestedOneWithoutPaymentMethodsInput
+  workspace: Prisma.WorkspaceCreateNestedOneWithoutPaymentMethodsInput
 }
 
 export type PaymentMethodUncheckedCreateWithoutRecurringExpensesInput = {
   id?: string
-  userId: string
+  workspaceId: string
   name: string
   active?: boolean
   createdAt?: Date | string
@@ -761,12 +698,12 @@ export type PaymentMethodUpdateWithoutRecurringExpensesInput = {
   defaultCommissionPercentage?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   expenses?: Prisma.ExpenseUpdateManyWithoutPaymentMethodNestedInput
   incomePayments?: Prisma.IncomePaymentUpdateManyWithoutPaymentMethodNestedInput
-  user?: Prisma.UserUpdateOneRequiredWithoutPaymentMethodsNestedInput
+  workspace?: Prisma.WorkspaceUpdateOneRequiredWithoutPaymentMethodsNestedInput
 }
 
 export type PaymentMethodUncheckedUpdateWithoutRecurringExpensesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  userId?: Prisma.StringFieldUpdateOperationsInput | string
+  workspaceId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -776,7 +713,70 @@ export type PaymentMethodUncheckedUpdateWithoutRecurringExpensesInput = {
   incomePayments?: Prisma.IncomePaymentUncheckedUpdateManyWithoutPaymentMethodNestedInput
 }
 
-export type PaymentMethodCreateManyUserInput = {
+export type PaymentMethodCreateWithoutWorkspaceInput = {
+  id?: string
+  name: string
+  active?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  defaultCommissionPercentage?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  expenses?: Prisma.ExpenseCreateNestedManyWithoutPaymentMethodInput
+  incomePayments?: Prisma.IncomePaymentCreateNestedManyWithoutPaymentMethodInput
+  recurringExpenses?: Prisma.RecurringExpenseCreateNestedManyWithoutPaymentMethodInput
+}
+
+export type PaymentMethodUncheckedCreateWithoutWorkspaceInput = {
+  id?: string
+  name: string
+  active?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  defaultCommissionPercentage?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  expenses?: Prisma.ExpenseUncheckedCreateNestedManyWithoutPaymentMethodInput
+  incomePayments?: Prisma.IncomePaymentUncheckedCreateNestedManyWithoutPaymentMethodInput
+  recurringExpenses?: Prisma.RecurringExpenseUncheckedCreateNestedManyWithoutPaymentMethodInput
+}
+
+export type PaymentMethodCreateOrConnectWithoutWorkspaceInput = {
+  where: Prisma.PaymentMethodWhereUniqueInput
+  create: Prisma.XOR<Prisma.PaymentMethodCreateWithoutWorkspaceInput, Prisma.PaymentMethodUncheckedCreateWithoutWorkspaceInput>
+}
+
+export type PaymentMethodCreateManyWorkspaceInputEnvelope = {
+  data: Prisma.PaymentMethodCreateManyWorkspaceInput | Prisma.PaymentMethodCreateManyWorkspaceInput[]
+  skipDuplicates?: boolean
+}
+
+export type PaymentMethodUpsertWithWhereUniqueWithoutWorkspaceInput = {
+  where: Prisma.PaymentMethodWhereUniqueInput
+  update: Prisma.XOR<Prisma.PaymentMethodUpdateWithoutWorkspaceInput, Prisma.PaymentMethodUncheckedUpdateWithoutWorkspaceInput>
+  create: Prisma.XOR<Prisma.PaymentMethodCreateWithoutWorkspaceInput, Prisma.PaymentMethodUncheckedCreateWithoutWorkspaceInput>
+}
+
+export type PaymentMethodUpdateWithWhereUniqueWithoutWorkspaceInput = {
+  where: Prisma.PaymentMethodWhereUniqueInput
+  data: Prisma.XOR<Prisma.PaymentMethodUpdateWithoutWorkspaceInput, Prisma.PaymentMethodUncheckedUpdateWithoutWorkspaceInput>
+}
+
+export type PaymentMethodUpdateManyWithWhereWithoutWorkspaceInput = {
+  where: Prisma.PaymentMethodScalarWhereInput
+  data: Prisma.XOR<Prisma.PaymentMethodUpdateManyMutationInput, Prisma.PaymentMethodUncheckedUpdateManyWithoutWorkspaceInput>
+}
+
+export type PaymentMethodScalarWhereInput = {
+  AND?: Prisma.PaymentMethodScalarWhereInput | Prisma.PaymentMethodScalarWhereInput[]
+  OR?: Prisma.PaymentMethodScalarWhereInput[]
+  NOT?: Prisma.PaymentMethodScalarWhereInput | Prisma.PaymentMethodScalarWhereInput[]
+  id?: Prisma.StringFilter<"PaymentMethod"> | string
+  workspaceId?: Prisma.StringFilter<"PaymentMethod"> | string
+  name?: Prisma.StringFilter<"PaymentMethod"> | string
+  active?: Prisma.BoolFilter<"PaymentMethod"> | boolean
+  createdAt?: Prisma.DateTimeFilter<"PaymentMethod"> | Date | string
+  updatedAt?: Prisma.DateTimeFilter<"PaymentMethod"> | Date | string
+  defaultCommissionPercentage?: Prisma.DecimalFilter<"PaymentMethod"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+}
+
+export type PaymentMethodCreateManyWorkspaceInput = {
   id?: string
   name: string
   active?: boolean
@@ -785,7 +785,7 @@ export type PaymentMethodCreateManyUserInput = {
   defaultCommissionPercentage?: runtime.Decimal | runtime.DecimalJsLike | number | string
 }
 
-export type PaymentMethodUpdateWithoutUserInput = {
+export type PaymentMethodUpdateWithoutWorkspaceInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -797,7 +797,7 @@ export type PaymentMethodUpdateWithoutUserInput = {
   recurringExpenses?: Prisma.RecurringExpenseUpdateManyWithoutPaymentMethodNestedInput
 }
 
-export type PaymentMethodUncheckedUpdateWithoutUserInput = {
+export type PaymentMethodUncheckedUpdateWithoutWorkspaceInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -809,7 +809,7 @@ export type PaymentMethodUncheckedUpdateWithoutUserInput = {
   recurringExpenses?: Prisma.RecurringExpenseUncheckedUpdateManyWithoutPaymentMethodNestedInput
 }
 
-export type PaymentMethodUncheckedUpdateManyWithoutUserInput = {
+export type PaymentMethodUncheckedUpdateManyWithoutWorkspaceInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -869,7 +869,7 @@ export type PaymentMethodCountOutputTypeCountRecurringExpensesArgs<ExtArgs exten
 
 export type PaymentMethodSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
-  userId?: boolean
+  workspaceId?: boolean
   name?: boolean
   active?: boolean
   createdAt?: boolean
@@ -877,36 +877,36 @@ export type PaymentMethodSelect<ExtArgs extends runtime.Types.Extensions.Interna
   defaultCommissionPercentage?: boolean
   expenses?: boolean | Prisma.PaymentMethod$expensesArgs<ExtArgs>
   incomePayments?: boolean | Prisma.PaymentMethod$incomePaymentsArgs<ExtArgs>
-  user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  workspace?: boolean | Prisma.WorkspaceDefaultArgs<ExtArgs>
   recurringExpenses?: boolean | Prisma.PaymentMethod$recurringExpensesArgs<ExtArgs>
   _count?: boolean | Prisma.PaymentMethodCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["paymentMethod"]>
 
 export type PaymentMethodSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
-  userId?: boolean
+  workspaceId?: boolean
   name?: boolean
   active?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   defaultCommissionPercentage?: boolean
-  user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  workspace?: boolean | Prisma.WorkspaceDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["paymentMethod"]>
 
 export type PaymentMethodSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
-  userId?: boolean
+  workspaceId?: boolean
   name?: boolean
   active?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   defaultCommissionPercentage?: boolean
-  user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  workspace?: boolean | Prisma.WorkspaceDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["paymentMethod"]>
 
 export type PaymentMethodSelectScalar = {
   id?: boolean
-  userId?: boolean
+  workspaceId?: boolean
   name?: boolean
   active?: boolean
   createdAt?: boolean
@@ -914,19 +914,19 @@ export type PaymentMethodSelectScalar = {
   defaultCommissionPercentage?: boolean
 }
 
-export type PaymentMethodOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "name" | "active" | "createdAt" | "updatedAt" | "defaultCommissionPercentage", ExtArgs["result"]["paymentMethod"]>
+export type PaymentMethodOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "workspaceId" | "name" | "active" | "createdAt" | "updatedAt" | "defaultCommissionPercentage", ExtArgs["result"]["paymentMethod"]>
 export type PaymentMethodInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   expenses?: boolean | Prisma.PaymentMethod$expensesArgs<ExtArgs>
   incomePayments?: boolean | Prisma.PaymentMethod$incomePaymentsArgs<ExtArgs>
-  user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  workspace?: boolean | Prisma.WorkspaceDefaultArgs<ExtArgs>
   recurringExpenses?: boolean | Prisma.PaymentMethod$recurringExpensesArgs<ExtArgs>
   _count?: boolean | Prisma.PaymentMethodCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type PaymentMethodIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  workspace?: boolean | Prisma.WorkspaceDefaultArgs<ExtArgs>
 }
 export type PaymentMethodIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  workspace?: boolean | Prisma.WorkspaceDefaultArgs<ExtArgs>
 }
 
 export type $PaymentMethodPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -934,12 +934,12 @@ export type $PaymentMethodPayload<ExtArgs extends runtime.Types.Extensions.Inter
   objects: {
     expenses: Prisma.$ExpensePayload<ExtArgs>[]
     incomePayments: Prisma.$IncomePaymentPayload<ExtArgs>[]
-    user: Prisma.$UserPayload<ExtArgs>
+    workspace: Prisma.$WorkspacePayload<ExtArgs>
     recurringExpenses: Prisma.$RecurringExpensePayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
-    userId: string
+    workspaceId: string
     name: string
     active: boolean
     createdAt: Date
@@ -1341,7 +1341,7 @@ export interface Prisma__PaymentMethodClient<T, Null = never, ExtArgs extends ru
   readonly [Symbol.toStringTag]: "PrismaPromise"
   expenses<T extends Prisma.PaymentMethod$expensesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.PaymentMethod$expensesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ExpensePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   incomePayments<T extends Prisma.PaymentMethod$incomePaymentsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.PaymentMethod$incomePaymentsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$IncomePaymentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-  user<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  workspace<T extends Prisma.WorkspaceDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.WorkspaceDefaultArgs<ExtArgs>>): Prisma.Prisma__WorkspaceClient<runtime.Types.Result.GetResult<Prisma.$WorkspacePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   recurringExpenses<T extends Prisma.PaymentMethod$recurringExpensesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.PaymentMethod$recurringExpensesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$RecurringExpensePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -1373,7 +1373,7 @@ export interface Prisma__PaymentMethodClient<T, Null = never, ExtArgs extends ru
  */
 export interface PaymentMethodFieldRefs {
   readonly id: Prisma.FieldRef<"PaymentMethod", 'String'>
-  readonly userId: Prisma.FieldRef<"PaymentMethod", 'String'>
+  readonly workspaceId: Prisma.FieldRef<"PaymentMethod", 'String'>
   readonly name: Prisma.FieldRef<"PaymentMethod", 'String'>
   readonly active: Prisma.FieldRef<"PaymentMethod", 'Boolean'>
   readonly createdAt: Prisma.FieldRef<"PaymentMethod", 'DateTime'>

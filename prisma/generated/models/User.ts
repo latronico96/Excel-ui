@@ -20,20 +20,8 @@ export type UserModel = runtime.Types.Result.DefaultSelection<Prisma.$UserPayloa
 
 export type AggregateUser = {
   _count: UserCountAggregateOutputType | null
-  _avg: UserAvgAggregateOutputType | null
-  _sum: UserSumAggregateOutputType | null
   _min: UserMinAggregateOutputType | null
   _max: UserMaxAggregateOutputType | null
-}
-
-export type UserAvgAggregateOutputType = {
-  defaultInvestmentPercentage: runtime.Decimal | null
-  tithePercentage: runtime.Decimal | null
-}
-
-export type UserSumAggregateOutputType = {
-  defaultInvestmentPercentage: runtime.Decimal | null
-  tithePercentage: runtime.Decimal | null
 }
 
 export type UserMinAggregateOutputType = {
@@ -44,12 +32,6 @@ export type UserMinAggregateOutputType = {
   createdAt: Date | null
   updatedAt: Date | null
   emailVerified: Date | null
-  onboardingCompleted: boolean | null
-  defaultInvestmentPercentage: runtime.Decimal | null
-  titheEnabled: boolean | null
-  tithePercentage: runtime.Decimal | null
-  titheBase: string | null
-  isDemo: boolean | null
 }
 
 export type UserMaxAggregateOutputType = {
@@ -60,12 +42,6 @@ export type UserMaxAggregateOutputType = {
   createdAt: Date | null
   updatedAt: Date | null
   emailVerified: Date | null
-  onboardingCompleted: boolean | null
-  defaultInvestmentPercentage: runtime.Decimal | null
-  titheEnabled: boolean | null
-  tithePercentage: runtime.Decimal | null
-  titheBase: string | null
-  isDemo: boolean | null
 }
 
 export type UserCountAggregateOutputType = {
@@ -76,25 +52,9 @@ export type UserCountAggregateOutputType = {
   createdAt: number
   updatedAt: number
   emailVerified: number
-  onboardingCompleted: number
-  defaultInvestmentPercentage: number
-  titheEnabled: number
-  tithePercentage: number
-  titheBase: number
-  isDemo: number
   _all: number
 }
 
-
-export type UserAvgAggregateInputType = {
-  defaultInvestmentPercentage?: true
-  tithePercentage?: true
-}
-
-export type UserSumAggregateInputType = {
-  defaultInvestmentPercentage?: true
-  tithePercentage?: true
-}
 
 export type UserMinAggregateInputType = {
   id?: true
@@ -104,12 +64,6 @@ export type UserMinAggregateInputType = {
   createdAt?: true
   updatedAt?: true
   emailVerified?: true
-  onboardingCompleted?: true
-  defaultInvestmentPercentage?: true
-  titheEnabled?: true
-  tithePercentage?: true
-  titheBase?: true
-  isDemo?: true
 }
 
 export type UserMaxAggregateInputType = {
@@ -120,12 +74,6 @@ export type UserMaxAggregateInputType = {
   createdAt?: true
   updatedAt?: true
   emailVerified?: true
-  onboardingCompleted?: true
-  defaultInvestmentPercentage?: true
-  titheEnabled?: true
-  tithePercentage?: true
-  titheBase?: true
-  isDemo?: true
 }
 
 export type UserCountAggregateInputType = {
@@ -136,12 +84,6 @@ export type UserCountAggregateInputType = {
   createdAt?: true
   updatedAt?: true
   emailVerified?: true
-  onboardingCompleted?: true
-  defaultInvestmentPercentage?: true
-  titheEnabled?: true
-  tithePercentage?: true
-  titheBase?: true
-  isDemo?: true
   _all?: true
 }
 
@@ -183,18 +125,6 @@ export type UserAggregateArgs<ExtArgs extends runtime.Types.Extensions.InternalA
   /**
    * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
    * 
-   * Select which fields to average
-  **/
-  _avg?: UserAvgAggregateInputType
-  /**
-   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-   * 
-   * Select which fields to sum
-  **/
-  _sum?: UserSumAggregateInputType
-  /**
-   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-   * 
    * Select which fields to find the minimum value
   **/
   _min?: UserMinAggregateInputType
@@ -225,8 +155,6 @@ export type UserGroupByArgs<ExtArgs extends runtime.Types.Extensions.InternalArg
   take?: number
   skip?: number
   _count?: UserCountAggregateInputType | true
-  _avg?: UserAvgAggregateInputType
-  _sum?: UserSumAggregateInputType
   _min?: UserMinAggregateInputType
   _max?: UserMaxAggregateInputType
 }
@@ -239,15 +167,7 @@ export type UserGroupByOutputType = {
   createdAt: Date
   updatedAt: Date
   emailVerified: Date | null
-  onboardingCompleted: boolean
-  defaultInvestmentPercentage: runtime.Decimal
-  titheEnabled: boolean
-  tithePercentage: runtime.Decimal
-  titheBase: string
-  isDemo: boolean
   _count: UserCountAggregateOutputType | null
-  _avg: UserAvgAggregateOutputType | null
-  _sum: UserSumAggregateOutputType | null
   _min: UserMinAggregateOutputType | null
   _max: UserMaxAggregateOutputType | null
 }
@@ -278,20 +198,13 @@ export type UserWhereInput = {
   createdAt?: Prisma.DateTimeFilter<"User"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"User"> | Date | string
   emailVerified?: Prisma.DateTimeNullableFilter<"User"> | Date | string | null
-  onboardingCompleted?: Prisma.BoolFilter<"User"> | boolean
-  defaultInvestmentPercentage?: Prisma.DecimalFilter<"User"> | runtime.Decimal | runtime.DecimalJsLike | number | string
-  titheEnabled?: Prisma.BoolFilter<"User"> | boolean
-  tithePercentage?: Prisma.DecimalFilter<"User"> | runtime.Decimal | runtime.DecimalJsLike | number | string
-  titheBase?: Prisma.StringFilter<"User"> | string
-  isDemo?: Prisma.BoolFilter<"User"> | boolean
+  workspaceMembers?: Prisma.WorkspaceMemberListRelationFilter
   accounts?: Prisma.AccountListRelationFilter
-  expenses?: Prisma.ExpenseListRelationFilter
-  expenseTypes?: Prisma.ExpenseTypeListRelationFilter
-  incomes?: Prisma.IncomeListRelationFilter
-  movements?: Prisma.MovementListRelationFilter
-  paymentMethods?: Prisma.PaymentMethodListRelationFilter
   sessions?: Prisma.SessionListRelationFilter
-  recurringExpenses?: Prisma.RecurringExpenseListRelationFilter
+  createdMovements?: Prisma.MovementListRelationFilter
+  updatedMovements?: Prisma.MovementListRelationFilter
+  createdInvitations?: Prisma.WorkspaceInvitationListRelationFilter
+  acceptedInvitations?: Prisma.WorkspaceInvitationListRelationFilter
 }
 
 export type UserOrderByWithRelationInput = {
@@ -302,20 +215,13 @@ export type UserOrderByWithRelationInput = {
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   emailVerified?: Prisma.SortOrderInput | Prisma.SortOrder
-  onboardingCompleted?: Prisma.SortOrder
-  defaultInvestmentPercentage?: Prisma.SortOrder
-  titheEnabled?: Prisma.SortOrder
-  tithePercentage?: Prisma.SortOrder
-  titheBase?: Prisma.SortOrder
-  isDemo?: Prisma.SortOrder
+  workspaceMembers?: Prisma.WorkspaceMemberOrderByRelationAggregateInput
   accounts?: Prisma.AccountOrderByRelationAggregateInput
-  expenses?: Prisma.ExpenseOrderByRelationAggregateInput
-  expenseTypes?: Prisma.ExpenseTypeOrderByRelationAggregateInput
-  incomes?: Prisma.IncomeOrderByRelationAggregateInput
-  movements?: Prisma.MovementOrderByRelationAggregateInput
-  paymentMethods?: Prisma.PaymentMethodOrderByRelationAggregateInput
   sessions?: Prisma.SessionOrderByRelationAggregateInput
-  recurringExpenses?: Prisma.RecurringExpenseOrderByRelationAggregateInput
+  createdMovements?: Prisma.MovementOrderByRelationAggregateInput
+  updatedMovements?: Prisma.MovementOrderByRelationAggregateInput
+  createdInvitations?: Prisma.WorkspaceInvitationOrderByRelationAggregateInput
+  acceptedInvitations?: Prisma.WorkspaceInvitationOrderByRelationAggregateInput
 }
 
 export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -329,20 +235,13 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   createdAt?: Prisma.DateTimeFilter<"User"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"User"> | Date | string
   emailVerified?: Prisma.DateTimeNullableFilter<"User"> | Date | string | null
-  onboardingCompleted?: Prisma.BoolFilter<"User"> | boolean
-  defaultInvestmentPercentage?: Prisma.DecimalFilter<"User"> | runtime.Decimal | runtime.DecimalJsLike | number | string
-  titheEnabled?: Prisma.BoolFilter<"User"> | boolean
-  tithePercentage?: Prisma.DecimalFilter<"User"> | runtime.Decimal | runtime.DecimalJsLike | number | string
-  titheBase?: Prisma.StringFilter<"User"> | string
-  isDemo?: Prisma.BoolFilter<"User"> | boolean
+  workspaceMembers?: Prisma.WorkspaceMemberListRelationFilter
   accounts?: Prisma.AccountListRelationFilter
-  expenses?: Prisma.ExpenseListRelationFilter
-  expenseTypes?: Prisma.ExpenseTypeListRelationFilter
-  incomes?: Prisma.IncomeListRelationFilter
-  movements?: Prisma.MovementListRelationFilter
-  paymentMethods?: Prisma.PaymentMethodListRelationFilter
   sessions?: Prisma.SessionListRelationFilter
-  recurringExpenses?: Prisma.RecurringExpenseListRelationFilter
+  createdMovements?: Prisma.MovementListRelationFilter
+  updatedMovements?: Prisma.MovementListRelationFilter
+  createdInvitations?: Prisma.WorkspaceInvitationListRelationFilter
+  acceptedInvitations?: Prisma.WorkspaceInvitationListRelationFilter
 }, "id" | "email">
 
 export type UserOrderByWithAggregationInput = {
@@ -353,17 +252,9 @@ export type UserOrderByWithAggregationInput = {
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   emailVerified?: Prisma.SortOrderInput | Prisma.SortOrder
-  onboardingCompleted?: Prisma.SortOrder
-  defaultInvestmentPercentage?: Prisma.SortOrder
-  titheEnabled?: Prisma.SortOrder
-  tithePercentage?: Prisma.SortOrder
-  titheBase?: Prisma.SortOrder
-  isDemo?: Prisma.SortOrder
   _count?: Prisma.UserCountOrderByAggregateInput
-  _avg?: Prisma.UserAvgOrderByAggregateInput
   _max?: Prisma.UserMaxOrderByAggregateInput
   _min?: Prisma.UserMinOrderByAggregateInput
-  _sum?: Prisma.UserSumOrderByAggregateInput
 }
 
 export type UserScalarWhereWithAggregatesInput = {
@@ -377,12 +268,6 @@ export type UserScalarWhereWithAggregatesInput = {
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"User"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"User"> | Date | string
   emailVerified?: Prisma.DateTimeNullableWithAggregatesFilter<"User"> | Date | string | null
-  onboardingCompleted?: Prisma.BoolWithAggregatesFilter<"User"> | boolean
-  defaultInvestmentPercentage?: Prisma.DecimalWithAggregatesFilter<"User"> | runtime.Decimal | runtime.DecimalJsLike | number | string
-  titheEnabled?: Prisma.BoolWithAggregatesFilter<"User"> | boolean
-  tithePercentage?: Prisma.DecimalWithAggregatesFilter<"User"> | runtime.Decimal | runtime.DecimalJsLike | number | string
-  titheBase?: Prisma.StringWithAggregatesFilter<"User"> | string
-  isDemo?: Prisma.BoolWithAggregatesFilter<"User"> | boolean
 }
 
 export type UserCreateInput = {
@@ -393,20 +278,13 @@ export type UserCreateInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   emailVerified?: Date | string | null
-  onboardingCompleted?: boolean
-  defaultInvestmentPercentage?: runtime.Decimal | runtime.DecimalJsLike | number | string
-  titheEnabled?: boolean
-  tithePercentage?: runtime.Decimal | runtime.DecimalJsLike | number | string
-  titheBase?: string
-  isDemo?: boolean
+  workspaceMembers?: Prisma.WorkspaceMemberCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
-  expenses?: Prisma.ExpenseCreateNestedManyWithoutUserInput
-  expenseTypes?: Prisma.ExpenseTypeCreateNestedManyWithoutUserInput
-  incomes?: Prisma.IncomeCreateNestedManyWithoutUserInput
-  movements?: Prisma.MovementCreateNestedManyWithoutUserInput
-  paymentMethods?: Prisma.PaymentMethodCreateNestedManyWithoutUserInput
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
-  recurringExpenses?: Prisma.RecurringExpenseCreateNestedManyWithoutUserInput
+  createdMovements?: Prisma.MovementCreateNestedManyWithoutCreatedByInput
+  updatedMovements?: Prisma.MovementCreateNestedManyWithoutUpdatedByInput
+  createdInvitations?: Prisma.WorkspaceInvitationCreateNestedManyWithoutInvitedByInput
+  acceptedInvitations?: Prisma.WorkspaceInvitationCreateNestedManyWithoutAcceptedByInput
 }
 
 export type UserUncheckedCreateInput = {
@@ -417,20 +295,13 @@ export type UserUncheckedCreateInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   emailVerified?: Date | string | null
-  onboardingCompleted?: boolean
-  defaultInvestmentPercentage?: runtime.Decimal | runtime.DecimalJsLike | number | string
-  titheEnabled?: boolean
-  tithePercentage?: runtime.Decimal | runtime.DecimalJsLike | number | string
-  titheBase?: string
-  isDemo?: boolean
+  workspaceMembers?: Prisma.WorkspaceMemberUncheckedCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
-  expenses?: Prisma.ExpenseUncheckedCreateNestedManyWithoutUserInput
-  expenseTypes?: Prisma.ExpenseTypeUncheckedCreateNestedManyWithoutUserInput
-  incomes?: Prisma.IncomeUncheckedCreateNestedManyWithoutUserInput
-  movements?: Prisma.MovementUncheckedCreateNestedManyWithoutUserInput
-  paymentMethods?: Prisma.PaymentMethodUncheckedCreateNestedManyWithoutUserInput
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
-  recurringExpenses?: Prisma.RecurringExpenseUncheckedCreateNestedManyWithoutUserInput
+  createdMovements?: Prisma.MovementUncheckedCreateNestedManyWithoutCreatedByInput
+  updatedMovements?: Prisma.MovementUncheckedCreateNestedManyWithoutUpdatedByInput
+  createdInvitations?: Prisma.WorkspaceInvitationUncheckedCreateNestedManyWithoutInvitedByInput
+  acceptedInvitations?: Prisma.WorkspaceInvitationUncheckedCreateNestedManyWithoutAcceptedByInput
 }
 
 export type UserUpdateInput = {
@@ -441,20 +312,13 @@ export type UserUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  onboardingCompleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  defaultInvestmentPercentage?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
-  titheEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  tithePercentage?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
-  titheBase?: Prisma.StringFieldUpdateOperationsInput | string
-  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  workspaceMembers?: Prisma.WorkspaceMemberUpdateManyWithoutUserNestedInput
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
-  expenses?: Prisma.ExpenseUpdateManyWithoutUserNestedInput
-  expenseTypes?: Prisma.ExpenseTypeUpdateManyWithoutUserNestedInput
-  incomes?: Prisma.IncomeUpdateManyWithoutUserNestedInput
-  movements?: Prisma.MovementUpdateManyWithoutUserNestedInput
-  paymentMethods?: Prisma.PaymentMethodUpdateManyWithoutUserNestedInput
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
-  recurringExpenses?: Prisma.RecurringExpenseUpdateManyWithoutUserNestedInput
+  createdMovements?: Prisma.MovementUpdateManyWithoutCreatedByNestedInput
+  updatedMovements?: Prisma.MovementUpdateManyWithoutUpdatedByNestedInput
+  createdInvitations?: Prisma.WorkspaceInvitationUpdateManyWithoutInvitedByNestedInput
+  acceptedInvitations?: Prisma.WorkspaceInvitationUpdateManyWithoutAcceptedByNestedInput
 }
 
 export type UserUncheckedUpdateInput = {
@@ -465,20 +329,13 @@ export type UserUncheckedUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  onboardingCompleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  defaultInvestmentPercentage?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
-  titheEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  tithePercentage?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
-  titheBase?: Prisma.StringFieldUpdateOperationsInput | string
-  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  workspaceMembers?: Prisma.WorkspaceMemberUncheckedUpdateManyWithoutUserNestedInput
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
-  expenses?: Prisma.ExpenseUncheckedUpdateManyWithoutUserNestedInput
-  expenseTypes?: Prisma.ExpenseTypeUncheckedUpdateManyWithoutUserNestedInput
-  incomes?: Prisma.IncomeUncheckedUpdateManyWithoutUserNestedInput
-  movements?: Prisma.MovementUncheckedUpdateManyWithoutUserNestedInput
-  paymentMethods?: Prisma.PaymentMethodUncheckedUpdateManyWithoutUserNestedInput
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
-  recurringExpenses?: Prisma.RecurringExpenseUncheckedUpdateManyWithoutUserNestedInput
+  createdMovements?: Prisma.MovementUncheckedUpdateManyWithoutCreatedByNestedInput
+  updatedMovements?: Prisma.MovementUncheckedUpdateManyWithoutUpdatedByNestedInput
+  createdInvitations?: Prisma.WorkspaceInvitationUncheckedUpdateManyWithoutInvitedByNestedInput
+  acceptedInvitations?: Prisma.WorkspaceInvitationUncheckedUpdateManyWithoutAcceptedByNestedInput
 }
 
 export type UserCreateManyInput = {
@@ -489,12 +346,6 @@ export type UserCreateManyInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   emailVerified?: Date | string | null
-  onboardingCompleted?: boolean
-  defaultInvestmentPercentage?: runtime.Decimal | runtime.DecimalJsLike | number | string
-  titheEnabled?: boolean
-  tithePercentage?: runtime.Decimal | runtime.DecimalJsLike | number | string
-  titheBase?: string
-  isDemo?: boolean
 }
 
 export type UserUpdateManyMutationInput = {
@@ -505,12 +356,6 @@ export type UserUpdateManyMutationInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  onboardingCompleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  defaultInvestmentPercentage?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
-  titheEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  tithePercentage?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
-  titheBase?: Prisma.StringFieldUpdateOperationsInput | string
-  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
 }
 
 export type UserUncheckedUpdateManyInput = {
@@ -521,12 +366,6 @@ export type UserUncheckedUpdateManyInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  onboardingCompleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  defaultInvestmentPercentage?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
-  titheEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  tithePercentage?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
-  titheBase?: Prisma.StringFieldUpdateOperationsInput | string
-  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
 }
 
 export type UserCountOrderByAggregateInput = {
@@ -537,17 +376,6 @@ export type UserCountOrderByAggregateInput = {
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   emailVerified?: Prisma.SortOrder
-  onboardingCompleted?: Prisma.SortOrder
-  defaultInvestmentPercentage?: Prisma.SortOrder
-  titheEnabled?: Prisma.SortOrder
-  tithePercentage?: Prisma.SortOrder
-  titheBase?: Prisma.SortOrder
-  isDemo?: Prisma.SortOrder
-}
-
-export type UserAvgOrderByAggregateInput = {
-  defaultInvestmentPercentage?: Prisma.SortOrder
-  tithePercentage?: Prisma.SortOrder
 }
 
 export type UserMaxOrderByAggregateInput = {
@@ -558,12 +386,6 @@ export type UserMaxOrderByAggregateInput = {
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   emailVerified?: Prisma.SortOrder
-  onboardingCompleted?: Prisma.SortOrder
-  defaultInvestmentPercentage?: Prisma.SortOrder
-  titheEnabled?: Prisma.SortOrder
-  tithePercentage?: Prisma.SortOrder
-  titheBase?: Prisma.SortOrder
-  isDemo?: Prisma.SortOrder
 }
 
 export type UserMinOrderByAggregateInput = {
@@ -574,17 +396,6 @@ export type UserMinOrderByAggregateInput = {
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   emailVerified?: Prisma.SortOrder
-  onboardingCompleted?: Prisma.SortOrder
-  defaultInvestmentPercentage?: Prisma.SortOrder
-  titheEnabled?: Prisma.SortOrder
-  tithePercentage?: Prisma.SortOrder
-  titheBase?: Prisma.SortOrder
-  isDemo?: Prisma.SortOrder
-}
-
-export type UserSumOrderByAggregateInput = {
-  defaultInvestmentPercentage?: Prisma.SortOrder
-  tithePercentage?: Prisma.SortOrder
 }
 
 export type UserScalarRelationFilter = {
@@ -611,18 +422,6 @@ export type DateTimeFieldUpdateOperationsInput = {
 
 export type NullableDateTimeFieldUpdateOperationsInput = {
   set?: Date | string | null
-}
-
-export type BoolFieldUpdateOperationsInput = {
-  set?: boolean
-}
-
-export type DecimalFieldUpdateOperationsInput = {
-  set?: runtime.Decimal | runtime.DecimalJsLike | number | string
-  increment?: runtime.Decimal | runtime.DecimalJsLike | number | string
-  decrement?: runtime.Decimal | runtime.DecimalJsLike | number | string
-  multiply?: runtime.Decimal | runtime.DecimalJsLike | number | string
-  divide?: runtime.Decimal | runtime.DecimalJsLike | number | string
 }
 
 export type UserCreateNestedOneWithoutAccountsInput = {
@@ -653,92 +452,78 @@ export type UserUpdateOneRequiredWithoutSessionsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutSessionsInput, Prisma.UserUpdateWithoutSessionsInput>, Prisma.UserUncheckedUpdateWithoutSessionsInput>
 }
 
-export type UserCreateNestedOneWithoutExpenseTypesInput = {
-  create?: Prisma.XOR<Prisma.UserCreateWithoutExpenseTypesInput, Prisma.UserUncheckedCreateWithoutExpenseTypesInput>
-  connectOrCreate?: Prisma.UserCreateOrConnectWithoutExpenseTypesInput
+export type UserCreateNestedOneWithoutCreatedMovementsInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutCreatedMovementsInput, Prisma.UserUncheckedCreateWithoutCreatedMovementsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutCreatedMovementsInput
   connect?: Prisma.UserWhereUniqueInput
 }
 
-export type UserUpdateOneRequiredWithoutExpenseTypesNestedInput = {
-  create?: Prisma.XOR<Prisma.UserCreateWithoutExpenseTypesInput, Prisma.UserUncheckedCreateWithoutExpenseTypesInput>
-  connectOrCreate?: Prisma.UserCreateOrConnectWithoutExpenseTypesInput
-  upsert?: Prisma.UserUpsertWithoutExpenseTypesInput
-  connect?: Prisma.UserWhereUniqueInput
-  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutExpenseTypesInput, Prisma.UserUpdateWithoutExpenseTypesInput>, Prisma.UserUncheckedUpdateWithoutExpenseTypesInput>
-}
-
-export type UserCreateNestedOneWithoutIncomesInput = {
-  create?: Prisma.XOR<Prisma.UserCreateWithoutIncomesInput, Prisma.UserUncheckedCreateWithoutIncomesInput>
-  connectOrCreate?: Prisma.UserCreateOrConnectWithoutIncomesInput
+export type UserCreateNestedOneWithoutUpdatedMovementsInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutUpdatedMovementsInput, Prisma.UserUncheckedCreateWithoutUpdatedMovementsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutUpdatedMovementsInput
   connect?: Prisma.UserWhereUniqueInput
 }
 
-export type UserUpdateOneWithoutIncomesNestedInput = {
-  create?: Prisma.XOR<Prisma.UserCreateWithoutIncomesInput, Prisma.UserUncheckedCreateWithoutIncomesInput>
-  connectOrCreate?: Prisma.UserCreateOrConnectWithoutIncomesInput
-  upsert?: Prisma.UserUpsertWithoutIncomesInput
+export type UserUpdateOneRequiredWithoutCreatedMovementsNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutCreatedMovementsInput, Prisma.UserUncheckedCreateWithoutCreatedMovementsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutCreatedMovementsInput
+  upsert?: Prisma.UserUpsertWithoutCreatedMovementsInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutCreatedMovementsInput, Prisma.UserUpdateWithoutCreatedMovementsInput>, Prisma.UserUncheckedUpdateWithoutCreatedMovementsInput>
+}
+
+export type UserUpdateOneWithoutUpdatedMovementsNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutUpdatedMovementsInput, Prisma.UserUncheckedCreateWithoutUpdatedMovementsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutUpdatedMovementsInput
+  upsert?: Prisma.UserUpsertWithoutUpdatedMovementsInput
   disconnect?: Prisma.UserWhereInput | boolean
   delete?: Prisma.UserWhereInput | boolean
   connect?: Prisma.UserWhereUniqueInput
-  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutIncomesInput, Prisma.UserUpdateWithoutIncomesInput>, Prisma.UserUncheckedUpdateWithoutIncomesInput>
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutUpdatedMovementsInput, Prisma.UserUpdateWithoutUpdatedMovementsInput>, Prisma.UserUncheckedUpdateWithoutUpdatedMovementsInput>
 }
 
-export type UserCreateNestedOneWithoutMovementsInput = {
-  create?: Prisma.XOR<Prisma.UserCreateWithoutMovementsInput, Prisma.UserUncheckedCreateWithoutMovementsInput>
-  connectOrCreate?: Prisma.UserCreateOrConnectWithoutMovementsInput
+export type UserCreateNestedOneWithoutWorkspaceMembersInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutWorkspaceMembersInput, Prisma.UserUncheckedCreateWithoutWorkspaceMembersInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutWorkspaceMembersInput
   connect?: Prisma.UserWhereUniqueInput
 }
 
-export type UserUpdateOneRequiredWithoutMovementsNestedInput = {
-  create?: Prisma.XOR<Prisma.UserCreateWithoutMovementsInput, Prisma.UserUncheckedCreateWithoutMovementsInput>
-  connectOrCreate?: Prisma.UserCreateOrConnectWithoutMovementsInput
-  upsert?: Prisma.UserUpsertWithoutMovementsInput
+export type UserUpdateOneRequiredWithoutWorkspaceMembersNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutWorkspaceMembersInput, Prisma.UserUncheckedCreateWithoutWorkspaceMembersInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutWorkspaceMembersInput
+  upsert?: Prisma.UserUpsertWithoutWorkspaceMembersInput
   connect?: Prisma.UserWhereUniqueInput
-  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutMovementsInput, Prisma.UserUpdateWithoutMovementsInput>, Prisma.UserUncheckedUpdateWithoutMovementsInput>
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutWorkspaceMembersInput, Prisma.UserUpdateWithoutWorkspaceMembersInput>, Prisma.UserUncheckedUpdateWithoutWorkspaceMembersInput>
 }
 
-export type UserCreateNestedOneWithoutExpensesInput = {
-  create?: Prisma.XOR<Prisma.UserCreateWithoutExpensesInput, Prisma.UserUncheckedCreateWithoutExpensesInput>
-  connectOrCreate?: Prisma.UserCreateOrConnectWithoutExpensesInput
+export type UserCreateNestedOneWithoutCreatedInvitationsInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutCreatedInvitationsInput, Prisma.UserUncheckedCreateWithoutCreatedInvitationsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutCreatedInvitationsInput
   connect?: Prisma.UserWhereUniqueInput
 }
 
-export type UserUpdateOneWithoutExpensesNestedInput = {
-  create?: Prisma.XOR<Prisma.UserCreateWithoutExpensesInput, Prisma.UserUncheckedCreateWithoutExpensesInput>
-  connectOrCreate?: Prisma.UserCreateOrConnectWithoutExpensesInput
-  upsert?: Prisma.UserUpsertWithoutExpensesInput
+export type UserCreateNestedOneWithoutAcceptedInvitationsInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutAcceptedInvitationsInput, Prisma.UserUncheckedCreateWithoutAcceptedInvitationsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutAcceptedInvitationsInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutCreatedInvitationsNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutCreatedInvitationsInput, Prisma.UserUncheckedCreateWithoutCreatedInvitationsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutCreatedInvitationsInput
+  upsert?: Prisma.UserUpsertWithoutCreatedInvitationsInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutCreatedInvitationsInput, Prisma.UserUpdateWithoutCreatedInvitationsInput>, Prisma.UserUncheckedUpdateWithoutCreatedInvitationsInput>
+}
+
+export type UserUpdateOneWithoutAcceptedInvitationsNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutAcceptedInvitationsInput, Prisma.UserUncheckedCreateWithoutAcceptedInvitationsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutAcceptedInvitationsInput
+  upsert?: Prisma.UserUpsertWithoutAcceptedInvitationsInput
   disconnect?: Prisma.UserWhereInput | boolean
   delete?: Prisma.UserWhereInput | boolean
   connect?: Prisma.UserWhereUniqueInput
-  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutExpensesInput, Prisma.UserUpdateWithoutExpensesInput>, Prisma.UserUncheckedUpdateWithoutExpensesInput>
-}
-
-export type UserCreateNestedOneWithoutPaymentMethodsInput = {
-  create?: Prisma.XOR<Prisma.UserCreateWithoutPaymentMethodsInput, Prisma.UserUncheckedCreateWithoutPaymentMethodsInput>
-  connectOrCreate?: Prisma.UserCreateOrConnectWithoutPaymentMethodsInput
-  connect?: Prisma.UserWhereUniqueInput
-}
-
-export type UserUpdateOneRequiredWithoutPaymentMethodsNestedInput = {
-  create?: Prisma.XOR<Prisma.UserCreateWithoutPaymentMethodsInput, Prisma.UserUncheckedCreateWithoutPaymentMethodsInput>
-  connectOrCreate?: Prisma.UserCreateOrConnectWithoutPaymentMethodsInput
-  upsert?: Prisma.UserUpsertWithoutPaymentMethodsInput
-  connect?: Prisma.UserWhereUniqueInput
-  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutPaymentMethodsInput, Prisma.UserUpdateWithoutPaymentMethodsInput>, Prisma.UserUncheckedUpdateWithoutPaymentMethodsInput>
-}
-
-export type UserCreateNestedOneWithoutRecurringExpensesInput = {
-  create?: Prisma.XOR<Prisma.UserCreateWithoutRecurringExpensesInput, Prisma.UserUncheckedCreateWithoutRecurringExpensesInput>
-  connectOrCreate?: Prisma.UserCreateOrConnectWithoutRecurringExpensesInput
-  connect?: Prisma.UserWhereUniqueInput
-}
-
-export type UserUpdateOneRequiredWithoutRecurringExpensesNestedInput = {
-  create?: Prisma.XOR<Prisma.UserCreateWithoutRecurringExpensesInput, Prisma.UserUncheckedCreateWithoutRecurringExpensesInput>
-  connectOrCreate?: Prisma.UserCreateOrConnectWithoutRecurringExpensesInput
-  upsert?: Prisma.UserUpsertWithoutRecurringExpensesInput
-  connect?: Prisma.UserWhereUniqueInput
-  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutRecurringExpensesInput, Prisma.UserUpdateWithoutRecurringExpensesInput>, Prisma.UserUncheckedUpdateWithoutRecurringExpensesInput>
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutAcceptedInvitationsInput, Prisma.UserUpdateWithoutAcceptedInvitationsInput>, Prisma.UserUncheckedUpdateWithoutAcceptedInvitationsInput>
 }
 
 export type UserCreateWithoutAccountsInput = {
@@ -749,19 +534,12 @@ export type UserCreateWithoutAccountsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   emailVerified?: Date | string | null
-  onboardingCompleted?: boolean
-  defaultInvestmentPercentage?: runtime.Decimal | runtime.DecimalJsLike | number | string
-  titheEnabled?: boolean
-  tithePercentage?: runtime.Decimal | runtime.DecimalJsLike | number | string
-  titheBase?: string
-  isDemo?: boolean
-  expenses?: Prisma.ExpenseCreateNestedManyWithoutUserInput
-  expenseTypes?: Prisma.ExpenseTypeCreateNestedManyWithoutUserInput
-  incomes?: Prisma.IncomeCreateNestedManyWithoutUserInput
-  movements?: Prisma.MovementCreateNestedManyWithoutUserInput
-  paymentMethods?: Prisma.PaymentMethodCreateNestedManyWithoutUserInput
+  workspaceMembers?: Prisma.WorkspaceMemberCreateNestedManyWithoutUserInput
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
-  recurringExpenses?: Prisma.RecurringExpenseCreateNestedManyWithoutUserInput
+  createdMovements?: Prisma.MovementCreateNestedManyWithoutCreatedByInput
+  updatedMovements?: Prisma.MovementCreateNestedManyWithoutUpdatedByInput
+  createdInvitations?: Prisma.WorkspaceInvitationCreateNestedManyWithoutInvitedByInput
+  acceptedInvitations?: Prisma.WorkspaceInvitationCreateNestedManyWithoutAcceptedByInput
 }
 
 export type UserUncheckedCreateWithoutAccountsInput = {
@@ -772,19 +550,12 @@ export type UserUncheckedCreateWithoutAccountsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   emailVerified?: Date | string | null
-  onboardingCompleted?: boolean
-  defaultInvestmentPercentage?: runtime.Decimal | runtime.DecimalJsLike | number | string
-  titheEnabled?: boolean
-  tithePercentage?: runtime.Decimal | runtime.DecimalJsLike | number | string
-  titheBase?: string
-  isDemo?: boolean
-  expenses?: Prisma.ExpenseUncheckedCreateNestedManyWithoutUserInput
-  expenseTypes?: Prisma.ExpenseTypeUncheckedCreateNestedManyWithoutUserInput
-  incomes?: Prisma.IncomeUncheckedCreateNestedManyWithoutUserInput
-  movements?: Prisma.MovementUncheckedCreateNestedManyWithoutUserInput
-  paymentMethods?: Prisma.PaymentMethodUncheckedCreateNestedManyWithoutUserInput
+  workspaceMembers?: Prisma.WorkspaceMemberUncheckedCreateNestedManyWithoutUserInput
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
-  recurringExpenses?: Prisma.RecurringExpenseUncheckedCreateNestedManyWithoutUserInput
+  createdMovements?: Prisma.MovementUncheckedCreateNestedManyWithoutCreatedByInput
+  updatedMovements?: Prisma.MovementUncheckedCreateNestedManyWithoutUpdatedByInput
+  createdInvitations?: Prisma.WorkspaceInvitationUncheckedCreateNestedManyWithoutInvitedByInput
+  acceptedInvitations?: Prisma.WorkspaceInvitationUncheckedCreateNestedManyWithoutAcceptedByInput
 }
 
 export type UserCreateOrConnectWithoutAccountsInput = {
@@ -811,19 +582,12 @@ export type UserUpdateWithoutAccountsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  onboardingCompleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  defaultInvestmentPercentage?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
-  titheEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  tithePercentage?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
-  titheBase?: Prisma.StringFieldUpdateOperationsInput | string
-  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  expenses?: Prisma.ExpenseUpdateManyWithoutUserNestedInput
-  expenseTypes?: Prisma.ExpenseTypeUpdateManyWithoutUserNestedInput
-  incomes?: Prisma.IncomeUpdateManyWithoutUserNestedInput
-  movements?: Prisma.MovementUpdateManyWithoutUserNestedInput
-  paymentMethods?: Prisma.PaymentMethodUpdateManyWithoutUserNestedInput
+  workspaceMembers?: Prisma.WorkspaceMemberUpdateManyWithoutUserNestedInput
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
-  recurringExpenses?: Prisma.RecurringExpenseUpdateManyWithoutUserNestedInput
+  createdMovements?: Prisma.MovementUpdateManyWithoutCreatedByNestedInput
+  updatedMovements?: Prisma.MovementUpdateManyWithoutUpdatedByNestedInput
+  createdInvitations?: Prisma.WorkspaceInvitationUpdateManyWithoutInvitedByNestedInput
+  acceptedInvitations?: Prisma.WorkspaceInvitationUpdateManyWithoutAcceptedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutAccountsInput = {
@@ -834,19 +598,12 @@ export type UserUncheckedUpdateWithoutAccountsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  onboardingCompleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  defaultInvestmentPercentage?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
-  titheEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  tithePercentage?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
-  titheBase?: Prisma.StringFieldUpdateOperationsInput | string
-  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  expenses?: Prisma.ExpenseUncheckedUpdateManyWithoutUserNestedInput
-  expenseTypes?: Prisma.ExpenseTypeUncheckedUpdateManyWithoutUserNestedInput
-  incomes?: Prisma.IncomeUncheckedUpdateManyWithoutUserNestedInput
-  movements?: Prisma.MovementUncheckedUpdateManyWithoutUserNestedInput
-  paymentMethods?: Prisma.PaymentMethodUncheckedUpdateManyWithoutUserNestedInput
+  workspaceMembers?: Prisma.WorkspaceMemberUncheckedUpdateManyWithoutUserNestedInput
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
-  recurringExpenses?: Prisma.RecurringExpenseUncheckedUpdateManyWithoutUserNestedInput
+  createdMovements?: Prisma.MovementUncheckedUpdateManyWithoutCreatedByNestedInput
+  updatedMovements?: Prisma.MovementUncheckedUpdateManyWithoutUpdatedByNestedInput
+  createdInvitations?: Prisma.WorkspaceInvitationUncheckedUpdateManyWithoutInvitedByNestedInput
+  acceptedInvitations?: Prisma.WorkspaceInvitationUncheckedUpdateManyWithoutAcceptedByNestedInput
 }
 
 export type UserCreateWithoutSessionsInput = {
@@ -857,19 +614,12 @@ export type UserCreateWithoutSessionsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   emailVerified?: Date | string | null
-  onboardingCompleted?: boolean
-  defaultInvestmentPercentage?: runtime.Decimal | runtime.DecimalJsLike | number | string
-  titheEnabled?: boolean
-  tithePercentage?: runtime.Decimal | runtime.DecimalJsLike | number | string
-  titheBase?: string
-  isDemo?: boolean
+  workspaceMembers?: Prisma.WorkspaceMemberCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
-  expenses?: Prisma.ExpenseCreateNestedManyWithoutUserInput
-  expenseTypes?: Prisma.ExpenseTypeCreateNestedManyWithoutUserInput
-  incomes?: Prisma.IncomeCreateNestedManyWithoutUserInput
-  movements?: Prisma.MovementCreateNestedManyWithoutUserInput
-  paymentMethods?: Prisma.PaymentMethodCreateNestedManyWithoutUserInput
-  recurringExpenses?: Prisma.RecurringExpenseCreateNestedManyWithoutUserInput
+  createdMovements?: Prisma.MovementCreateNestedManyWithoutCreatedByInput
+  updatedMovements?: Prisma.MovementCreateNestedManyWithoutUpdatedByInput
+  createdInvitations?: Prisma.WorkspaceInvitationCreateNestedManyWithoutInvitedByInput
+  acceptedInvitations?: Prisma.WorkspaceInvitationCreateNestedManyWithoutAcceptedByInput
 }
 
 export type UserUncheckedCreateWithoutSessionsInput = {
@@ -880,19 +630,12 @@ export type UserUncheckedCreateWithoutSessionsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   emailVerified?: Date | string | null
-  onboardingCompleted?: boolean
-  defaultInvestmentPercentage?: runtime.Decimal | runtime.DecimalJsLike | number | string
-  titheEnabled?: boolean
-  tithePercentage?: runtime.Decimal | runtime.DecimalJsLike | number | string
-  titheBase?: string
-  isDemo?: boolean
+  workspaceMembers?: Prisma.WorkspaceMemberUncheckedCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
-  expenses?: Prisma.ExpenseUncheckedCreateNestedManyWithoutUserInput
-  expenseTypes?: Prisma.ExpenseTypeUncheckedCreateNestedManyWithoutUserInput
-  incomes?: Prisma.IncomeUncheckedCreateNestedManyWithoutUserInput
-  movements?: Prisma.MovementUncheckedCreateNestedManyWithoutUserInput
-  paymentMethods?: Prisma.PaymentMethodUncheckedCreateNestedManyWithoutUserInput
-  recurringExpenses?: Prisma.RecurringExpenseUncheckedCreateNestedManyWithoutUserInput
+  createdMovements?: Prisma.MovementUncheckedCreateNestedManyWithoutCreatedByInput
+  updatedMovements?: Prisma.MovementUncheckedCreateNestedManyWithoutUpdatedByInput
+  createdInvitations?: Prisma.WorkspaceInvitationUncheckedCreateNestedManyWithoutInvitedByInput
+  acceptedInvitations?: Prisma.WorkspaceInvitationUncheckedCreateNestedManyWithoutAcceptedByInput
 }
 
 export type UserCreateOrConnectWithoutSessionsInput = {
@@ -919,19 +662,12 @@ export type UserUpdateWithoutSessionsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  onboardingCompleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  defaultInvestmentPercentage?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
-  titheEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  tithePercentage?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
-  titheBase?: Prisma.StringFieldUpdateOperationsInput | string
-  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  workspaceMembers?: Prisma.WorkspaceMemberUpdateManyWithoutUserNestedInput
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
-  expenses?: Prisma.ExpenseUpdateManyWithoutUserNestedInput
-  expenseTypes?: Prisma.ExpenseTypeUpdateManyWithoutUserNestedInput
-  incomes?: Prisma.IncomeUpdateManyWithoutUserNestedInput
-  movements?: Prisma.MovementUpdateManyWithoutUserNestedInput
-  paymentMethods?: Prisma.PaymentMethodUpdateManyWithoutUserNestedInput
-  recurringExpenses?: Prisma.RecurringExpenseUpdateManyWithoutUserNestedInput
+  createdMovements?: Prisma.MovementUpdateManyWithoutCreatedByNestedInput
+  updatedMovements?: Prisma.MovementUpdateManyWithoutUpdatedByNestedInput
+  createdInvitations?: Prisma.WorkspaceInvitationUpdateManyWithoutInvitedByNestedInput
+  acceptedInvitations?: Prisma.WorkspaceInvitationUpdateManyWithoutAcceptedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutSessionsInput = {
@@ -942,22 +678,15 @@ export type UserUncheckedUpdateWithoutSessionsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  onboardingCompleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  defaultInvestmentPercentage?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
-  titheEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  tithePercentage?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
-  titheBase?: Prisma.StringFieldUpdateOperationsInput | string
-  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  workspaceMembers?: Prisma.WorkspaceMemberUncheckedUpdateManyWithoutUserNestedInput
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
-  expenses?: Prisma.ExpenseUncheckedUpdateManyWithoutUserNestedInput
-  expenseTypes?: Prisma.ExpenseTypeUncheckedUpdateManyWithoutUserNestedInput
-  incomes?: Prisma.IncomeUncheckedUpdateManyWithoutUserNestedInput
-  movements?: Prisma.MovementUncheckedUpdateManyWithoutUserNestedInput
-  paymentMethods?: Prisma.PaymentMethodUncheckedUpdateManyWithoutUserNestedInput
-  recurringExpenses?: Prisma.RecurringExpenseUncheckedUpdateManyWithoutUserNestedInput
+  createdMovements?: Prisma.MovementUncheckedUpdateManyWithoutCreatedByNestedInput
+  updatedMovements?: Prisma.MovementUncheckedUpdateManyWithoutUpdatedByNestedInput
+  createdInvitations?: Prisma.WorkspaceInvitationUncheckedUpdateManyWithoutInvitedByNestedInput
+  acceptedInvitations?: Prisma.WorkspaceInvitationUncheckedUpdateManyWithoutAcceptedByNestedInput
 }
 
-export type UserCreateWithoutExpenseTypesInput = {
+export type UserCreateWithoutCreatedMovementsInput = {
   id?: string
   name?: string | null
   email: string
@@ -965,22 +694,15 @@ export type UserCreateWithoutExpenseTypesInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   emailVerified?: Date | string | null
-  onboardingCompleted?: boolean
-  defaultInvestmentPercentage?: runtime.Decimal | runtime.DecimalJsLike | number | string
-  titheEnabled?: boolean
-  tithePercentage?: runtime.Decimal | runtime.DecimalJsLike | number | string
-  titheBase?: string
-  isDemo?: boolean
+  workspaceMembers?: Prisma.WorkspaceMemberCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
-  expenses?: Prisma.ExpenseCreateNestedManyWithoutUserInput
-  incomes?: Prisma.IncomeCreateNestedManyWithoutUserInput
-  movements?: Prisma.MovementCreateNestedManyWithoutUserInput
-  paymentMethods?: Prisma.PaymentMethodCreateNestedManyWithoutUserInput
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
-  recurringExpenses?: Prisma.RecurringExpenseCreateNestedManyWithoutUserInput
+  updatedMovements?: Prisma.MovementCreateNestedManyWithoutUpdatedByInput
+  createdInvitations?: Prisma.WorkspaceInvitationCreateNestedManyWithoutInvitedByInput
+  acceptedInvitations?: Prisma.WorkspaceInvitationCreateNestedManyWithoutAcceptedByInput
 }
 
-export type UserUncheckedCreateWithoutExpenseTypesInput = {
+export type UserUncheckedCreateWithoutCreatedMovementsInput = {
   id?: string
   name?: string | null
   email: string
@@ -988,84 +710,20 @@ export type UserUncheckedCreateWithoutExpenseTypesInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   emailVerified?: Date | string | null
-  onboardingCompleted?: boolean
-  defaultInvestmentPercentage?: runtime.Decimal | runtime.DecimalJsLike | number | string
-  titheEnabled?: boolean
-  tithePercentage?: runtime.Decimal | runtime.DecimalJsLike | number | string
-  titheBase?: string
-  isDemo?: boolean
+  workspaceMembers?: Prisma.WorkspaceMemberUncheckedCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
-  expenses?: Prisma.ExpenseUncheckedCreateNestedManyWithoutUserInput
-  incomes?: Prisma.IncomeUncheckedCreateNestedManyWithoutUserInput
-  movements?: Prisma.MovementUncheckedCreateNestedManyWithoutUserInput
-  paymentMethods?: Prisma.PaymentMethodUncheckedCreateNestedManyWithoutUserInput
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
-  recurringExpenses?: Prisma.RecurringExpenseUncheckedCreateNestedManyWithoutUserInput
+  updatedMovements?: Prisma.MovementUncheckedCreateNestedManyWithoutUpdatedByInput
+  createdInvitations?: Prisma.WorkspaceInvitationUncheckedCreateNestedManyWithoutInvitedByInput
+  acceptedInvitations?: Prisma.WorkspaceInvitationUncheckedCreateNestedManyWithoutAcceptedByInput
 }
 
-export type UserCreateOrConnectWithoutExpenseTypesInput = {
+export type UserCreateOrConnectWithoutCreatedMovementsInput = {
   where: Prisma.UserWhereUniqueInput
-  create: Prisma.XOR<Prisma.UserCreateWithoutExpenseTypesInput, Prisma.UserUncheckedCreateWithoutExpenseTypesInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutCreatedMovementsInput, Prisma.UserUncheckedCreateWithoutCreatedMovementsInput>
 }
 
-export type UserUpsertWithoutExpenseTypesInput = {
-  update: Prisma.XOR<Prisma.UserUpdateWithoutExpenseTypesInput, Prisma.UserUncheckedUpdateWithoutExpenseTypesInput>
-  create: Prisma.XOR<Prisma.UserCreateWithoutExpenseTypesInput, Prisma.UserUncheckedCreateWithoutExpenseTypesInput>
-  where?: Prisma.UserWhereInput
-}
-
-export type UserUpdateToOneWithWhereWithoutExpenseTypesInput = {
-  where?: Prisma.UserWhereInput
-  data: Prisma.XOR<Prisma.UserUpdateWithoutExpenseTypesInput, Prisma.UserUncheckedUpdateWithoutExpenseTypesInput>
-}
-
-export type UserUpdateWithoutExpenseTypesInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  email?: Prisma.StringFieldUpdateOperationsInput | string
-  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  onboardingCompleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  defaultInvestmentPercentage?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
-  titheEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  tithePercentage?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
-  titheBase?: Prisma.StringFieldUpdateOperationsInput | string
-  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
-  expenses?: Prisma.ExpenseUpdateManyWithoutUserNestedInput
-  incomes?: Prisma.IncomeUpdateManyWithoutUserNestedInput
-  movements?: Prisma.MovementUpdateManyWithoutUserNestedInput
-  paymentMethods?: Prisma.PaymentMethodUpdateManyWithoutUserNestedInput
-  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
-  recurringExpenses?: Prisma.RecurringExpenseUpdateManyWithoutUserNestedInput
-}
-
-export type UserUncheckedUpdateWithoutExpenseTypesInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  email?: Prisma.StringFieldUpdateOperationsInput | string
-  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  onboardingCompleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  defaultInvestmentPercentage?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
-  titheEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  tithePercentage?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
-  titheBase?: Prisma.StringFieldUpdateOperationsInput | string
-  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
-  expenses?: Prisma.ExpenseUncheckedUpdateManyWithoutUserNestedInput
-  incomes?: Prisma.IncomeUncheckedUpdateManyWithoutUserNestedInput
-  movements?: Prisma.MovementUncheckedUpdateManyWithoutUserNestedInput
-  paymentMethods?: Prisma.PaymentMethodUncheckedUpdateManyWithoutUserNestedInput
-  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
-  recurringExpenses?: Prisma.RecurringExpenseUncheckedUpdateManyWithoutUserNestedInput
-}
-
-export type UserCreateWithoutIncomesInput = {
+export type UserCreateWithoutUpdatedMovementsInput = {
   id?: string
   name?: string | null
   email: string
@@ -1073,22 +731,15 @@ export type UserCreateWithoutIncomesInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   emailVerified?: Date | string | null
-  onboardingCompleted?: boolean
-  defaultInvestmentPercentage?: runtime.Decimal | runtime.DecimalJsLike | number | string
-  titheEnabled?: boolean
-  tithePercentage?: runtime.Decimal | runtime.DecimalJsLike | number | string
-  titheBase?: string
-  isDemo?: boolean
+  workspaceMembers?: Prisma.WorkspaceMemberCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
-  expenses?: Prisma.ExpenseCreateNestedManyWithoutUserInput
-  expenseTypes?: Prisma.ExpenseTypeCreateNestedManyWithoutUserInput
-  movements?: Prisma.MovementCreateNestedManyWithoutUserInput
-  paymentMethods?: Prisma.PaymentMethodCreateNestedManyWithoutUserInput
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
-  recurringExpenses?: Prisma.RecurringExpenseCreateNestedManyWithoutUserInput
+  createdMovements?: Prisma.MovementCreateNestedManyWithoutCreatedByInput
+  createdInvitations?: Prisma.WorkspaceInvitationCreateNestedManyWithoutInvitedByInput
+  acceptedInvitations?: Prisma.WorkspaceInvitationCreateNestedManyWithoutAcceptedByInput
 }
 
-export type UserUncheckedCreateWithoutIncomesInput = {
+export type UserUncheckedCreateWithoutUpdatedMovementsInput = {
   id?: string
   name?: string | null
   email: string
@@ -1096,38 +747,31 @@ export type UserUncheckedCreateWithoutIncomesInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   emailVerified?: Date | string | null
-  onboardingCompleted?: boolean
-  defaultInvestmentPercentage?: runtime.Decimal | runtime.DecimalJsLike | number | string
-  titheEnabled?: boolean
-  tithePercentage?: runtime.Decimal | runtime.DecimalJsLike | number | string
-  titheBase?: string
-  isDemo?: boolean
+  workspaceMembers?: Prisma.WorkspaceMemberUncheckedCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
-  expenses?: Prisma.ExpenseUncheckedCreateNestedManyWithoutUserInput
-  expenseTypes?: Prisma.ExpenseTypeUncheckedCreateNestedManyWithoutUserInput
-  movements?: Prisma.MovementUncheckedCreateNestedManyWithoutUserInput
-  paymentMethods?: Prisma.PaymentMethodUncheckedCreateNestedManyWithoutUserInput
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
-  recurringExpenses?: Prisma.RecurringExpenseUncheckedCreateNestedManyWithoutUserInput
+  createdMovements?: Prisma.MovementUncheckedCreateNestedManyWithoutCreatedByInput
+  createdInvitations?: Prisma.WorkspaceInvitationUncheckedCreateNestedManyWithoutInvitedByInput
+  acceptedInvitations?: Prisma.WorkspaceInvitationUncheckedCreateNestedManyWithoutAcceptedByInput
 }
 
-export type UserCreateOrConnectWithoutIncomesInput = {
+export type UserCreateOrConnectWithoutUpdatedMovementsInput = {
   where: Prisma.UserWhereUniqueInput
-  create: Prisma.XOR<Prisma.UserCreateWithoutIncomesInput, Prisma.UserUncheckedCreateWithoutIncomesInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutUpdatedMovementsInput, Prisma.UserUncheckedCreateWithoutUpdatedMovementsInput>
 }
 
-export type UserUpsertWithoutIncomesInput = {
-  update: Prisma.XOR<Prisma.UserUpdateWithoutIncomesInput, Prisma.UserUncheckedUpdateWithoutIncomesInput>
-  create: Prisma.XOR<Prisma.UserCreateWithoutIncomesInput, Prisma.UserUncheckedCreateWithoutIncomesInput>
+export type UserUpsertWithoutCreatedMovementsInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutCreatedMovementsInput, Prisma.UserUncheckedUpdateWithoutCreatedMovementsInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutCreatedMovementsInput, Prisma.UserUncheckedCreateWithoutCreatedMovementsInput>
   where?: Prisma.UserWhereInput
 }
 
-export type UserUpdateToOneWithWhereWithoutIncomesInput = {
+export type UserUpdateToOneWithWhereWithoutCreatedMovementsInput = {
   where?: Prisma.UserWhereInput
-  data: Prisma.XOR<Prisma.UserUpdateWithoutIncomesInput, Prisma.UserUncheckedUpdateWithoutIncomesInput>
+  data: Prisma.XOR<Prisma.UserUpdateWithoutCreatedMovementsInput, Prisma.UserUncheckedUpdateWithoutCreatedMovementsInput>
 }
 
-export type UserUpdateWithoutIncomesInput = {
+export type UserUpdateWithoutCreatedMovementsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   email?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1135,22 +779,15 @@ export type UserUpdateWithoutIncomesInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  onboardingCompleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  defaultInvestmentPercentage?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
-  titheEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  tithePercentage?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
-  titheBase?: Prisma.StringFieldUpdateOperationsInput | string
-  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  workspaceMembers?: Prisma.WorkspaceMemberUpdateManyWithoutUserNestedInput
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
-  expenses?: Prisma.ExpenseUpdateManyWithoutUserNestedInput
-  expenseTypes?: Prisma.ExpenseTypeUpdateManyWithoutUserNestedInput
-  movements?: Prisma.MovementUpdateManyWithoutUserNestedInput
-  paymentMethods?: Prisma.PaymentMethodUpdateManyWithoutUserNestedInput
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
-  recurringExpenses?: Prisma.RecurringExpenseUpdateManyWithoutUserNestedInput
+  updatedMovements?: Prisma.MovementUpdateManyWithoutUpdatedByNestedInput
+  createdInvitations?: Prisma.WorkspaceInvitationUpdateManyWithoutInvitedByNestedInput
+  acceptedInvitations?: Prisma.WorkspaceInvitationUpdateManyWithoutAcceptedByNestedInput
 }
 
-export type UserUncheckedUpdateWithoutIncomesInput = {
+export type UserUncheckedUpdateWithoutCreatedMovementsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   email?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1158,22 +795,58 @@ export type UserUncheckedUpdateWithoutIncomesInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  onboardingCompleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  defaultInvestmentPercentage?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
-  titheEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  tithePercentage?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
-  titheBase?: Prisma.StringFieldUpdateOperationsInput | string
-  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  workspaceMembers?: Prisma.WorkspaceMemberUncheckedUpdateManyWithoutUserNestedInput
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
-  expenses?: Prisma.ExpenseUncheckedUpdateManyWithoutUserNestedInput
-  expenseTypes?: Prisma.ExpenseTypeUncheckedUpdateManyWithoutUserNestedInput
-  movements?: Prisma.MovementUncheckedUpdateManyWithoutUserNestedInput
-  paymentMethods?: Prisma.PaymentMethodUncheckedUpdateManyWithoutUserNestedInput
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
-  recurringExpenses?: Prisma.RecurringExpenseUncheckedUpdateManyWithoutUserNestedInput
+  updatedMovements?: Prisma.MovementUncheckedUpdateManyWithoutUpdatedByNestedInput
+  createdInvitations?: Prisma.WorkspaceInvitationUncheckedUpdateManyWithoutInvitedByNestedInput
+  acceptedInvitations?: Prisma.WorkspaceInvitationUncheckedUpdateManyWithoutAcceptedByNestedInput
 }
 
-export type UserCreateWithoutMovementsInput = {
+export type UserUpsertWithoutUpdatedMovementsInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutUpdatedMovementsInput, Prisma.UserUncheckedUpdateWithoutUpdatedMovementsInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutUpdatedMovementsInput, Prisma.UserUncheckedCreateWithoutUpdatedMovementsInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutUpdatedMovementsInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutUpdatedMovementsInput, Prisma.UserUncheckedUpdateWithoutUpdatedMovementsInput>
+}
+
+export type UserUpdateWithoutUpdatedMovementsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  workspaceMembers?: Prisma.WorkspaceMemberUpdateManyWithoutUserNestedInput
+  accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
+  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
+  createdMovements?: Prisma.MovementUpdateManyWithoutCreatedByNestedInput
+  createdInvitations?: Prisma.WorkspaceInvitationUpdateManyWithoutInvitedByNestedInput
+  acceptedInvitations?: Prisma.WorkspaceInvitationUpdateManyWithoutAcceptedByNestedInput
+}
+
+export type UserUncheckedUpdateWithoutUpdatedMovementsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  workspaceMembers?: Prisma.WorkspaceMemberUncheckedUpdateManyWithoutUserNestedInput
+  accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
+  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
+  createdMovements?: Prisma.MovementUncheckedUpdateManyWithoutCreatedByNestedInput
+  createdInvitations?: Prisma.WorkspaceInvitationUncheckedUpdateManyWithoutInvitedByNestedInput
+  acceptedInvitations?: Prisma.WorkspaceInvitationUncheckedUpdateManyWithoutAcceptedByNestedInput
+}
+
+export type UserCreateWithoutWorkspaceMembersInput = {
   id?: string
   name?: string | null
   email: string
@@ -1181,22 +854,15 @@ export type UserCreateWithoutMovementsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   emailVerified?: Date | string | null
-  onboardingCompleted?: boolean
-  defaultInvestmentPercentage?: runtime.Decimal | runtime.DecimalJsLike | number | string
-  titheEnabled?: boolean
-  tithePercentage?: runtime.Decimal | runtime.DecimalJsLike | number | string
-  titheBase?: string
-  isDemo?: boolean
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
-  expenses?: Prisma.ExpenseCreateNestedManyWithoutUserInput
-  expenseTypes?: Prisma.ExpenseTypeCreateNestedManyWithoutUserInput
-  incomes?: Prisma.IncomeCreateNestedManyWithoutUserInput
-  paymentMethods?: Prisma.PaymentMethodCreateNestedManyWithoutUserInput
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
-  recurringExpenses?: Prisma.RecurringExpenseCreateNestedManyWithoutUserInput
+  createdMovements?: Prisma.MovementCreateNestedManyWithoutCreatedByInput
+  updatedMovements?: Prisma.MovementCreateNestedManyWithoutUpdatedByInput
+  createdInvitations?: Prisma.WorkspaceInvitationCreateNestedManyWithoutInvitedByInput
+  acceptedInvitations?: Prisma.WorkspaceInvitationCreateNestedManyWithoutAcceptedByInput
 }
 
-export type UserUncheckedCreateWithoutMovementsInput = {
+export type UserUncheckedCreateWithoutWorkspaceMembersInput = {
   id?: string
   name?: string | null
   email: string
@@ -1204,38 +870,31 @@ export type UserUncheckedCreateWithoutMovementsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   emailVerified?: Date | string | null
-  onboardingCompleted?: boolean
-  defaultInvestmentPercentage?: runtime.Decimal | runtime.DecimalJsLike | number | string
-  titheEnabled?: boolean
-  tithePercentage?: runtime.Decimal | runtime.DecimalJsLike | number | string
-  titheBase?: string
-  isDemo?: boolean
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
-  expenses?: Prisma.ExpenseUncheckedCreateNestedManyWithoutUserInput
-  expenseTypes?: Prisma.ExpenseTypeUncheckedCreateNestedManyWithoutUserInput
-  incomes?: Prisma.IncomeUncheckedCreateNestedManyWithoutUserInput
-  paymentMethods?: Prisma.PaymentMethodUncheckedCreateNestedManyWithoutUserInput
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
-  recurringExpenses?: Prisma.RecurringExpenseUncheckedCreateNestedManyWithoutUserInput
+  createdMovements?: Prisma.MovementUncheckedCreateNestedManyWithoutCreatedByInput
+  updatedMovements?: Prisma.MovementUncheckedCreateNestedManyWithoutUpdatedByInput
+  createdInvitations?: Prisma.WorkspaceInvitationUncheckedCreateNestedManyWithoutInvitedByInput
+  acceptedInvitations?: Prisma.WorkspaceInvitationUncheckedCreateNestedManyWithoutAcceptedByInput
 }
 
-export type UserCreateOrConnectWithoutMovementsInput = {
+export type UserCreateOrConnectWithoutWorkspaceMembersInput = {
   where: Prisma.UserWhereUniqueInput
-  create: Prisma.XOR<Prisma.UserCreateWithoutMovementsInput, Prisma.UserUncheckedCreateWithoutMovementsInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutWorkspaceMembersInput, Prisma.UserUncheckedCreateWithoutWorkspaceMembersInput>
 }
 
-export type UserUpsertWithoutMovementsInput = {
-  update: Prisma.XOR<Prisma.UserUpdateWithoutMovementsInput, Prisma.UserUncheckedUpdateWithoutMovementsInput>
-  create: Prisma.XOR<Prisma.UserCreateWithoutMovementsInput, Prisma.UserUncheckedCreateWithoutMovementsInput>
+export type UserUpsertWithoutWorkspaceMembersInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutWorkspaceMembersInput, Prisma.UserUncheckedUpdateWithoutWorkspaceMembersInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutWorkspaceMembersInput, Prisma.UserUncheckedCreateWithoutWorkspaceMembersInput>
   where?: Prisma.UserWhereInput
 }
 
-export type UserUpdateToOneWithWhereWithoutMovementsInput = {
+export type UserUpdateToOneWithWhereWithoutWorkspaceMembersInput = {
   where?: Prisma.UserWhereInput
-  data: Prisma.XOR<Prisma.UserUpdateWithoutMovementsInput, Prisma.UserUncheckedUpdateWithoutMovementsInput>
+  data: Prisma.XOR<Prisma.UserUpdateWithoutWorkspaceMembersInput, Prisma.UserUncheckedUpdateWithoutWorkspaceMembersInput>
 }
 
-export type UserUpdateWithoutMovementsInput = {
+export type UserUpdateWithoutWorkspaceMembersInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   email?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1243,22 +902,15 @@ export type UserUpdateWithoutMovementsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  onboardingCompleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  defaultInvestmentPercentage?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
-  titheEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  tithePercentage?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
-  titheBase?: Prisma.StringFieldUpdateOperationsInput | string
-  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
-  expenses?: Prisma.ExpenseUpdateManyWithoutUserNestedInput
-  expenseTypes?: Prisma.ExpenseTypeUpdateManyWithoutUserNestedInput
-  incomes?: Prisma.IncomeUpdateManyWithoutUserNestedInput
-  paymentMethods?: Prisma.PaymentMethodUpdateManyWithoutUserNestedInput
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
-  recurringExpenses?: Prisma.RecurringExpenseUpdateManyWithoutUserNestedInput
+  createdMovements?: Prisma.MovementUpdateManyWithoutCreatedByNestedInput
+  updatedMovements?: Prisma.MovementUpdateManyWithoutUpdatedByNestedInput
+  createdInvitations?: Prisma.WorkspaceInvitationUpdateManyWithoutInvitedByNestedInput
+  acceptedInvitations?: Prisma.WorkspaceInvitationUpdateManyWithoutAcceptedByNestedInput
 }
 
-export type UserUncheckedUpdateWithoutMovementsInput = {
+export type UserUncheckedUpdateWithoutWorkspaceMembersInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   email?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1266,22 +918,15 @@ export type UserUncheckedUpdateWithoutMovementsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  onboardingCompleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  defaultInvestmentPercentage?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
-  titheEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  tithePercentage?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
-  titheBase?: Prisma.StringFieldUpdateOperationsInput | string
-  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
-  expenses?: Prisma.ExpenseUncheckedUpdateManyWithoutUserNestedInput
-  expenseTypes?: Prisma.ExpenseTypeUncheckedUpdateManyWithoutUserNestedInput
-  incomes?: Prisma.IncomeUncheckedUpdateManyWithoutUserNestedInput
-  paymentMethods?: Prisma.PaymentMethodUncheckedUpdateManyWithoutUserNestedInput
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
-  recurringExpenses?: Prisma.RecurringExpenseUncheckedUpdateManyWithoutUserNestedInput
+  createdMovements?: Prisma.MovementUncheckedUpdateManyWithoutCreatedByNestedInput
+  updatedMovements?: Prisma.MovementUncheckedUpdateManyWithoutUpdatedByNestedInput
+  createdInvitations?: Prisma.WorkspaceInvitationUncheckedUpdateManyWithoutInvitedByNestedInput
+  acceptedInvitations?: Prisma.WorkspaceInvitationUncheckedUpdateManyWithoutAcceptedByNestedInput
 }
 
-export type UserCreateWithoutExpensesInput = {
+export type UserCreateWithoutCreatedInvitationsInput = {
   id?: string
   name?: string | null
   email: string
@@ -1289,22 +934,15 @@ export type UserCreateWithoutExpensesInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   emailVerified?: Date | string | null
-  onboardingCompleted?: boolean
-  defaultInvestmentPercentage?: runtime.Decimal | runtime.DecimalJsLike | number | string
-  titheEnabled?: boolean
-  tithePercentage?: runtime.Decimal | runtime.DecimalJsLike | number | string
-  titheBase?: string
-  isDemo?: boolean
+  workspaceMembers?: Prisma.WorkspaceMemberCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
-  expenseTypes?: Prisma.ExpenseTypeCreateNestedManyWithoutUserInput
-  incomes?: Prisma.IncomeCreateNestedManyWithoutUserInput
-  movements?: Prisma.MovementCreateNestedManyWithoutUserInput
-  paymentMethods?: Prisma.PaymentMethodCreateNestedManyWithoutUserInput
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
-  recurringExpenses?: Prisma.RecurringExpenseCreateNestedManyWithoutUserInput
+  createdMovements?: Prisma.MovementCreateNestedManyWithoutCreatedByInput
+  updatedMovements?: Prisma.MovementCreateNestedManyWithoutUpdatedByInput
+  acceptedInvitations?: Prisma.WorkspaceInvitationCreateNestedManyWithoutAcceptedByInput
 }
 
-export type UserUncheckedCreateWithoutExpensesInput = {
+export type UserUncheckedCreateWithoutCreatedInvitationsInput = {
   id?: string
   name?: string | null
   email: string
@@ -1312,84 +950,20 @@ export type UserUncheckedCreateWithoutExpensesInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   emailVerified?: Date | string | null
-  onboardingCompleted?: boolean
-  defaultInvestmentPercentage?: runtime.Decimal | runtime.DecimalJsLike | number | string
-  titheEnabled?: boolean
-  tithePercentage?: runtime.Decimal | runtime.DecimalJsLike | number | string
-  titheBase?: string
-  isDemo?: boolean
+  workspaceMembers?: Prisma.WorkspaceMemberUncheckedCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
-  expenseTypes?: Prisma.ExpenseTypeUncheckedCreateNestedManyWithoutUserInput
-  incomes?: Prisma.IncomeUncheckedCreateNestedManyWithoutUserInput
-  movements?: Prisma.MovementUncheckedCreateNestedManyWithoutUserInput
-  paymentMethods?: Prisma.PaymentMethodUncheckedCreateNestedManyWithoutUserInput
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
-  recurringExpenses?: Prisma.RecurringExpenseUncheckedCreateNestedManyWithoutUserInput
+  createdMovements?: Prisma.MovementUncheckedCreateNestedManyWithoutCreatedByInput
+  updatedMovements?: Prisma.MovementUncheckedCreateNestedManyWithoutUpdatedByInput
+  acceptedInvitations?: Prisma.WorkspaceInvitationUncheckedCreateNestedManyWithoutAcceptedByInput
 }
 
-export type UserCreateOrConnectWithoutExpensesInput = {
+export type UserCreateOrConnectWithoutCreatedInvitationsInput = {
   where: Prisma.UserWhereUniqueInput
-  create: Prisma.XOR<Prisma.UserCreateWithoutExpensesInput, Prisma.UserUncheckedCreateWithoutExpensesInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutCreatedInvitationsInput, Prisma.UserUncheckedCreateWithoutCreatedInvitationsInput>
 }
 
-export type UserUpsertWithoutExpensesInput = {
-  update: Prisma.XOR<Prisma.UserUpdateWithoutExpensesInput, Prisma.UserUncheckedUpdateWithoutExpensesInput>
-  create: Prisma.XOR<Prisma.UserCreateWithoutExpensesInput, Prisma.UserUncheckedCreateWithoutExpensesInput>
-  where?: Prisma.UserWhereInput
-}
-
-export type UserUpdateToOneWithWhereWithoutExpensesInput = {
-  where?: Prisma.UserWhereInput
-  data: Prisma.XOR<Prisma.UserUpdateWithoutExpensesInput, Prisma.UserUncheckedUpdateWithoutExpensesInput>
-}
-
-export type UserUpdateWithoutExpensesInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  email?: Prisma.StringFieldUpdateOperationsInput | string
-  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  onboardingCompleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  defaultInvestmentPercentage?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
-  titheEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  tithePercentage?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
-  titheBase?: Prisma.StringFieldUpdateOperationsInput | string
-  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
-  expenseTypes?: Prisma.ExpenseTypeUpdateManyWithoutUserNestedInput
-  incomes?: Prisma.IncomeUpdateManyWithoutUserNestedInput
-  movements?: Prisma.MovementUpdateManyWithoutUserNestedInput
-  paymentMethods?: Prisma.PaymentMethodUpdateManyWithoutUserNestedInput
-  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
-  recurringExpenses?: Prisma.RecurringExpenseUpdateManyWithoutUserNestedInput
-}
-
-export type UserUncheckedUpdateWithoutExpensesInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  email?: Prisma.StringFieldUpdateOperationsInput | string
-  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  onboardingCompleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  defaultInvestmentPercentage?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
-  titheEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  tithePercentage?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
-  titheBase?: Prisma.StringFieldUpdateOperationsInput | string
-  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
-  expenseTypes?: Prisma.ExpenseTypeUncheckedUpdateManyWithoutUserNestedInput
-  incomes?: Prisma.IncomeUncheckedUpdateManyWithoutUserNestedInput
-  movements?: Prisma.MovementUncheckedUpdateManyWithoutUserNestedInput
-  paymentMethods?: Prisma.PaymentMethodUncheckedUpdateManyWithoutUserNestedInput
-  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
-  recurringExpenses?: Prisma.RecurringExpenseUncheckedUpdateManyWithoutUserNestedInput
-}
-
-export type UserCreateWithoutPaymentMethodsInput = {
+export type UserCreateWithoutAcceptedInvitationsInput = {
   id?: string
   name?: string | null
   email: string
@@ -1397,22 +971,15 @@ export type UserCreateWithoutPaymentMethodsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   emailVerified?: Date | string | null
-  onboardingCompleted?: boolean
-  defaultInvestmentPercentage?: runtime.Decimal | runtime.DecimalJsLike | number | string
-  titheEnabled?: boolean
-  tithePercentage?: runtime.Decimal | runtime.DecimalJsLike | number | string
-  titheBase?: string
-  isDemo?: boolean
+  workspaceMembers?: Prisma.WorkspaceMemberCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
-  expenses?: Prisma.ExpenseCreateNestedManyWithoutUserInput
-  expenseTypes?: Prisma.ExpenseTypeCreateNestedManyWithoutUserInput
-  incomes?: Prisma.IncomeCreateNestedManyWithoutUserInput
-  movements?: Prisma.MovementCreateNestedManyWithoutUserInput
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
-  recurringExpenses?: Prisma.RecurringExpenseCreateNestedManyWithoutUserInput
+  createdMovements?: Prisma.MovementCreateNestedManyWithoutCreatedByInput
+  updatedMovements?: Prisma.MovementCreateNestedManyWithoutUpdatedByInput
+  createdInvitations?: Prisma.WorkspaceInvitationCreateNestedManyWithoutInvitedByInput
 }
 
-export type UserUncheckedCreateWithoutPaymentMethodsInput = {
+export type UserUncheckedCreateWithoutAcceptedInvitationsInput = {
   id?: string
   name?: string | null
   email: string
@@ -1420,38 +987,31 @@ export type UserUncheckedCreateWithoutPaymentMethodsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   emailVerified?: Date | string | null
-  onboardingCompleted?: boolean
-  defaultInvestmentPercentage?: runtime.Decimal | runtime.DecimalJsLike | number | string
-  titheEnabled?: boolean
-  tithePercentage?: runtime.Decimal | runtime.DecimalJsLike | number | string
-  titheBase?: string
-  isDemo?: boolean
+  workspaceMembers?: Prisma.WorkspaceMemberUncheckedCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
-  expenses?: Prisma.ExpenseUncheckedCreateNestedManyWithoutUserInput
-  expenseTypes?: Prisma.ExpenseTypeUncheckedCreateNestedManyWithoutUserInput
-  incomes?: Prisma.IncomeUncheckedCreateNestedManyWithoutUserInput
-  movements?: Prisma.MovementUncheckedCreateNestedManyWithoutUserInput
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
-  recurringExpenses?: Prisma.RecurringExpenseUncheckedCreateNestedManyWithoutUserInput
+  createdMovements?: Prisma.MovementUncheckedCreateNestedManyWithoutCreatedByInput
+  updatedMovements?: Prisma.MovementUncheckedCreateNestedManyWithoutUpdatedByInput
+  createdInvitations?: Prisma.WorkspaceInvitationUncheckedCreateNestedManyWithoutInvitedByInput
 }
 
-export type UserCreateOrConnectWithoutPaymentMethodsInput = {
+export type UserCreateOrConnectWithoutAcceptedInvitationsInput = {
   where: Prisma.UserWhereUniqueInput
-  create: Prisma.XOR<Prisma.UserCreateWithoutPaymentMethodsInput, Prisma.UserUncheckedCreateWithoutPaymentMethodsInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutAcceptedInvitationsInput, Prisma.UserUncheckedCreateWithoutAcceptedInvitationsInput>
 }
 
-export type UserUpsertWithoutPaymentMethodsInput = {
-  update: Prisma.XOR<Prisma.UserUpdateWithoutPaymentMethodsInput, Prisma.UserUncheckedUpdateWithoutPaymentMethodsInput>
-  create: Prisma.XOR<Prisma.UserCreateWithoutPaymentMethodsInput, Prisma.UserUncheckedCreateWithoutPaymentMethodsInput>
+export type UserUpsertWithoutCreatedInvitationsInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutCreatedInvitationsInput, Prisma.UserUncheckedUpdateWithoutCreatedInvitationsInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutCreatedInvitationsInput, Prisma.UserUncheckedCreateWithoutCreatedInvitationsInput>
   where?: Prisma.UserWhereInput
 }
 
-export type UserUpdateToOneWithWhereWithoutPaymentMethodsInput = {
+export type UserUpdateToOneWithWhereWithoutCreatedInvitationsInput = {
   where?: Prisma.UserWhereInput
-  data: Prisma.XOR<Prisma.UserUpdateWithoutPaymentMethodsInput, Prisma.UserUncheckedUpdateWithoutPaymentMethodsInput>
+  data: Prisma.XOR<Prisma.UserUpdateWithoutCreatedInvitationsInput, Prisma.UserUncheckedUpdateWithoutCreatedInvitationsInput>
 }
 
-export type UserUpdateWithoutPaymentMethodsInput = {
+export type UserUpdateWithoutCreatedInvitationsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   email?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1459,22 +1019,15 @@ export type UserUpdateWithoutPaymentMethodsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  onboardingCompleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  defaultInvestmentPercentage?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
-  titheEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  tithePercentage?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
-  titheBase?: Prisma.StringFieldUpdateOperationsInput | string
-  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  workspaceMembers?: Prisma.WorkspaceMemberUpdateManyWithoutUserNestedInput
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
-  expenses?: Prisma.ExpenseUpdateManyWithoutUserNestedInput
-  expenseTypes?: Prisma.ExpenseTypeUpdateManyWithoutUserNestedInput
-  incomes?: Prisma.IncomeUpdateManyWithoutUserNestedInput
-  movements?: Prisma.MovementUpdateManyWithoutUserNestedInput
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
-  recurringExpenses?: Prisma.RecurringExpenseUpdateManyWithoutUserNestedInput
+  createdMovements?: Prisma.MovementUpdateManyWithoutCreatedByNestedInput
+  updatedMovements?: Prisma.MovementUpdateManyWithoutUpdatedByNestedInput
+  acceptedInvitations?: Prisma.WorkspaceInvitationUpdateManyWithoutAcceptedByNestedInput
 }
 
-export type UserUncheckedUpdateWithoutPaymentMethodsInput = {
+export type UserUncheckedUpdateWithoutCreatedInvitationsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   email?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1482,84 +1035,26 @@ export type UserUncheckedUpdateWithoutPaymentMethodsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  onboardingCompleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  defaultInvestmentPercentage?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
-  titheEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  tithePercentage?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
-  titheBase?: Prisma.StringFieldUpdateOperationsInput | string
-  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  workspaceMembers?: Prisma.WorkspaceMemberUncheckedUpdateManyWithoutUserNestedInput
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
-  expenses?: Prisma.ExpenseUncheckedUpdateManyWithoutUserNestedInput
-  expenseTypes?: Prisma.ExpenseTypeUncheckedUpdateManyWithoutUserNestedInput
-  incomes?: Prisma.IncomeUncheckedUpdateManyWithoutUserNestedInput
-  movements?: Prisma.MovementUncheckedUpdateManyWithoutUserNestedInput
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
-  recurringExpenses?: Prisma.RecurringExpenseUncheckedUpdateManyWithoutUserNestedInput
+  createdMovements?: Prisma.MovementUncheckedUpdateManyWithoutCreatedByNestedInput
+  updatedMovements?: Prisma.MovementUncheckedUpdateManyWithoutUpdatedByNestedInput
+  acceptedInvitations?: Prisma.WorkspaceInvitationUncheckedUpdateManyWithoutAcceptedByNestedInput
 }
 
-export type UserCreateWithoutRecurringExpensesInput = {
-  id?: string
-  name?: string | null
-  email: string
-  image?: string | null
-  createdAt?: Date | string
-  updatedAt?: Date | string
-  emailVerified?: Date | string | null
-  onboardingCompleted?: boolean
-  defaultInvestmentPercentage?: runtime.Decimal | runtime.DecimalJsLike | number | string
-  titheEnabled?: boolean
-  tithePercentage?: runtime.Decimal | runtime.DecimalJsLike | number | string
-  titheBase?: string
-  isDemo?: boolean
-  accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
-  expenses?: Prisma.ExpenseCreateNestedManyWithoutUserInput
-  expenseTypes?: Prisma.ExpenseTypeCreateNestedManyWithoutUserInput
-  incomes?: Prisma.IncomeCreateNestedManyWithoutUserInput
-  movements?: Prisma.MovementCreateNestedManyWithoutUserInput
-  paymentMethods?: Prisma.PaymentMethodCreateNestedManyWithoutUserInput
-  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
-}
-
-export type UserUncheckedCreateWithoutRecurringExpensesInput = {
-  id?: string
-  name?: string | null
-  email: string
-  image?: string | null
-  createdAt?: Date | string
-  updatedAt?: Date | string
-  emailVerified?: Date | string | null
-  onboardingCompleted?: boolean
-  defaultInvestmentPercentage?: runtime.Decimal | runtime.DecimalJsLike | number | string
-  titheEnabled?: boolean
-  tithePercentage?: runtime.Decimal | runtime.DecimalJsLike | number | string
-  titheBase?: string
-  isDemo?: boolean
-  accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
-  expenses?: Prisma.ExpenseUncheckedCreateNestedManyWithoutUserInput
-  expenseTypes?: Prisma.ExpenseTypeUncheckedCreateNestedManyWithoutUserInput
-  incomes?: Prisma.IncomeUncheckedCreateNestedManyWithoutUserInput
-  movements?: Prisma.MovementUncheckedCreateNestedManyWithoutUserInput
-  paymentMethods?: Prisma.PaymentMethodUncheckedCreateNestedManyWithoutUserInput
-  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
-}
-
-export type UserCreateOrConnectWithoutRecurringExpensesInput = {
-  where: Prisma.UserWhereUniqueInput
-  create: Prisma.XOR<Prisma.UserCreateWithoutRecurringExpensesInput, Prisma.UserUncheckedCreateWithoutRecurringExpensesInput>
-}
-
-export type UserUpsertWithoutRecurringExpensesInput = {
-  update: Prisma.XOR<Prisma.UserUpdateWithoutRecurringExpensesInput, Prisma.UserUncheckedUpdateWithoutRecurringExpensesInput>
-  create: Prisma.XOR<Prisma.UserCreateWithoutRecurringExpensesInput, Prisma.UserUncheckedCreateWithoutRecurringExpensesInput>
+export type UserUpsertWithoutAcceptedInvitationsInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutAcceptedInvitationsInput, Prisma.UserUncheckedUpdateWithoutAcceptedInvitationsInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutAcceptedInvitationsInput, Prisma.UserUncheckedCreateWithoutAcceptedInvitationsInput>
   where?: Prisma.UserWhereInput
 }
 
-export type UserUpdateToOneWithWhereWithoutRecurringExpensesInput = {
+export type UserUpdateToOneWithWhereWithoutAcceptedInvitationsInput = {
   where?: Prisma.UserWhereInput
-  data: Prisma.XOR<Prisma.UserUpdateWithoutRecurringExpensesInput, Prisma.UserUncheckedUpdateWithoutRecurringExpensesInput>
+  data: Prisma.XOR<Prisma.UserUpdateWithoutAcceptedInvitationsInput, Prisma.UserUncheckedUpdateWithoutAcceptedInvitationsInput>
 }
 
-export type UserUpdateWithoutRecurringExpensesInput = {
+export type UserUpdateWithoutAcceptedInvitationsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   email?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1567,22 +1062,15 @@ export type UserUpdateWithoutRecurringExpensesInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  onboardingCompleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  defaultInvestmentPercentage?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
-  titheEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  tithePercentage?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
-  titheBase?: Prisma.StringFieldUpdateOperationsInput | string
-  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  workspaceMembers?: Prisma.WorkspaceMemberUpdateManyWithoutUserNestedInput
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
-  expenses?: Prisma.ExpenseUpdateManyWithoutUserNestedInput
-  expenseTypes?: Prisma.ExpenseTypeUpdateManyWithoutUserNestedInput
-  incomes?: Prisma.IncomeUpdateManyWithoutUserNestedInput
-  movements?: Prisma.MovementUpdateManyWithoutUserNestedInput
-  paymentMethods?: Prisma.PaymentMethodUpdateManyWithoutUserNestedInput
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
+  createdMovements?: Prisma.MovementUpdateManyWithoutCreatedByNestedInput
+  updatedMovements?: Prisma.MovementUpdateManyWithoutUpdatedByNestedInput
+  createdInvitations?: Prisma.WorkspaceInvitationUpdateManyWithoutInvitedByNestedInput
 }
 
-export type UserUncheckedUpdateWithoutRecurringExpensesInput = {
+export type UserUncheckedUpdateWithoutAcceptedInvitationsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   email?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1590,19 +1078,12 @@ export type UserUncheckedUpdateWithoutRecurringExpensesInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  onboardingCompleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  defaultInvestmentPercentage?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
-  titheEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  tithePercentage?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
-  titheBase?: Prisma.StringFieldUpdateOperationsInput | string
-  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  workspaceMembers?: Prisma.WorkspaceMemberUncheckedUpdateManyWithoutUserNestedInput
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
-  expenses?: Prisma.ExpenseUncheckedUpdateManyWithoutUserNestedInput
-  expenseTypes?: Prisma.ExpenseTypeUncheckedUpdateManyWithoutUserNestedInput
-  incomes?: Prisma.IncomeUncheckedUpdateManyWithoutUserNestedInput
-  movements?: Prisma.MovementUncheckedUpdateManyWithoutUserNestedInput
-  paymentMethods?: Prisma.PaymentMethodUncheckedUpdateManyWithoutUserNestedInput
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
+  createdMovements?: Prisma.MovementUncheckedUpdateManyWithoutCreatedByNestedInput
+  updatedMovements?: Prisma.MovementUncheckedUpdateManyWithoutUpdatedByNestedInput
+  createdInvitations?: Prisma.WorkspaceInvitationUncheckedUpdateManyWithoutInvitedByNestedInput
 }
 
 
@@ -1611,25 +1092,23 @@ export type UserUncheckedUpdateWithoutRecurringExpensesInput = {
  */
 
 export type UserCountOutputType = {
+  workspaceMembers: number
   accounts: number
-  expenses: number
-  expenseTypes: number
-  incomes: number
-  movements: number
-  paymentMethods: number
   sessions: number
-  recurringExpenses: number
+  createdMovements: number
+  updatedMovements: number
+  createdInvitations: number
+  acceptedInvitations: number
 }
 
 export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  workspaceMembers?: boolean | UserCountOutputTypeCountWorkspaceMembersArgs
   accounts?: boolean | UserCountOutputTypeCountAccountsArgs
-  expenses?: boolean | UserCountOutputTypeCountExpensesArgs
-  expenseTypes?: boolean | UserCountOutputTypeCountExpenseTypesArgs
-  incomes?: boolean | UserCountOutputTypeCountIncomesArgs
-  movements?: boolean | UserCountOutputTypeCountMovementsArgs
-  paymentMethods?: boolean | UserCountOutputTypeCountPaymentMethodsArgs
   sessions?: boolean | UserCountOutputTypeCountSessionsArgs
-  recurringExpenses?: boolean | UserCountOutputTypeCountRecurringExpensesArgs
+  createdMovements?: boolean | UserCountOutputTypeCountCreatedMovementsArgs
+  updatedMovements?: boolean | UserCountOutputTypeCountUpdatedMovementsArgs
+  createdInvitations?: boolean | UserCountOutputTypeCountCreatedInvitationsArgs
+  acceptedInvitations?: boolean | UserCountOutputTypeCountAcceptedInvitationsArgs
 }
 
 /**
@@ -1645,43 +1124,15 @@ export type UserCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Extensi
 /**
  * UserCountOutputType without action
  */
+export type UserCountOutputTypeCountWorkspaceMembersArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.WorkspaceMemberWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
 export type UserCountOutputTypeCountAccountsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.AccountWhereInput
-}
-
-/**
- * UserCountOutputType without action
- */
-export type UserCountOutputTypeCountExpensesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.ExpenseWhereInput
-}
-
-/**
- * UserCountOutputType without action
- */
-export type UserCountOutputTypeCountExpenseTypesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.ExpenseTypeWhereInput
-}
-
-/**
- * UserCountOutputType without action
- */
-export type UserCountOutputTypeCountIncomesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.IncomeWhereInput
-}
-
-/**
- * UserCountOutputType without action
- */
-export type UserCountOutputTypeCountMovementsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.MovementWhereInput
-}
-
-/**
- * UserCountOutputType without action
- */
-export type UserCountOutputTypeCountPaymentMethodsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.PaymentMethodWhereInput
 }
 
 /**
@@ -1694,8 +1145,29 @@ export type UserCountOutputTypeCountSessionsArgs<ExtArgs extends runtime.Types.E
 /**
  * UserCountOutputType without action
  */
-export type UserCountOutputTypeCountRecurringExpensesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.RecurringExpenseWhereInput
+export type UserCountOutputTypeCountCreatedMovementsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.MovementWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountUpdatedMovementsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.MovementWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountCreatedInvitationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.WorkspaceInvitationWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountAcceptedInvitationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.WorkspaceInvitationWhereInput
 }
 
 
@@ -1707,20 +1179,13 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   createdAt?: boolean
   updatedAt?: boolean
   emailVerified?: boolean
-  onboardingCompleted?: boolean
-  defaultInvestmentPercentage?: boolean
-  titheEnabled?: boolean
-  tithePercentage?: boolean
-  titheBase?: boolean
-  isDemo?: boolean
+  workspaceMembers?: boolean | Prisma.User$workspaceMembersArgs<ExtArgs>
   accounts?: boolean | Prisma.User$accountsArgs<ExtArgs>
-  expenses?: boolean | Prisma.User$expensesArgs<ExtArgs>
-  expenseTypes?: boolean | Prisma.User$expenseTypesArgs<ExtArgs>
-  incomes?: boolean | Prisma.User$incomesArgs<ExtArgs>
-  movements?: boolean | Prisma.User$movementsArgs<ExtArgs>
-  paymentMethods?: boolean | Prisma.User$paymentMethodsArgs<ExtArgs>
   sessions?: boolean | Prisma.User$sessionsArgs<ExtArgs>
-  recurringExpenses?: boolean | Prisma.User$recurringExpensesArgs<ExtArgs>
+  createdMovements?: boolean | Prisma.User$createdMovementsArgs<ExtArgs>
+  updatedMovements?: boolean | Prisma.User$updatedMovementsArgs<ExtArgs>
+  createdInvitations?: boolean | Prisma.User$createdInvitationsArgs<ExtArgs>
+  acceptedInvitations?: boolean | Prisma.User$acceptedInvitationsArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["user"]>
 
@@ -1732,12 +1197,6 @@ export type UserSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   createdAt?: boolean
   updatedAt?: boolean
   emailVerified?: boolean
-  onboardingCompleted?: boolean
-  defaultInvestmentPercentage?: boolean
-  titheEnabled?: boolean
-  tithePercentage?: boolean
-  titheBase?: boolean
-  isDemo?: boolean
 }, ExtArgs["result"]["user"]>
 
 export type UserSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -1748,12 +1207,6 @@ export type UserSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   createdAt?: boolean
   updatedAt?: boolean
   emailVerified?: boolean
-  onboardingCompleted?: boolean
-  defaultInvestmentPercentage?: boolean
-  titheEnabled?: boolean
-  tithePercentage?: boolean
-  titheBase?: boolean
-  isDemo?: boolean
 }, ExtArgs["result"]["user"]>
 
 export type UserSelectScalar = {
@@ -1764,24 +1217,17 @@ export type UserSelectScalar = {
   createdAt?: boolean
   updatedAt?: boolean
   emailVerified?: boolean
-  onboardingCompleted?: boolean
-  defaultInvestmentPercentage?: boolean
-  titheEnabled?: boolean
-  tithePercentage?: boolean
-  titheBase?: boolean
-  isDemo?: boolean
 }
 
-export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "email" | "image" | "createdAt" | "updatedAt" | "emailVerified" | "onboardingCompleted" | "defaultInvestmentPercentage" | "titheEnabled" | "tithePercentage" | "titheBase" | "isDemo", ExtArgs["result"]["user"]>
+export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "email" | "image" | "createdAt" | "updatedAt" | "emailVerified", ExtArgs["result"]["user"]>
 export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  workspaceMembers?: boolean | Prisma.User$workspaceMembersArgs<ExtArgs>
   accounts?: boolean | Prisma.User$accountsArgs<ExtArgs>
-  expenses?: boolean | Prisma.User$expensesArgs<ExtArgs>
-  expenseTypes?: boolean | Prisma.User$expenseTypesArgs<ExtArgs>
-  incomes?: boolean | Prisma.User$incomesArgs<ExtArgs>
-  movements?: boolean | Prisma.User$movementsArgs<ExtArgs>
-  paymentMethods?: boolean | Prisma.User$paymentMethodsArgs<ExtArgs>
   sessions?: boolean | Prisma.User$sessionsArgs<ExtArgs>
-  recurringExpenses?: boolean | Prisma.User$recurringExpensesArgs<ExtArgs>
+  createdMovements?: boolean | Prisma.User$createdMovementsArgs<ExtArgs>
+  updatedMovements?: boolean | Prisma.User$updatedMovementsArgs<ExtArgs>
+  createdInvitations?: boolean | Prisma.User$createdInvitationsArgs<ExtArgs>
+  acceptedInvitations?: boolean | Prisma.User$acceptedInvitationsArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type UserIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -1790,14 +1236,13 @@ export type UserIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensi
 export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "User"
   objects: {
+    workspaceMembers: Prisma.$WorkspaceMemberPayload<ExtArgs>[]
     accounts: Prisma.$AccountPayload<ExtArgs>[]
-    expenses: Prisma.$ExpensePayload<ExtArgs>[]
-    expenseTypes: Prisma.$ExpenseTypePayload<ExtArgs>[]
-    incomes: Prisma.$IncomePayload<ExtArgs>[]
-    movements: Prisma.$MovementPayload<ExtArgs>[]
-    paymentMethods: Prisma.$PaymentMethodPayload<ExtArgs>[]
     sessions: Prisma.$SessionPayload<ExtArgs>[]
-    recurringExpenses: Prisma.$RecurringExpensePayload<ExtArgs>[]
+    createdMovements: Prisma.$MovementPayload<ExtArgs>[]
+    updatedMovements: Prisma.$MovementPayload<ExtArgs>[]
+    createdInvitations: Prisma.$WorkspaceInvitationPayload<ExtArgs>[]
+    acceptedInvitations: Prisma.$WorkspaceInvitationPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1807,12 +1252,6 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     createdAt: Date
     updatedAt: Date
     emailVerified: Date | null
-    onboardingCompleted: boolean
-    defaultInvestmentPercentage: runtime.Decimal
-    titheEnabled: boolean
-    tithePercentage: runtime.Decimal
-    titheBase: string
-    isDemo: boolean
   }, ExtArgs["result"]["user"]>
   composites: {}
 }
@@ -2207,14 +1646,13 @@ readonly fields: UserFieldRefs;
  */
 export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
+  workspaceMembers<T extends Prisma.User$workspaceMembersArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$workspaceMembersArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$WorkspaceMemberPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   accounts<T extends Prisma.User$accountsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$accountsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AccountPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-  expenses<T extends Prisma.User$expensesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$expensesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ExpensePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-  expenseTypes<T extends Prisma.User$expenseTypesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$expenseTypesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ExpenseTypePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-  incomes<T extends Prisma.User$incomesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$incomesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$IncomePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-  movements<T extends Prisma.User$movementsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$movementsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MovementPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-  paymentMethods<T extends Prisma.User$paymentMethodsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$paymentMethodsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PaymentMethodPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   sessions<T extends Prisma.User$sessionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$sessionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$SessionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-  recurringExpenses<T extends Prisma.User$recurringExpensesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$recurringExpensesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$RecurringExpensePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  createdMovements<T extends Prisma.User$createdMovementsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$createdMovementsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MovementPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  updatedMovements<T extends Prisma.User$updatedMovementsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$updatedMovementsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MovementPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  createdInvitations<T extends Prisma.User$createdInvitationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$createdInvitationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$WorkspaceInvitationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  acceptedInvitations<T extends Prisma.User$acceptedInvitationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$acceptedInvitationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$WorkspaceInvitationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2251,12 +1689,6 @@ export interface UserFieldRefs {
   readonly createdAt: Prisma.FieldRef<"User", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"User", 'DateTime'>
   readonly emailVerified: Prisma.FieldRef<"User", 'DateTime'>
-  readonly onboardingCompleted: Prisma.FieldRef<"User", 'Boolean'>
-  readonly defaultInvestmentPercentage: Prisma.FieldRef<"User", 'Decimal'>
-  readonly titheEnabled: Prisma.FieldRef<"User", 'Boolean'>
-  readonly tithePercentage: Prisma.FieldRef<"User", 'Decimal'>
-  readonly titheBase: Prisma.FieldRef<"User", 'String'>
-  readonly isDemo: Prisma.FieldRef<"User", 'Boolean'>
 }
     
 
@@ -2650,6 +2082,30 @@ export type UserDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.Internal
 }
 
 /**
+ * User.workspaceMembers
+ */
+export type User$workspaceMembersArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the WorkspaceMember
+   */
+  select?: Prisma.WorkspaceMemberSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the WorkspaceMember
+   */
+  omit?: Prisma.WorkspaceMemberOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.WorkspaceMemberInclude<ExtArgs> | null
+  where?: Prisma.WorkspaceMemberWhereInput
+  orderBy?: Prisma.WorkspaceMemberOrderByWithRelationInput | Prisma.WorkspaceMemberOrderByWithRelationInput[]
+  cursor?: Prisma.WorkspaceMemberWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.WorkspaceMemberScalarFieldEnum | Prisma.WorkspaceMemberScalarFieldEnum[]
+}
+
+/**
  * User.accounts
  */
 export type User$accountsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -2671,126 +2127,6 @@ export type User$accountsArgs<ExtArgs extends runtime.Types.Extensions.InternalA
   take?: number
   skip?: number
   distinct?: Prisma.AccountScalarFieldEnum | Prisma.AccountScalarFieldEnum[]
-}
-
-/**
- * User.expenses
- */
-export type User$expensesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the Expense
-   */
-  select?: Prisma.ExpenseSelect<ExtArgs> | null
-  /**
-   * Omit specific fields from the Expense
-   */
-  omit?: Prisma.ExpenseOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.ExpenseInclude<ExtArgs> | null
-  where?: Prisma.ExpenseWhereInput
-  orderBy?: Prisma.ExpenseOrderByWithRelationInput | Prisma.ExpenseOrderByWithRelationInput[]
-  cursor?: Prisma.ExpenseWhereUniqueInput
-  take?: number
-  skip?: number
-  distinct?: Prisma.ExpenseScalarFieldEnum | Prisma.ExpenseScalarFieldEnum[]
-}
-
-/**
- * User.expenseTypes
- */
-export type User$expenseTypesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the ExpenseType
-   */
-  select?: Prisma.ExpenseTypeSelect<ExtArgs> | null
-  /**
-   * Omit specific fields from the ExpenseType
-   */
-  omit?: Prisma.ExpenseTypeOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.ExpenseTypeInclude<ExtArgs> | null
-  where?: Prisma.ExpenseTypeWhereInput
-  orderBy?: Prisma.ExpenseTypeOrderByWithRelationInput | Prisma.ExpenseTypeOrderByWithRelationInput[]
-  cursor?: Prisma.ExpenseTypeWhereUniqueInput
-  take?: number
-  skip?: number
-  distinct?: Prisma.ExpenseTypeScalarFieldEnum | Prisma.ExpenseTypeScalarFieldEnum[]
-}
-
-/**
- * User.incomes
- */
-export type User$incomesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the Income
-   */
-  select?: Prisma.IncomeSelect<ExtArgs> | null
-  /**
-   * Omit specific fields from the Income
-   */
-  omit?: Prisma.IncomeOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.IncomeInclude<ExtArgs> | null
-  where?: Prisma.IncomeWhereInput
-  orderBy?: Prisma.IncomeOrderByWithRelationInput | Prisma.IncomeOrderByWithRelationInput[]
-  cursor?: Prisma.IncomeWhereUniqueInput
-  take?: number
-  skip?: number
-  distinct?: Prisma.IncomeScalarFieldEnum | Prisma.IncomeScalarFieldEnum[]
-}
-
-/**
- * User.movements
- */
-export type User$movementsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the Movement
-   */
-  select?: Prisma.MovementSelect<ExtArgs> | null
-  /**
-   * Omit specific fields from the Movement
-   */
-  omit?: Prisma.MovementOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.MovementInclude<ExtArgs> | null
-  where?: Prisma.MovementWhereInput
-  orderBy?: Prisma.MovementOrderByWithRelationInput | Prisma.MovementOrderByWithRelationInput[]
-  cursor?: Prisma.MovementWhereUniqueInput
-  take?: number
-  skip?: number
-  distinct?: Prisma.MovementScalarFieldEnum | Prisma.MovementScalarFieldEnum[]
-}
-
-/**
- * User.paymentMethods
- */
-export type User$paymentMethodsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the PaymentMethod
-   */
-  select?: Prisma.PaymentMethodSelect<ExtArgs> | null
-  /**
-   * Omit specific fields from the PaymentMethod
-   */
-  omit?: Prisma.PaymentMethodOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.PaymentMethodInclude<ExtArgs> | null
-  where?: Prisma.PaymentMethodWhereInput
-  orderBy?: Prisma.PaymentMethodOrderByWithRelationInput | Prisma.PaymentMethodOrderByWithRelationInput[]
-  cursor?: Prisma.PaymentMethodWhereUniqueInput
-  take?: number
-  skip?: number
-  distinct?: Prisma.PaymentMethodScalarFieldEnum | Prisma.PaymentMethodScalarFieldEnum[]
 }
 
 /**
@@ -2818,27 +2154,99 @@ export type User$sessionsArgs<ExtArgs extends runtime.Types.Extensions.InternalA
 }
 
 /**
- * User.recurringExpenses
+ * User.createdMovements
  */
-export type User$recurringExpensesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+export type User$createdMovementsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   /**
-   * Select specific fields to fetch from the RecurringExpense
+   * Select specific fields to fetch from the Movement
    */
-  select?: Prisma.RecurringExpenseSelect<ExtArgs> | null
+  select?: Prisma.MovementSelect<ExtArgs> | null
   /**
-   * Omit specific fields from the RecurringExpense
+   * Omit specific fields from the Movement
    */
-  omit?: Prisma.RecurringExpenseOmit<ExtArgs> | null
+  omit?: Prisma.MovementOmit<ExtArgs> | null
   /**
    * Choose, which related nodes to fetch as well
    */
-  include?: Prisma.RecurringExpenseInclude<ExtArgs> | null
-  where?: Prisma.RecurringExpenseWhereInput
-  orderBy?: Prisma.RecurringExpenseOrderByWithRelationInput | Prisma.RecurringExpenseOrderByWithRelationInput[]
-  cursor?: Prisma.RecurringExpenseWhereUniqueInput
+  include?: Prisma.MovementInclude<ExtArgs> | null
+  where?: Prisma.MovementWhereInput
+  orderBy?: Prisma.MovementOrderByWithRelationInput | Prisma.MovementOrderByWithRelationInput[]
+  cursor?: Prisma.MovementWhereUniqueInput
   take?: number
   skip?: number
-  distinct?: Prisma.RecurringExpenseScalarFieldEnum | Prisma.RecurringExpenseScalarFieldEnum[]
+  distinct?: Prisma.MovementScalarFieldEnum | Prisma.MovementScalarFieldEnum[]
+}
+
+/**
+ * User.updatedMovements
+ */
+export type User$updatedMovementsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Movement
+   */
+  select?: Prisma.MovementSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Movement
+   */
+  omit?: Prisma.MovementOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.MovementInclude<ExtArgs> | null
+  where?: Prisma.MovementWhereInput
+  orderBy?: Prisma.MovementOrderByWithRelationInput | Prisma.MovementOrderByWithRelationInput[]
+  cursor?: Prisma.MovementWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.MovementScalarFieldEnum | Prisma.MovementScalarFieldEnum[]
+}
+
+/**
+ * User.createdInvitations
+ */
+export type User$createdInvitationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the WorkspaceInvitation
+   */
+  select?: Prisma.WorkspaceInvitationSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the WorkspaceInvitation
+   */
+  omit?: Prisma.WorkspaceInvitationOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.WorkspaceInvitationInclude<ExtArgs> | null
+  where?: Prisma.WorkspaceInvitationWhereInput
+  orderBy?: Prisma.WorkspaceInvitationOrderByWithRelationInput | Prisma.WorkspaceInvitationOrderByWithRelationInput[]
+  cursor?: Prisma.WorkspaceInvitationWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.WorkspaceInvitationScalarFieldEnum | Prisma.WorkspaceInvitationScalarFieldEnum[]
+}
+
+/**
+ * User.acceptedInvitations
+ */
+export type User$acceptedInvitationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the WorkspaceInvitation
+   */
+  select?: Prisma.WorkspaceInvitationSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the WorkspaceInvitation
+   */
+  omit?: Prisma.WorkspaceInvitationOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.WorkspaceInvitationInclude<ExtArgs> | null
+  where?: Prisma.WorkspaceInvitationWhereInput
+  orderBy?: Prisma.WorkspaceInvitationOrderByWithRelationInput | Prisma.WorkspaceInvitationOrderByWithRelationInput[]
+  cursor?: Prisma.WorkspaceInvitationWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.WorkspaceInvitationScalarFieldEnum | Prisma.WorkspaceInvitationScalarFieldEnum[]
 }
 
 /**

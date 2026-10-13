@@ -36,7 +36,9 @@ export type MovementSumAggregateOutputType = {
 
 export type MovementMinAggregateOutputType = {
   id: string | null
-  userId: string | null
+  workspaceId: string | null
+  createdById: string | null
+  updatedById: string | null
   type: $Enums.MovementType | null
   amount: runtime.Decimal | null
   date: Date | null
@@ -47,7 +49,9 @@ export type MovementMinAggregateOutputType = {
 
 export type MovementMaxAggregateOutputType = {
   id: string | null
-  userId: string | null
+  workspaceId: string | null
+  createdById: string | null
+  updatedById: string | null
   type: $Enums.MovementType | null
   amount: runtime.Decimal | null
   date: Date | null
@@ -58,7 +62,9 @@ export type MovementMaxAggregateOutputType = {
 
 export type MovementCountAggregateOutputType = {
   id: number
-  userId: number
+  workspaceId: number
+  createdById: number
+  updatedById: number
   type: number
   amount: number
   date: number
@@ -79,7 +85,9 @@ export type MovementSumAggregateInputType = {
 
 export type MovementMinAggregateInputType = {
   id?: true
-  userId?: true
+  workspaceId?: true
+  createdById?: true
+  updatedById?: true
   type?: true
   amount?: true
   date?: true
@@ -90,7 +98,9 @@ export type MovementMinAggregateInputType = {
 
 export type MovementMaxAggregateInputType = {
   id?: true
-  userId?: true
+  workspaceId?: true
+  createdById?: true
+  updatedById?: true
   type?: true
   amount?: true
   date?: true
@@ -101,7 +111,9 @@ export type MovementMaxAggregateInputType = {
 
 export type MovementCountAggregateInputType = {
   id?: true
-  userId?: true
+  workspaceId?: true
+  createdById?: true
+  updatedById?: true
   type?: true
   amount?: true
   date?: true
@@ -199,7 +211,9 @@ export type MovementGroupByArgs<ExtArgs extends runtime.Types.Extensions.Interna
 
 export type MovementGroupByOutputType = {
   id: string
-  userId: string
+  workspaceId: string
+  createdById: string
+  updatedById: string | null
   type: $Enums.MovementType
   amount: runtime.Decimal
   date: Date
@@ -233,31 +247,39 @@ export type MovementWhereInput = {
   OR?: Prisma.MovementWhereInput[]
   NOT?: Prisma.MovementWhereInput | Prisma.MovementWhereInput[]
   id?: Prisma.StringFilter<"Movement"> | string
-  userId?: Prisma.StringFilter<"Movement"> | string
+  workspaceId?: Prisma.StringFilter<"Movement"> | string
+  createdById?: Prisma.StringFilter<"Movement"> | string
+  updatedById?: Prisma.StringNullableFilter<"Movement"> | string | null
   type?: Prisma.EnumMovementTypeFilter<"Movement"> | $Enums.MovementType
   amount?: Prisma.DecimalFilter<"Movement"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   date?: Prisma.DateTimeFilter<"Movement"> | Date | string
   description?: Prisma.StringNullableFilter<"Movement"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Movement"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Movement"> | Date | string
+  workspace?: Prisma.XOR<Prisma.WorkspaceScalarRelationFilter, Prisma.WorkspaceWhereInput>
+  createdBy?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
+  updatedBy?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
   expense?: Prisma.XOR<Prisma.ExpenseNullableScalarRelationFilter, Prisma.ExpenseWhereInput> | null
   income?: Prisma.XOR<Prisma.IncomeNullableScalarRelationFilter, Prisma.IncomeWhereInput> | null
-  user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   recurringExpensePayment?: Prisma.XOR<Prisma.RecurringExpensePaymentNullableScalarRelationFilter, Prisma.RecurringExpensePaymentWhereInput> | null
 }
 
 export type MovementOrderByWithRelationInput = {
   id?: Prisma.SortOrder
-  userId?: Prisma.SortOrder
+  workspaceId?: Prisma.SortOrder
+  createdById?: Prisma.SortOrder
+  updatedById?: Prisma.SortOrderInput | Prisma.SortOrder
   type?: Prisma.SortOrder
   amount?: Prisma.SortOrder
   date?: Prisma.SortOrder
   description?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  workspace?: Prisma.WorkspaceOrderByWithRelationInput
+  createdBy?: Prisma.UserOrderByWithRelationInput
+  updatedBy?: Prisma.UserOrderByWithRelationInput
   expense?: Prisma.ExpenseOrderByWithRelationInput
   income?: Prisma.IncomeOrderByWithRelationInput
-  user?: Prisma.UserOrderByWithRelationInput
   recurringExpensePayment?: Prisma.RecurringExpensePaymentOrderByWithRelationInput
 }
 
@@ -266,22 +288,28 @@ export type MovementWhereUniqueInput = Prisma.AtLeast<{
   AND?: Prisma.MovementWhereInput | Prisma.MovementWhereInput[]
   OR?: Prisma.MovementWhereInput[]
   NOT?: Prisma.MovementWhereInput | Prisma.MovementWhereInput[]
-  userId?: Prisma.StringFilter<"Movement"> | string
+  workspaceId?: Prisma.StringFilter<"Movement"> | string
+  createdById?: Prisma.StringFilter<"Movement"> | string
+  updatedById?: Prisma.StringNullableFilter<"Movement"> | string | null
   type?: Prisma.EnumMovementTypeFilter<"Movement"> | $Enums.MovementType
   amount?: Prisma.DecimalFilter<"Movement"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   date?: Prisma.DateTimeFilter<"Movement"> | Date | string
   description?: Prisma.StringNullableFilter<"Movement"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Movement"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Movement"> | Date | string
+  workspace?: Prisma.XOR<Prisma.WorkspaceScalarRelationFilter, Prisma.WorkspaceWhereInput>
+  createdBy?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
+  updatedBy?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
   expense?: Prisma.XOR<Prisma.ExpenseNullableScalarRelationFilter, Prisma.ExpenseWhereInput> | null
   income?: Prisma.XOR<Prisma.IncomeNullableScalarRelationFilter, Prisma.IncomeWhereInput> | null
-  user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   recurringExpensePayment?: Prisma.XOR<Prisma.RecurringExpensePaymentNullableScalarRelationFilter, Prisma.RecurringExpensePaymentWhereInput> | null
 }, "id">
 
 export type MovementOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
-  userId?: Prisma.SortOrder
+  workspaceId?: Prisma.SortOrder
+  createdById?: Prisma.SortOrder
+  updatedById?: Prisma.SortOrderInput | Prisma.SortOrder
   type?: Prisma.SortOrder
   amount?: Prisma.SortOrder
   date?: Prisma.SortOrder
@@ -300,7 +328,9 @@ export type MovementScalarWhereWithAggregatesInput = {
   OR?: Prisma.MovementScalarWhereWithAggregatesInput[]
   NOT?: Prisma.MovementScalarWhereWithAggregatesInput | Prisma.MovementScalarWhereWithAggregatesInput[]
   id?: Prisma.StringWithAggregatesFilter<"Movement"> | string
-  userId?: Prisma.StringWithAggregatesFilter<"Movement"> | string
+  workspaceId?: Prisma.StringWithAggregatesFilter<"Movement"> | string
+  createdById?: Prisma.StringWithAggregatesFilter<"Movement"> | string
+  updatedById?: Prisma.StringNullableWithAggregatesFilter<"Movement"> | string | null
   type?: Prisma.EnumMovementTypeWithAggregatesFilter<"Movement"> | $Enums.MovementType
   amount?: Prisma.DecimalWithAggregatesFilter<"Movement"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   date?: Prisma.DateTimeWithAggregatesFilter<"Movement"> | Date | string
@@ -317,15 +347,19 @@ export type MovementCreateInput = {
   description?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  workspace: Prisma.WorkspaceCreateNestedOneWithoutMovementsInput
+  createdBy: Prisma.UserCreateNestedOneWithoutCreatedMovementsInput
+  updatedBy?: Prisma.UserCreateNestedOneWithoutUpdatedMovementsInput
   expense?: Prisma.ExpenseCreateNestedOneWithoutMovementInput
   income?: Prisma.IncomeCreateNestedOneWithoutMovementInput
-  user: Prisma.UserCreateNestedOneWithoutMovementsInput
   recurringExpensePayment?: Prisma.RecurringExpensePaymentCreateNestedOneWithoutMovementInput
 }
 
 export type MovementUncheckedCreateInput = {
   id?: string
-  userId: string
+  workspaceId: string
+  createdById: string
+  updatedById?: string | null
   type: $Enums.MovementType
   amount: runtime.Decimal | runtime.DecimalJsLike | number | string
   date: Date | string
@@ -345,15 +379,19 @@ export type MovementUpdateInput = {
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  workspace?: Prisma.WorkspaceUpdateOneRequiredWithoutMovementsNestedInput
+  createdBy?: Prisma.UserUpdateOneRequiredWithoutCreatedMovementsNestedInput
+  updatedBy?: Prisma.UserUpdateOneWithoutUpdatedMovementsNestedInput
   expense?: Prisma.ExpenseUpdateOneWithoutMovementNestedInput
   income?: Prisma.IncomeUpdateOneWithoutMovementNestedInput
-  user?: Prisma.UserUpdateOneRequiredWithoutMovementsNestedInput
   recurringExpensePayment?: Prisma.RecurringExpensePaymentUpdateOneWithoutMovementNestedInput
 }
 
 export type MovementUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  userId?: Prisma.StringFieldUpdateOperationsInput | string
+  workspaceId?: Prisma.StringFieldUpdateOperationsInput | string
+  createdById?: Prisma.StringFieldUpdateOperationsInput | string
+  updatedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   type?: Prisma.EnumMovementTypeFieldUpdateOperationsInput | $Enums.MovementType
   amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -367,7 +405,9 @@ export type MovementUncheckedUpdateInput = {
 
 export type MovementCreateManyInput = {
   id?: string
-  userId: string
+  workspaceId: string
+  createdById: string
+  updatedById?: string | null
   type: $Enums.MovementType
   amount: runtime.Decimal | runtime.DecimalJsLike | number | string
   date: Date | string
@@ -388,7 +428,9 @@ export type MovementUpdateManyMutationInput = {
 
 export type MovementUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  userId?: Prisma.StringFieldUpdateOperationsInput | string
+  workspaceId?: Prisma.StringFieldUpdateOperationsInput | string
+  createdById?: Prisma.StringFieldUpdateOperationsInput | string
+  updatedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   type?: Prisma.EnumMovementTypeFieldUpdateOperationsInput | $Enums.MovementType
   amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -414,7 +456,9 @@ export type MovementScalarRelationFilter = {
 
 export type MovementCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
-  userId?: Prisma.SortOrder
+  workspaceId?: Prisma.SortOrder
+  createdById?: Prisma.SortOrder
+  updatedById?: Prisma.SortOrder
   type?: Prisma.SortOrder
   amount?: Prisma.SortOrder
   date?: Prisma.SortOrder
@@ -429,7 +473,9 @@ export type MovementAvgOrderByAggregateInput = {
 
 export type MovementMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
-  userId?: Prisma.SortOrder
+  workspaceId?: Prisma.SortOrder
+  createdById?: Prisma.SortOrder
+  updatedById?: Prisma.SortOrder
   type?: Prisma.SortOrder
   amount?: Prisma.SortOrder
   date?: Prisma.SortOrder
@@ -440,7 +486,9 @@ export type MovementMaxOrderByAggregateInput = {
 
 export type MovementMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
-  userId?: Prisma.SortOrder
+  workspaceId?: Prisma.SortOrder
+  createdById?: Prisma.SortOrder
+  updatedById?: Prisma.SortOrder
   type?: Prisma.SortOrder
   amount?: Prisma.SortOrder
   date?: Prisma.SortOrder
@@ -453,45 +501,87 @@ export type MovementSumOrderByAggregateInput = {
   amount?: Prisma.SortOrder
 }
 
-export type MovementCreateNestedManyWithoutUserInput = {
-  create?: Prisma.XOR<Prisma.MovementCreateWithoutUserInput, Prisma.MovementUncheckedCreateWithoutUserInput> | Prisma.MovementCreateWithoutUserInput[] | Prisma.MovementUncheckedCreateWithoutUserInput[]
-  connectOrCreate?: Prisma.MovementCreateOrConnectWithoutUserInput | Prisma.MovementCreateOrConnectWithoutUserInput[]
-  createMany?: Prisma.MovementCreateManyUserInputEnvelope
+export type MovementCreateNestedManyWithoutCreatedByInput = {
+  create?: Prisma.XOR<Prisma.MovementCreateWithoutCreatedByInput, Prisma.MovementUncheckedCreateWithoutCreatedByInput> | Prisma.MovementCreateWithoutCreatedByInput[] | Prisma.MovementUncheckedCreateWithoutCreatedByInput[]
+  connectOrCreate?: Prisma.MovementCreateOrConnectWithoutCreatedByInput | Prisma.MovementCreateOrConnectWithoutCreatedByInput[]
+  createMany?: Prisma.MovementCreateManyCreatedByInputEnvelope
   connect?: Prisma.MovementWhereUniqueInput | Prisma.MovementWhereUniqueInput[]
 }
 
-export type MovementUncheckedCreateNestedManyWithoutUserInput = {
-  create?: Prisma.XOR<Prisma.MovementCreateWithoutUserInput, Prisma.MovementUncheckedCreateWithoutUserInput> | Prisma.MovementCreateWithoutUserInput[] | Prisma.MovementUncheckedCreateWithoutUserInput[]
-  connectOrCreate?: Prisma.MovementCreateOrConnectWithoutUserInput | Prisma.MovementCreateOrConnectWithoutUserInput[]
-  createMany?: Prisma.MovementCreateManyUserInputEnvelope
+export type MovementCreateNestedManyWithoutUpdatedByInput = {
+  create?: Prisma.XOR<Prisma.MovementCreateWithoutUpdatedByInput, Prisma.MovementUncheckedCreateWithoutUpdatedByInput> | Prisma.MovementCreateWithoutUpdatedByInput[] | Prisma.MovementUncheckedCreateWithoutUpdatedByInput[]
+  connectOrCreate?: Prisma.MovementCreateOrConnectWithoutUpdatedByInput | Prisma.MovementCreateOrConnectWithoutUpdatedByInput[]
+  createMany?: Prisma.MovementCreateManyUpdatedByInputEnvelope
   connect?: Prisma.MovementWhereUniqueInput | Prisma.MovementWhereUniqueInput[]
 }
 
-export type MovementUpdateManyWithoutUserNestedInput = {
-  create?: Prisma.XOR<Prisma.MovementCreateWithoutUserInput, Prisma.MovementUncheckedCreateWithoutUserInput> | Prisma.MovementCreateWithoutUserInput[] | Prisma.MovementUncheckedCreateWithoutUserInput[]
-  connectOrCreate?: Prisma.MovementCreateOrConnectWithoutUserInput | Prisma.MovementCreateOrConnectWithoutUserInput[]
-  upsert?: Prisma.MovementUpsertWithWhereUniqueWithoutUserInput | Prisma.MovementUpsertWithWhereUniqueWithoutUserInput[]
-  createMany?: Prisma.MovementCreateManyUserInputEnvelope
+export type MovementUncheckedCreateNestedManyWithoutCreatedByInput = {
+  create?: Prisma.XOR<Prisma.MovementCreateWithoutCreatedByInput, Prisma.MovementUncheckedCreateWithoutCreatedByInput> | Prisma.MovementCreateWithoutCreatedByInput[] | Prisma.MovementUncheckedCreateWithoutCreatedByInput[]
+  connectOrCreate?: Prisma.MovementCreateOrConnectWithoutCreatedByInput | Prisma.MovementCreateOrConnectWithoutCreatedByInput[]
+  createMany?: Prisma.MovementCreateManyCreatedByInputEnvelope
+  connect?: Prisma.MovementWhereUniqueInput | Prisma.MovementWhereUniqueInput[]
+}
+
+export type MovementUncheckedCreateNestedManyWithoutUpdatedByInput = {
+  create?: Prisma.XOR<Prisma.MovementCreateWithoutUpdatedByInput, Prisma.MovementUncheckedCreateWithoutUpdatedByInput> | Prisma.MovementCreateWithoutUpdatedByInput[] | Prisma.MovementUncheckedCreateWithoutUpdatedByInput[]
+  connectOrCreate?: Prisma.MovementCreateOrConnectWithoutUpdatedByInput | Prisma.MovementCreateOrConnectWithoutUpdatedByInput[]
+  createMany?: Prisma.MovementCreateManyUpdatedByInputEnvelope
+  connect?: Prisma.MovementWhereUniqueInput | Prisma.MovementWhereUniqueInput[]
+}
+
+export type MovementUpdateManyWithoutCreatedByNestedInput = {
+  create?: Prisma.XOR<Prisma.MovementCreateWithoutCreatedByInput, Prisma.MovementUncheckedCreateWithoutCreatedByInput> | Prisma.MovementCreateWithoutCreatedByInput[] | Prisma.MovementUncheckedCreateWithoutCreatedByInput[]
+  connectOrCreate?: Prisma.MovementCreateOrConnectWithoutCreatedByInput | Prisma.MovementCreateOrConnectWithoutCreatedByInput[]
+  upsert?: Prisma.MovementUpsertWithWhereUniqueWithoutCreatedByInput | Prisma.MovementUpsertWithWhereUniqueWithoutCreatedByInput[]
+  createMany?: Prisma.MovementCreateManyCreatedByInputEnvelope
   set?: Prisma.MovementWhereUniqueInput | Prisma.MovementWhereUniqueInput[]
   disconnect?: Prisma.MovementWhereUniqueInput | Prisma.MovementWhereUniqueInput[]
   delete?: Prisma.MovementWhereUniqueInput | Prisma.MovementWhereUniqueInput[]
   connect?: Prisma.MovementWhereUniqueInput | Prisma.MovementWhereUniqueInput[]
-  update?: Prisma.MovementUpdateWithWhereUniqueWithoutUserInput | Prisma.MovementUpdateWithWhereUniqueWithoutUserInput[]
-  updateMany?: Prisma.MovementUpdateManyWithWhereWithoutUserInput | Prisma.MovementUpdateManyWithWhereWithoutUserInput[]
+  update?: Prisma.MovementUpdateWithWhereUniqueWithoutCreatedByInput | Prisma.MovementUpdateWithWhereUniqueWithoutCreatedByInput[]
+  updateMany?: Prisma.MovementUpdateManyWithWhereWithoutCreatedByInput | Prisma.MovementUpdateManyWithWhereWithoutCreatedByInput[]
   deleteMany?: Prisma.MovementScalarWhereInput | Prisma.MovementScalarWhereInput[]
 }
 
-export type MovementUncheckedUpdateManyWithoutUserNestedInput = {
-  create?: Prisma.XOR<Prisma.MovementCreateWithoutUserInput, Prisma.MovementUncheckedCreateWithoutUserInput> | Prisma.MovementCreateWithoutUserInput[] | Prisma.MovementUncheckedCreateWithoutUserInput[]
-  connectOrCreate?: Prisma.MovementCreateOrConnectWithoutUserInput | Prisma.MovementCreateOrConnectWithoutUserInput[]
-  upsert?: Prisma.MovementUpsertWithWhereUniqueWithoutUserInput | Prisma.MovementUpsertWithWhereUniqueWithoutUserInput[]
-  createMany?: Prisma.MovementCreateManyUserInputEnvelope
+export type MovementUpdateManyWithoutUpdatedByNestedInput = {
+  create?: Prisma.XOR<Prisma.MovementCreateWithoutUpdatedByInput, Prisma.MovementUncheckedCreateWithoutUpdatedByInput> | Prisma.MovementCreateWithoutUpdatedByInput[] | Prisma.MovementUncheckedCreateWithoutUpdatedByInput[]
+  connectOrCreate?: Prisma.MovementCreateOrConnectWithoutUpdatedByInput | Prisma.MovementCreateOrConnectWithoutUpdatedByInput[]
+  upsert?: Prisma.MovementUpsertWithWhereUniqueWithoutUpdatedByInput | Prisma.MovementUpsertWithWhereUniqueWithoutUpdatedByInput[]
+  createMany?: Prisma.MovementCreateManyUpdatedByInputEnvelope
   set?: Prisma.MovementWhereUniqueInput | Prisma.MovementWhereUniqueInput[]
   disconnect?: Prisma.MovementWhereUniqueInput | Prisma.MovementWhereUniqueInput[]
   delete?: Prisma.MovementWhereUniqueInput | Prisma.MovementWhereUniqueInput[]
   connect?: Prisma.MovementWhereUniqueInput | Prisma.MovementWhereUniqueInput[]
-  update?: Prisma.MovementUpdateWithWhereUniqueWithoutUserInput | Prisma.MovementUpdateWithWhereUniqueWithoutUserInput[]
-  updateMany?: Prisma.MovementUpdateManyWithWhereWithoutUserInput | Prisma.MovementUpdateManyWithWhereWithoutUserInput[]
+  update?: Prisma.MovementUpdateWithWhereUniqueWithoutUpdatedByInput | Prisma.MovementUpdateWithWhereUniqueWithoutUpdatedByInput[]
+  updateMany?: Prisma.MovementUpdateManyWithWhereWithoutUpdatedByInput | Prisma.MovementUpdateManyWithWhereWithoutUpdatedByInput[]
+  deleteMany?: Prisma.MovementScalarWhereInput | Prisma.MovementScalarWhereInput[]
+}
+
+export type MovementUncheckedUpdateManyWithoutCreatedByNestedInput = {
+  create?: Prisma.XOR<Prisma.MovementCreateWithoutCreatedByInput, Prisma.MovementUncheckedCreateWithoutCreatedByInput> | Prisma.MovementCreateWithoutCreatedByInput[] | Prisma.MovementUncheckedCreateWithoutCreatedByInput[]
+  connectOrCreate?: Prisma.MovementCreateOrConnectWithoutCreatedByInput | Prisma.MovementCreateOrConnectWithoutCreatedByInput[]
+  upsert?: Prisma.MovementUpsertWithWhereUniqueWithoutCreatedByInput | Prisma.MovementUpsertWithWhereUniqueWithoutCreatedByInput[]
+  createMany?: Prisma.MovementCreateManyCreatedByInputEnvelope
+  set?: Prisma.MovementWhereUniqueInput | Prisma.MovementWhereUniqueInput[]
+  disconnect?: Prisma.MovementWhereUniqueInput | Prisma.MovementWhereUniqueInput[]
+  delete?: Prisma.MovementWhereUniqueInput | Prisma.MovementWhereUniqueInput[]
+  connect?: Prisma.MovementWhereUniqueInput | Prisma.MovementWhereUniqueInput[]
+  update?: Prisma.MovementUpdateWithWhereUniqueWithoutCreatedByInput | Prisma.MovementUpdateWithWhereUniqueWithoutCreatedByInput[]
+  updateMany?: Prisma.MovementUpdateManyWithWhereWithoutCreatedByInput | Prisma.MovementUpdateManyWithWhereWithoutCreatedByInput[]
+  deleteMany?: Prisma.MovementScalarWhereInput | Prisma.MovementScalarWhereInput[]
+}
+
+export type MovementUncheckedUpdateManyWithoutUpdatedByNestedInput = {
+  create?: Prisma.XOR<Prisma.MovementCreateWithoutUpdatedByInput, Prisma.MovementUncheckedCreateWithoutUpdatedByInput> | Prisma.MovementCreateWithoutUpdatedByInput[] | Prisma.MovementUncheckedCreateWithoutUpdatedByInput[]
+  connectOrCreate?: Prisma.MovementCreateOrConnectWithoutUpdatedByInput | Prisma.MovementCreateOrConnectWithoutUpdatedByInput[]
+  upsert?: Prisma.MovementUpsertWithWhereUniqueWithoutUpdatedByInput | Prisma.MovementUpsertWithWhereUniqueWithoutUpdatedByInput[]
+  createMany?: Prisma.MovementCreateManyUpdatedByInputEnvelope
+  set?: Prisma.MovementWhereUniqueInput | Prisma.MovementWhereUniqueInput[]
+  disconnect?: Prisma.MovementWhereUniqueInput | Prisma.MovementWhereUniqueInput[]
+  delete?: Prisma.MovementWhereUniqueInput | Prisma.MovementWhereUniqueInput[]
+  connect?: Prisma.MovementWhereUniqueInput | Prisma.MovementWhereUniqueInput[]
+  update?: Prisma.MovementUpdateWithWhereUniqueWithoutUpdatedByInput | Prisma.MovementUpdateWithWhereUniqueWithoutUpdatedByInput[]
+  updateMany?: Prisma.MovementUpdateManyWithWhereWithoutUpdatedByInput | Prisma.MovementUpdateManyWithWhereWithoutUpdatedByInput[]
   deleteMany?: Prisma.MovementScalarWhereInput | Prisma.MovementScalarWhereInput[]
 }
 
@@ -541,7 +631,49 @@ export type MovementUpdateOneRequiredWithoutRecurringExpensePaymentNestedInput =
   update?: Prisma.XOR<Prisma.XOR<Prisma.MovementUpdateToOneWithWhereWithoutRecurringExpensePaymentInput, Prisma.MovementUpdateWithoutRecurringExpensePaymentInput>, Prisma.MovementUncheckedUpdateWithoutRecurringExpensePaymentInput>
 }
 
-export type MovementCreateWithoutUserInput = {
+export type MovementCreateNestedManyWithoutWorkspaceInput = {
+  create?: Prisma.XOR<Prisma.MovementCreateWithoutWorkspaceInput, Prisma.MovementUncheckedCreateWithoutWorkspaceInput> | Prisma.MovementCreateWithoutWorkspaceInput[] | Prisma.MovementUncheckedCreateWithoutWorkspaceInput[]
+  connectOrCreate?: Prisma.MovementCreateOrConnectWithoutWorkspaceInput | Prisma.MovementCreateOrConnectWithoutWorkspaceInput[]
+  createMany?: Prisma.MovementCreateManyWorkspaceInputEnvelope
+  connect?: Prisma.MovementWhereUniqueInput | Prisma.MovementWhereUniqueInput[]
+}
+
+export type MovementUncheckedCreateNestedManyWithoutWorkspaceInput = {
+  create?: Prisma.XOR<Prisma.MovementCreateWithoutWorkspaceInput, Prisma.MovementUncheckedCreateWithoutWorkspaceInput> | Prisma.MovementCreateWithoutWorkspaceInput[] | Prisma.MovementUncheckedCreateWithoutWorkspaceInput[]
+  connectOrCreate?: Prisma.MovementCreateOrConnectWithoutWorkspaceInput | Prisma.MovementCreateOrConnectWithoutWorkspaceInput[]
+  createMany?: Prisma.MovementCreateManyWorkspaceInputEnvelope
+  connect?: Prisma.MovementWhereUniqueInput | Prisma.MovementWhereUniqueInput[]
+}
+
+export type MovementUpdateManyWithoutWorkspaceNestedInput = {
+  create?: Prisma.XOR<Prisma.MovementCreateWithoutWorkspaceInput, Prisma.MovementUncheckedCreateWithoutWorkspaceInput> | Prisma.MovementCreateWithoutWorkspaceInput[] | Prisma.MovementUncheckedCreateWithoutWorkspaceInput[]
+  connectOrCreate?: Prisma.MovementCreateOrConnectWithoutWorkspaceInput | Prisma.MovementCreateOrConnectWithoutWorkspaceInput[]
+  upsert?: Prisma.MovementUpsertWithWhereUniqueWithoutWorkspaceInput | Prisma.MovementUpsertWithWhereUniqueWithoutWorkspaceInput[]
+  createMany?: Prisma.MovementCreateManyWorkspaceInputEnvelope
+  set?: Prisma.MovementWhereUniqueInput | Prisma.MovementWhereUniqueInput[]
+  disconnect?: Prisma.MovementWhereUniqueInput | Prisma.MovementWhereUniqueInput[]
+  delete?: Prisma.MovementWhereUniqueInput | Prisma.MovementWhereUniqueInput[]
+  connect?: Prisma.MovementWhereUniqueInput | Prisma.MovementWhereUniqueInput[]
+  update?: Prisma.MovementUpdateWithWhereUniqueWithoutWorkspaceInput | Prisma.MovementUpdateWithWhereUniqueWithoutWorkspaceInput[]
+  updateMany?: Prisma.MovementUpdateManyWithWhereWithoutWorkspaceInput | Prisma.MovementUpdateManyWithWhereWithoutWorkspaceInput[]
+  deleteMany?: Prisma.MovementScalarWhereInput | Prisma.MovementScalarWhereInput[]
+}
+
+export type MovementUncheckedUpdateManyWithoutWorkspaceNestedInput = {
+  create?: Prisma.XOR<Prisma.MovementCreateWithoutWorkspaceInput, Prisma.MovementUncheckedCreateWithoutWorkspaceInput> | Prisma.MovementCreateWithoutWorkspaceInput[] | Prisma.MovementUncheckedCreateWithoutWorkspaceInput[]
+  connectOrCreate?: Prisma.MovementCreateOrConnectWithoutWorkspaceInput | Prisma.MovementCreateOrConnectWithoutWorkspaceInput[]
+  upsert?: Prisma.MovementUpsertWithWhereUniqueWithoutWorkspaceInput | Prisma.MovementUpsertWithWhereUniqueWithoutWorkspaceInput[]
+  createMany?: Prisma.MovementCreateManyWorkspaceInputEnvelope
+  set?: Prisma.MovementWhereUniqueInput | Prisma.MovementWhereUniqueInput[]
+  disconnect?: Prisma.MovementWhereUniqueInput | Prisma.MovementWhereUniqueInput[]
+  delete?: Prisma.MovementWhereUniqueInput | Prisma.MovementWhereUniqueInput[]
+  connect?: Prisma.MovementWhereUniqueInput | Prisma.MovementWhereUniqueInput[]
+  update?: Prisma.MovementUpdateWithWhereUniqueWithoutWorkspaceInput | Prisma.MovementUpdateWithWhereUniqueWithoutWorkspaceInput[]
+  updateMany?: Prisma.MovementUpdateManyWithWhereWithoutWorkspaceInput | Prisma.MovementUpdateManyWithWhereWithoutWorkspaceInput[]
+  deleteMany?: Prisma.MovementScalarWhereInput | Prisma.MovementScalarWhereInput[]
+}
+
+export type MovementCreateWithoutCreatedByInput = {
   id?: string
   type: $Enums.MovementType
   amount: runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -549,13 +681,17 @@ export type MovementCreateWithoutUserInput = {
   description?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  workspace: Prisma.WorkspaceCreateNestedOneWithoutMovementsInput
+  updatedBy?: Prisma.UserCreateNestedOneWithoutUpdatedMovementsInput
   expense?: Prisma.ExpenseCreateNestedOneWithoutMovementInput
   income?: Prisma.IncomeCreateNestedOneWithoutMovementInput
   recurringExpensePayment?: Prisma.RecurringExpensePaymentCreateNestedOneWithoutMovementInput
 }
 
-export type MovementUncheckedCreateWithoutUserInput = {
+export type MovementUncheckedCreateWithoutCreatedByInput = {
   id?: string
+  workspaceId: string
+  updatedById?: string | null
   type: $Enums.MovementType
   amount: runtime.Decimal | runtime.DecimalJsLike | number | string
   date: Date | string
@@ -567,30 +703,70 @@ export type MovementUncheckedCreateWithoutUserInput = {
   recurringExpensePayment?: Prisma.RecurringExpensePaymentUncheckedCreateNestedOneWithoutMovementInput
 }
 
-export type MovementCreateOrConnectWithoutUserInput = {
+export type MovementCreateOrConnectWithoutCreatedByInput = {
   where: Prisma.MovementWhereUniqueInput
-  create: Prisma.XOR<Prisma.MovementCreateWithoutUserInput, Prisma.MovementUncheckedCreateWithoutUserInput>
+  create: Prisma.XOR<Prisma.MovementCreateWithoutCreatedByInput, Prisma.MovementUncheckedCreateWithoutCreatedByInput>
 }
 
-export type MovementCreateManyUserInputEnvelope = {
-  data: Prisma.MovementCreateManyUserInput | Prisma.MovementCreateManyUserInput[]
+export type MovementCreateManyCreatedByInputEnvelope = {
+  data: Prisma.MovementCreateManyCreatedByInput | Prisma.MovementCreateManyCreatedByInput[]
   skipDuplicates?: boolean
 }
 
-export type MovementUpsertWithWhereUniqueWithoutUserInput = {
-  where: Prisma.MovementWhereUniqueInput
-  update: Prisma.XOR<Prisma.MovementUpdateWithoutUserInput, Prisma.MovementUncheckedUpdateWithoutUserInput>
-  create: Prisma.XOR<Prisma.MovementCreateWithoutUserInput, Prisma.MovementUncheckedCreateWithoutUserInput>
+export type MovementCreateWithoutUpdatedByInput = {
+  id?: string
+  type: $Enums.MovementType
+  amount: runtime.Decimal | runtime.DecimalJsLike | number | string
+  date: Date | string
+  description?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  workspace: Prisma.WorkspaceCreateNestedOneWithoutMovementsInput
+  createdBy: Prisma.UserCreateNestedOneWithoutCreatedMovementsInput
+  expense?: Prisma.ExpenseCreateNestedOneWithoutMovementInput
+  income?: Prisma.IncomeCreateNestedOneWithoutMovementInput
+  recurringExpensePayment?: Prisma.RecurringExpensePaymentCreateNestedOneWithoutMovementInput
 }
 
-export type MovementUpdateWithWhereUniqueWithoutUserInput = {
-  where: Prisma.MovementWhereUniqueInput
-  data: Prisma.XOR<Prisma.MovementUpdateWithoutUserInput, Prisma.MovementUncheckedUpdateWithoutUserInput>
+export type MovementUncheckedCreateWithoutUpdatedByInput = {
+  id?: string
+  workspaceId: string
+  createdById: string
+  type: $Enums.MovementType
+  amount: runtime.Decimal | runtime.DecimalJsLike | number | string
+  date: Date | string
+  description?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  expense?: Prisma.ExpenseUncheckedCreateNestedOneWithoutMovementInput
+  income?: Prisma.IncomeUncheckedCreateNestedOneWithoutMovementInput
+  recurringExpensePayment?: Prisma.RecurringExpensePaymentUncheckedCreateNestedOneWithoutMovementInput
 }
 
-export type MovementUpdateManyWithWhereWithoutUserInput = {
+export type MovementCreateOrConnectWithoutUpdatedByInput = {
+  where: Prisma.MovementWhereUniqueInput
+  create: Prisma.XOR<Prisma.MovementCreateWithoutUpdatedByInput, Prisma.MovementUncheckedCreateWithoutUpdatedByInput>
+}
+
+export type MovementCreateManyUpdatedByInputEnvelope = {
+  data: Prisma.MovementCreateManyUpdatedByInput | Prisma.MovementCreateManyUpdatedByInput[]
+  skipDuplicates?: boolean
+}
+
+export type MovementUpsertWithWhereUniqueWithoutCreatedByInput = {
+  where: Prisma.MovementWhereUniqueInput
+  update: Prisma.XOR<Prisma.MovementUpdateWithoutCreatedByInput, Prisma.MovementUncheckedUpdateWithoutCreatedByInput>
+  create: Prisma.XOR<Prisma.MovementCreateWithoutCreatedByInput, Prisma.MovementUncheckedCreateWithoutCreatedByInput>
+}
+
+export type MovementUpdateWithWhereUniqueWithoutCreatedByInput = {
+  where: Prisma.MovementWhereUniqueInput
+  data: Prisma.XOR<Prisma.MovementUpdateWithoutCreatedByInput, Prisma.MovementUncheckedUpdateWithoutCreatedByInput>
+}
+
+export type MovementUpdateManyWithWhereWithoutCreatedByInput = {
   where: Prisma.MovementScalarWhereInput
-  data: Prisma.XOR<Prisma.MovementUpdateManyMutationInput, Prisma.MovementUncheckedUpdateManyWithoutUserInput>
+  data: Prisma.XOR<Prisma.MovementUpdateManyMutationInput, Prisma.MovementUncheckedUpdateManyWithoutCreatedByInput>
 }
 
 export type MovementScalarWhereInput = {
@@ -598,13 +774,31 @@ export type MovementScalarWhereInput = {
   OR?: Prisma.MovementScalarWhereInput[]
   NOT?: Prisma.MovementScalarWhereInput | Prisma.MovementScalarWhereInput[]
   id?: Prisma.StringFilter<"Movement"> | string
-  userId?: Prisma.StringFilter<"Movement"> | string
+  workspaceId?: Prisma.StringFilter<"Movement"> | string
+  createdById?: Prisma.StringFilter<"Movement"> | string
+  updatedById?: Prisma.StringNullableFilter<"Movement"> | string | null
   type?: Prisma.EnumMovementTypeFilter<"Movement"> | $Enums.MovementType
   amount?: Prisma.DecimalFilter<"Movement"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   date?: Prisma.DateTimeFilter<"Movement"> | Date | string
   description?: Prisma.StringNullableFilter<"Movement"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Movement"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Movement"> | Date | string
+}
+
+export type MovementUpsertWithWhereUniqueWithoutUpdatedByInput = {
+  where: Prisma.MovementWhereUniqueInput
+  update: Prisma.XOR<Prisma.MovementUpdateWithoutUpdatedByInput, Prisma.MovementUncheckedUpdateWithoutUpdatedByInput>
+  create: Prisma.XOR<Prisma.MovementCreateWithoutUpdatedByInput, Prisma.MovementUncheckedCreateWithoutUpdatedByInput>
+}
+
+export type MovementUpdateWithWhereUniqueWithoutUpdatedByInput = {
+  where: Prisma.MovementWhereUniqueInput
+  data: Prisma.XOR<Prisma.MovementUpdateWithoutUpdatedByInput, Prisma.MovementUncheckedUpdateWithoutUpdatedByInput>
+}
+
+export type MovementUpdateManyWithWhereWithoutUpdatedByInput = {
+  where: Prisma.MovementScalarWhereInput
+  data: Prisma.XOR<Prisma.MovementUpdateManyMutationInput, Prisma.MovementUncheckedUpdateManyWithoutUpdatedByInput>
 }
 
 export type MovementCreateWithoutIncomeInput = {
@@ -615,14 +809,18 @@ export type MovementCreateWithoutIncomeInput = {
   description?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  workspace: Prisma.WorkspaceCreateNestedOneWithoutMovementsInput
+  createdBy: Prisma.UserCreateNestedOneWithoutCreatedMovementsInput
+  updatedBy?: Prisma.UserCreateNestedOneWithoutUpdatedMovementsInput
   expense?: Prisma.ExpenseCreateNestedOneWithoutMovementInput
-  user: Prisma.UserCreateNestedOneWithoutMovementsInput
   recurringExpensePayment?: Prisma.RecurringExpensePaymentCreateNestedOneWithoutMovementInput
 }
 
 export type MovementUncheckedCreateWithoutIncomeInput = {
   id?: string
-  userId: string
+  workspaceId: string
+  createdById: string
+  updatedById?: string | null
   type: $Enums.MovementType
   amount: runtime.Decimal | runtime.DecimalJsLike | number | string
   date: Date | string
@@ -657,14 +855,18 @@ export type MovementUpdateWithoutIncomeInput = {
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  workspace?: Prisma.WorkspaceUpdateOneRequiredWithoutMovementsNestedInput
+  createdBy?: Prisma.UserUpdateOneRequiredWithoutCreatedMovementsNestedInput
+  updatedBy?: Prisma.UserUpdateOneWithoutUpdatedMovementsNestedInput
   expense?: Prisma.ExpenseUpdateOneWithoutMovementNestedInput
-  user?: Prisma.UserUpdateOneRequiredWithoutMovementsNestedInput
   recurringExpensePayment?: Prisma.RecurringExpensePaymentUpdateOneWithoutMovementNestedInput
 }
 
 export type MovementUncheckedUpdateWithoutIncomeInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  userId?: Prisma.StringFieldUpdateOperationsInput | string
+  workspaceId?: Prisma.StringFieldUpdateOperationsInput | string
+  createdById?: Prisma.StringFieldUpdateOperationsInput | string
+  updatedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   type?: Prisma.EnumMovementTypeFieldUpdateOperationsInput | $Enums.MovementType
   amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -683,14 +885,18 @@ export type MovementCreateWithoutExpenseInput = {
   description?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  workspace: Prisma.WorkspaceCreateNestedOneWithoutMovementsInput
+  createdBy: Prisma.UserCreateNestedOneWithoutCreatedMovementsInput
+  updatedBy?: Prisma.UserCreateNestedOneWithoutUpdatedMovementsInput
   income?: Prisma.IncomeCreateNestedOneWithoutMovementInput
-  user: Prisma.UserCreateNestedOneWithoutMovementsInput
   recurringExpensePayment?: Prisma.RecurringExpensePaymentCreateNestedOneWithoutMovementInput
 }
 
 export type MovementUncheckedCreateWithoutExpenseInput = {
   id?: string
-  userId: string
+  workspaceId: string
+  createdById: string
+  updatedById?: string | null
   type: $Enums.MovementType
   amount: runtime.Decimal | runtime.DecimalJsLike | number | string
   date: Date | string
@@ -725,14 +931,18 @@ export type MovementUpdateWithoutExpenseInput = {
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  workspace?: Prisma.WorkspaceUpdateOneRequiredWithoutMovementsNestedInput
+  createdBy?: Prisma.UserUpdateOneRequiredWithoutCreatedMovementsNestedInput
+  updatedBy?: Prisma.UserUpdateOneWithoutUpdatedMovementsNestedInput
   income?: Prisma.IncomeUpdateOneWithoutMovementNestedInput
-  user?: Prisma.UserUpdateOneRequiredWithoutMovementsNestedInput
   recurringExpensePayment?: Prisma.RecurringExpensePaymentUpdateOneWithoutMovementNestedInput
 }
 
 export type MovementUncheckedUpdateWithoutExpenseInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  userId?: Prisma.StringFieldUpdateOperationsInput | string
+  workspaceId?: Prisma.StringFieldUpdateOperationsInput | string
+  createdById?: Prisma.StringFieldUpdateOperationsInput | string
+  updatedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   type?: Prisma.EnumMovementTypeFieldUpdateOperationsInput | $Enums.MovementType
   amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -751,14 +961,18 @@ export type MovementCreateWithoutRecurringExpensePaymentInput = {
   description?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  workspace: Prisma.WorkspaceCreateNestedOneWithoutMovementsInput
+  createdBy: Prisma.UserCreateNestedOneWithoutCreatedMovementsInput
+  updatedBy?: Prisma.UserCreateNestedOneWithoutUpdatedMovementsInput
   expense?: Prisma.ExpenseCreateNestedOneWithoutMovementInput
   income?: Prisma.IncomeCreateNestedOneWithoutMovementInput
-  user: Prisma.UserCreateNestedOneWithoutMovementsInput
 }
 
 export type MovementUncheckedCreateWithoutRecurringExpensePaymentInput = {
   id?: string
-  userId: string
+  workspaceId: string
+  createdById: string
+  updatedById?: string | null
   type: $Enums.MovementType
   amount: runtime.Decimal | runtime.DecimalJsLike | number | string
   date: Date | string
@@ -793,14 +1007,18 @@ export type MovementUpdateWithoutRecurringExpensePaymentInput = {
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  workspace?: Prisma.WorkspaceUpdateOneRequiredWithoutMovementsNestedInput
+  createdBy?: Prisma.UserUpdateOneRequiredWithoutCreatedMovementsNestedInput
+  updatedBy?: Prisma.UserUpdateOneWithoutUpdatedMovementsNestedInput
   expense?: Prisma.ExpenseUpdateOneWithoutMovementNestedInput
   income?: Prisma.IncomeUpdateOneWithoutMovementNestedInput
-  user?: Prisma.UserUpdateOneRequiredWithoutMovementsNestedInput
 }
 
 export type MovementUncheckedUpdateWithoutRecurringExpensePaymentInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  userId?: Prisma.StringFieldUpdateOperationsInput | string
+  workspaceId?: Prisma.StringFieldUpdateOperationsInput | string
+  createdById?: Prisma.StringFieldUpdateOperationsInput | string
+  updatedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   type?: Prisma.EnumMovementTypeFieldUpdateOperationsInput | $Enums.MovementType
   amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -811,8 +1029,66 @@ export type MovementUncheckedUpdateWithoutRecurringExpensePaymentInput = {
   income?: Prisma.IncomeUncheckedUpdateOneWithoutMovementNestedInput
 }
 
-export type MovementCreateManyUserInput = {
+export type MovementCreateWithoutWorkspaceInput = {
   id?: string
+  type: $Enums.MovementType
+  amount: runtime.Decimal | runtime.DecimalJsLike | number | string
+  date: Date | string
+  description?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  createdBy: Prisma.UserCreateNestedOneWithoutCreatedMovementsInput
+  updatedBy?: Prisma.UserCreateNestedOneWithoutUpdatedMovementsInput
+  expense?: Prisma.ExpenseCreateNestedOneWithoutMovementInput
+  income?: Prisma.IncomeCreateNestedOneWithoutMovementInput
+  recurringExpensePayment?: Prisma.RecurringExpensePaymentCreateNestedOneWithoutMovementInput
+}
+
+export type MovementUncheckedCreateWithoutWorkspaceInput = {
+  id?: string
+  createdById: string
+  updatedById?: string | null
+  type: $Enums.MovementType
+  amount: runtime.Decimal | runtime.DecimalJsLike | number | string
+  date: Date | string
+  description?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  expense?: Prisma.ExpenseUncheckedCreateNestedOneWithoutMovementInput
+  income?: Prisma.IncomeUncheckedCreateNestedOneWithoutMovementInput
+  recurringExpensePayment?: Prisma.RecurringExpensePaymentUncheckedCreateNestedOneWithoutMovementInput
+}
+
+export type MovementCreateOrConnectWithoutWorkspaceInput = {
+  where: Prisma.MovementWhereUniqueInput
+  create: Prisma.XOR<Prisma.MovementCreateWithoutWorkspaceInput, Prisma.MovementUncheckedCreateWithoutWorkspaceInput>
+}
+
+export type MovementCreateManyWorkspaceInputEnvelope = {
+  data: Prisma.MovementCreateManyWorkspaceInput | Prisma.MovementCreateManyWorkspaceInput[]
+  skipDuplicates?: boolean
+}
+
+export type MovementUpsertWithWhereUniqueWithoutWorkspaceInput = {
+  where: Prisma.MovementWhereUniqueInput
+  update: Prisma.XOR<Prisma.MovementUpdateWithoutWorkspaceInput, Prisma.MovementUncheckedUpdateWithoutWorkspaceInput>
+  create: Prisma.XOR<Prisma.MovementCreateWithoutWorkspaceInput, Prisma.MovementUncheckedCreateWithoutWorkspaceInput>
+}
+
+export type MovementUpdateWithWhereUniqueWithoutWorkspaceInput = {
+  where: Prisma.MovementWhereUniqueInput
+  data: Prisma.XOR<Prisma.MovementUpdateWithoutWorkspaceInput, Prisma.MovementUncheckedUpdateWithoutWorkspaceInput>
+}
+
+export type MovementUpdateManyWithWhereWithoutWorkspaceInput = {
+  where: Prisma.MovementScalarWhereInput
+  data: Prisma.XOR<Prisma.MovementUpdateManyMutationInput, Prisma.MovementUncheckedUpdateManyWithoutWorkspaceInput>
+}
+
+export type MovementCreateManyCreatedByInput = {
+  id?: string
+  workspaceId: string
+  updatedById?: string | null
   type: $Enums.MovementType
   amount: runtime.Decimal | runtime.DecimalJsLike | number | string
   date: Date | string
@@ -821,7 +1097,19 @@ export type MovementCreateManyUserInput = {
   updatedAt?: Date | string
 }
 
-export type MovementUpdateWithoutUserInput = {
+export type MovementCreateManyUpdatedByInput = {
+  id?: string
+  workspaceId: string
+  createdById: string
+  type: $Enums.MovementType
+  amount: runtime.Decimal | runtime.DecimalJsLike | number | string
+  date: Date | string
+  description?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type MovementUpdateWithoutCreatedByInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.EnumMovementTypeFieldUpdateOperationsInput | $Enums.MovementType
   amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -829,13 +1117,17 @@ export type MovementUpdateWithoutUserInput = {
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  workspace?: Prisma.WorkspaceUpdateOneRequiredWithoutMovementsNestedInput
+  updatedBy?: Prisma.UserUpdateOneWithoutUpdatedMovementsNestedInput
   expense?: Prisma.ExpenseUpdateOneWithoutMovementNestedInput
   income?: Prisma.IncomeUpdateOneWithoutMovementNestedInput
   recurringExpensePayment?: Prisma.RecurringExpensePaymentUpdateOneWithoutMovementNestedInput
 }
 
-export type MovementUncheckedUpdateWithoutUserInput = {
+export type MovementUncheckedUpdateWithoutCreatedByInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  workspaceId?: Prisma.StringFieldUpdateOperationsInput | string
+  updatedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   type?: Prisma.EnumMovementTypeFieldUpdateOperationsInput | $Enums.MovementType
   amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -847,8 +1139,106 @@ export type MovementUncheckedUpdateWithoutUserInput = {
   recurringExpensePayment?: Prisma.RecurringExpensePaymentUncheckedUpdateOneWithoutMovementNestedInput
 }
 
-export type MovementUncheckedUpdateManyWithoutUserInput = {
+export type MovementUncheckedUpdateManyWithoutCreatedByInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  workspaceId?: Prisma.StringFieldUpdateOperationsInput | string
+  updatedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  type?: Prisma.EnumMovementTypeFieldUpdateOperationsInput | $Enums.MovementType
+  amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type MovementUpdateWithoutUpdatedByInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.EnumMovementTypeFieldUpdateOperationsInput | $Enums.MovementType
+  amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  workspace?: Prisma.WorkspaceUpdateOneRequiredWithoutMovementsNestedInput
+  createdBy?: Prisma.UserUpdateOneRequiredWithoutCreatedMovementsNestedInput
+  expense?: Prisma.ExpenseUpdateOneWithoutMovementNestedInput
+  income?: Prisma.IncomeUpdateOneWithoutMovementNestedInput
+  recurringExpensePayment?: Prisma.RecurringExpensePaymentUpdateOneWithoutMovementNestedInput
+}
+
+export type MovementUncheckedUpdateWithoutUpdatedByInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  workspaceId?: Prisma.StringFieldUpdateOperationsInput | string
+  createdById?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.EnumMovementTypeFieldUpdateOperationsInput | $Enums.MovementType
+  amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  expense?: Prisma.ExpenseUncheckedUpdateOneWithoutMovementNestedInput
+  income?: Prisma.IncomeUncheckedUpdateOneWithoutMovementNestedInput
+  recurringExpensePayment?: Prisma.RecurringExpensePaymentUncheckedUpdateOneWithoutMovementNestedInput
+}
+
+export type MovementUncheckedUpdateManyWithoutUpdatedByInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  workspaceId?: Prisma.StringFieldUpdateOperationsInput | string
+  createdById?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.EnumMovementTypeFieldUpdateOperationsInput | $Enums.MovementType
+  amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type MovementCreateManyWorkspaceInput = {
+  id?: string
+  createdById: string
+  updatedById?: string | null
+  type: $Enums.MovementType
+  amount: runtime.Decimal | runtime.DecimalJsLike | number | string
+  date: Date | string
+  description?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type MovementUpdateWithoutWorkspaceInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.EnumMovementTypeFieldUpdateOperationsInput | $Enums.MovementType
+  amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  createdBy?: Prisma.UserUpdateOneRequiredWithoutCreatedMovementsNestedInput
+  updatedBy?: Prisma.UserUpdateOneWithoutUpdatedMovementsNestedInput
+  expense?: Prisma.ExpenseUpdateOneWithoutMovementNestedInput
+  income?: Prisma.IncomeUpdateOneWithoutMovementNestedInput
+  recurringExpensePayment?: Prisma.RecurringExpensePaymentUpdateOneWithoutMovementNestedInput
+}
+
+export type MovementUncheckedUpdateWithoutWorkspaceInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  createdById?: Prisma.StringFieldUpdateOperationsInput | string
+  updatedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  type?: Prisma.EnumMovementTypeFieldUpdateOperationsInput | $Enums.MovementType
+  amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  expense?: Prisma.ExpenseUncheckedUpdateOneWithoutMovementNestedInput
+  income?: Prisma.IncomeUncheckedUpdateOneWithoutMovementNestedInput
+  recurringExpensePayment?: Prisma.RecurringExpensePaymentUncheckedUpdateOneWithoutMovementNestedInput
+}
+
+export type MovementUncheckedUpdateManyWithoutWorkspaceInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  createdById?: Prisma.StringFieldUpdateOperationsInput | string
+  updatedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   type?: Prisma.EnumMovementTypeFieldUpdateOperationsInput | $Enums.MovementType
   amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -861,46 +1251,60 @@ export type MovementUncheckedUpdateManyWithoutUserInput = {
 
 export type MovementSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
-  userId?: boolean
+  workspaceId?: boolean
+  createdById?: boolean
+  updatedById?: boolean
   type?: boolean
   amount?: boolean
   date?: boolean
   description?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  workspace?: boolean | Prisma.WorkspaceDefaultArgs<ExtArgs>
+  createdBy?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  updatedBy?: boolean | Prisma.Movement$updatedByArgs<ExtArgs>
   expense?: boolean | Prisma.Movement$expenseArgs<ExtArgs>
   income?: boolean | Prisma.Movement$incomeArgs<ExtArgs>
-  user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   recurringExpensePayment?: boolean | Prisma.Movement$recurringExpensePaymentArgs<ExtArgs>
 }, ExtArgs["result"]["movement"]>
 
 export type MovementSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
-  userId?: boolean
+  workspaceId?: boolean
+  createdById?: boolean
+  updatedById?: boolean
   type?: boolean
   amount?: boolean
   date?: boolean
   description?: boolean
   createdAt?: boolean
   updatedAt?: boolean
-  user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  workspace?: boolean | Prisma.WorkspaceDefaultArgs<ExtArgs>
+  createdBy?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  updatedBy?: boolean | Prisma.Movement$updatedByArgs<ExtArgs>
 }, ExtArgs["result"]["movement"]>
 
 export type MovementSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
-  userId?: boolean
+  workspaceId?: boolean
+  createdById?: boolean
+  updatedById?: boolean
   type?: boolean
   amount?: boolean
   date?: boolean
   description?: boolean
   createdAt?: boolean
   updatedAt?: boolean
-  user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  workspace?: boolean | Prisma.WorkspaceDefaultArgs<ExtArgs>
+  createdBy?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  updatedBy?: boolean | Prisma.Movement$updatedByArgs<ExtArgs>
 }, ExtArgs["result"]["movement"]>
 
 export type MovementSelectScalar = {
   id?: boolean
-  userId?: boolean
+  workspaceId?: boolean
+  createdById?: boolean
+  updatedById?: boolean
   type?: boolean
   amount?: boolean
   date?: boolean
@@ -909,31 +1313,41 @@ export type MovementSelectScalar = {
   updatedAt?: boolean
 }
 
-export type MovementOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "type" | "amount" | "date" | "description" | "createdAt" | "updatedAt", ExtArgs["result"]["movement"]>
+export type MovementOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "workspaceId" | "createdById" | "updatedById" | "type" | "amount" | "date" | "description" | "createdAt" | "updatedAt", ExtArgs["result"]["movement"]>
 export type MovementInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  workspace?: boolean | Prisma.WorkspaceDefaultArgs<ExtArgs>
+  createdBy?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  updatedBy?: boolean | Prisma.Movement$updatedByArgs<ExtArgs>
   expense?: boolean | Prisma.Movement$expenseArgs<ExtArgs>
   income?: boolean | Prisma.Movement$incomeArgs<ExtArgs>
-  user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   recurringExpensePayment?: boolean | Prisma.Movement$recurringExpensePaymentArgs<ExtArgs>
 }
 export type MovementIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  workspace?: boolean | Prisma.WorkspaceDefaultArgs<ExtArgs>
+  createdBy?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  updatedBy?: boolean | Prisma.Movement$updatedByArgs<ExtArgs>
 }
 export type MovementIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  workspace?: boolean | Prisma.WorkspaceDefaultArgs<ExtArgs>
+  createdBy?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  updatedBy?: boolean | Prisma.Movement$updatedByArgs<ExtArgs>
 }
 
 export type $MovementPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Movement"
   objects: {
+    workspace: Prisma.$WorkspacePayload<ExtArgs>
+    createdBy: Prisma.$UserPayload<ExtArgs>
+    updatedBy: Prisma.$UserPayload<ExtArgs> | null
     expense: Prisma.$ExpensePayload<ExtArgs> | null
     income: Prisma.$IncomePayload<ExtArgs> | null
-    user: Prisma.$UserPayload<ExtArgs>
     recurringExpensePayment: Prisma.$RecurringExpensePaymentPayload<ExtArgs> | null
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
-    userId: string
+    workspaceId: string
+    createdById: string
+    updatedById: string | null
     type: $Enums.MovementType
     amount: runtime.Decimal
     date: Date
@@ -1334,9 +1748,11 @@ readonly fields: MovementFieldRefs;
  */
 export interface Prisma__MovementClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
+  workspace<T extends Prisma.WorkspaceDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.WorkspaceDefaultArgs<ExtArgs>>): Prisma.Prisma__WorkspaceClient<runtime.Types.Result.GetResult<Prisma.$WorkspacePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  createdBy<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  updatedBy<T extends Prisma.Movement$updatedByArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Movement$updatedByArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   expense<T extends Prisma.Movement$expenseArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Movement$expenseArgs<ExtArgs>>): Prisma.Prisma__ExpenseClient<runtime.Types.Result.GetResult<Prisma.$ExpensePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   income<T extends Prisma.Movement$incomeArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Movement$incomeArgs<ExtArgs>>): Prisma.Prisma__IncomeClient<runtime.Types.Result.GetResult<Prisma.$IncomePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
-  user<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   recurringExpensePayment<T extends Prisma.Movement$recurringExpensePaymentArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Movement$recurringExpensePaymentArgs<ExtArgs>>): Prisma.Prisma__RecurringExpensePaymentClient<runtime.Types.Result.GetResult<Prisma.$RecurringExpensePaymentPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -1368,7 +1784,9 @@ export interface Prisma__MovementClient<T, Null = never, ExtArgs extends runtime
  */
 export interface MovementFieldRefs {
   readonly id: Prisma.FieldRef<"Movement", 'String'>
-  readonly userId: Prisma.FieldRef<"Movement", 'String'>
+  readonly workspaceId: Prisma.FieldRef<"Movement", 'String'>
+  readonly createdById: Prisma.FieldRef<"Movement", 'String'>
+  readonly updatedById: Prisma.FieldRef<"Movement", 'String'>
   readonly type: Prisma.FieldRef<"Movement", 'MovementType'>
   readonly amount: Prisma.FieldRef<"Movement", 'Decimal'>
   readonly date: Prisma.FieldRef<"Movement", 'DateTime'>
@@ -1773,6 +2191,25 @@ export type MovementDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.Inte
    * Limit how many Movements to delete.
    */
   limit?: number
+}
+
+/**
+ * Movement.updatedBy
+ */
+export type Movement$updatedByArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the User
+   */
+  select?: Prisma.UserSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the User
+   */
+  omit?: Prisma.UserOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.UserInclude<ExtArgs> | null
+  where?: Prisma.UserWhereInput
 }
 
 /**

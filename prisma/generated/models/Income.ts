@@ -35,19 +35,16 @@ export type IncomeSumAggregateOutputType = {
 }
 
 export type IncomeMinAggregateOutputType = {
-  userId: string | null
   investmentPercentage: runtime.Decimal | null
   movementId: string | null
 }
 
 export type IncomeMaxAggregateOutputType = {
-  userId: string | null
   investmentPercentage: runtime.Decimal | null
   movementId: string | null
 }
 
 export type IncomeCountAggregateOutputType = {
-  userId: number
   investmentPercentage: number
   movementId: number
   _all: number
@@ -63,19 +60,16 @@ export type IncomeSumAggregateInputType = {
 }
 
 export type IncomeMinAggregateInputType = {
-  userId?: true
   investmentPercentage?: true
   movementId?: true
 }
 
 export type IncomeMaxAggregateInputType = {
-  userId?: true
   investmentPercentage?: true
   movementId?: true
 }
 
 export type IncomeCountAggregateInputType = {
-  userId?: true
   investmentPercentage?: true
   movementId?: true
   _all?: true
@@ -168,7 +162,6 @@ export type IncomeGroupByArgs<ExtArgs extends runtime.Types.Extensions.InternalA
 }
 
 export type IncomeGroupByOutputType = {
-  userId: string | null
   investmentPercentage: runtime.Decimal
   movementId: string
   _count: IncomeCountAggregateOutputType | null
@@ -197,20 +190,16 @@ export type IncomeWhereInput = {
   AND?: Prisma.IncomeWhereInput | Prisma.IncomeWhereInput[]
   OR?: Prisma.IncomeWhereInput[]
   NOT?: Prisma.IncomeWhereInput | Prisma.IncomeWhereInput[]
-  userId?: Prisma.StringNullableFilter<"Income"> | string | null
   investmentPercentage?: Prisma.DecimalFilter<"Income"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   movementId?: Prisma.StringFilter<"Income"> | string
   movement?: Prisma.XOR<Prisma.MovementScalarRelationFilter, Prisma.MovementWhereInput>
-  user?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
   payments?: Prisma.IncomePaymentListRelationFilter
 }
 
 export type IncomeOrderByWithRelationInput = {
-  userId?: Prisma.SortOrderInput | Prisma.SortOrder
   investmentPercentage?: Prisma.SortOrder
   movementId?: Prisma.SortOrder
   movement?: Prisma.MovementOrderByWithRelationInput
-  user?: Prisma.UserOrderByWithRelationInput
   payments?: Prisma.IncomePaymentOrderByRelationAggregateInput
 }
 
@@ -219,15 +208,12 @@ export type IncomeWhereUniqueInput = Prisma.AtLeast<{
   AND?: Prisma.IncomeWhereInput | Prisma.IncomeWhereInput[]
   OR?: Prisma.IncomeWhereInput[]
   NOT?: Prisma.IncomeWhereInput | Prisma.IncomeWhereInput[]
-  userId?: Prisma.StringNullableFilter<"Income"> | string | null
   investmentPercentage?: Prisma.DecimalFilter<"Income"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   movement?: Prisma.XOR<Prisma.MovementScalarRelationFilter, Prisma.MovementWhereInput>
-  user?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
   payments?: Prisma.IncomePaymentListRelationFilter
 }, "movementId">
 
 export type IncomeOrderByWithAggregationInput = {
-  userId?: Prisma.SortOrderInput | Prisma.SortOrder
   investmentPercentage?: Prisma.SortOrder
   movementId?: Prisma.SortOrder
   _count?: Prisma.IncomeCountOrderByAggregateInput
@@ -241,7 +227,6 @@ export type IncomeScalarWhereWithAggregatesInput = {
   AND?: Prisma.IncomeScalarWhereWithAggregatesInput | Prisma.IncomeScalarWhereWithAggregatesInput[]
   OR?: Prisma.IncomeScalarWhereWithAggregatesInput[]
   NOT?: Prisma.IncomeScalarWhereWithAggregatesInput | Prisma.IncomeScalarWhereWithAggregatesInput[]
-  userId?: Prisma.StringNullableWithAggregatesFilter<"Income"> | string | null
   investmentPercentage?: Prisma.DecimalWithAggregatesFilter<"Income"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   movementId?: Prisma.StringWithAggregatesFilter<"Income"> | string
 }
@@ -249,12 +234,10 @@ export type IncomeScalarWhereWithAggregatesInput = {
 export type IncomeCreateInput = {
   investmentPercentage?: runtime.Decimal | runtime.DecimalJsLike | number | string
   movement: Prisma.MovementCreateNestedOneWithoutIncomeInput
-  user?: Prisma.UserCreateNestedOneWithoutIncomesInput
   payments?: Prisma.IncomePaymentCreateNestedManyWithoutIncomeInput
 }
 
 export type IncomeUncheckedCreateInput = {
-  userId?: string | null
   investmentPercentage?: runtime.Decimal | runtime.DecimalJsLike | number | string
   movementId: string
   payments?: Prisma.IncomePaymentUncheckedCreateNestedManyWithoutIncomeInput
@@ -263,19 +246,16 @@ export type IncomeUncheckedCreateInput = {
 export type IncomeUpdateInput = {
   investmentPercentage?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   movement?: Prisma.MovementUpdateOneRequiredWithoutIncomeNestedInput
-  user?: Prisma.UserUpdateOneWithoutIncomesNestedInput
   payments?: Prisma.IncomePaymentUpdateManyWithoutIncomeNestedInput
 }
 
 export type IncomeUncheckedUpdateInput = {
-  userId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   investmentPercentage?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   movementId?: Prisma.StringFieldUpdateOperationsInput | string
   payments?: Prisma.IncomePaymentUncheckedUpdateManyWithoutIncomeNestedInput
 }
 
 export type IncomeCreateManyInput = {
-  userId?: string | null
   investmentPercentage?: runtime.Decimal | runtime.DecimalJsLike | number | string
   movementId: string
 }
@@ -285,23 +265,11 @@ export type IncomeUpdateManyMutationInput = {
 }
 
 export type IncomeUncheckedUpdateManyInput = {
-  userId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   investmentPercentage?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   movementId?: Prisma.StringFieldUpdateOperationsInput | string
 }
 
-export type IncomeListRelationFilter = {
-  every?: Prisma.IncomeWhereInput
-  some?: Prisma.IncomeWhereInput
-  none?: Prisma.IncomeWhereInput
-}
-
-export type IncomeOrderByRelationAggregateInput = {
-  _count?: Prisma.SortOrder
-}
-
 export type IncomeCountOrderByAggregateInput = {
-  userId?: Prisma.SortOrder
   investmentPercentage?: Prisma.SortOrder
   movementId?: Prisma.SortOrder
 }
@@ -311,13 +279,11 @@ export type IncomeAvgOrderByAggregateInput = {
 }
 
 export type IncomeMaxOrderByAggregateInput = {
-  userId?: Prisma.SortOrder
   investmentPercentage?: Prisma.SortOrder
   movementId?: Prisma.SortOrder
 }
 
 export type IncomeMinOrderByAggregateInput = {
-  userId?: Prisma.SortOrder
   investmentPercentage?: Prisma.SortOrder
   movementId?: Prisma.SortOrder
 }
@@ -336,46 +302,12 @@ export type IncomeNullableScalarRelationFilter = {
   isNot?: Prisma.IncomeWhereInput | null
 }
 
-export type IncomeCreateNestedManyWithoutUserInput = {
-  create?: Prisma.XOR<Prisma.IncomeCreateWithoutUserInput, Prisma.IncomeUncheckedCreateWithoutUserInput> | Prisma.IncomeCreateWithoutUserInput[] | Prisma.IncomeUncheckedCreateWithoutUserInput[]
-  connectOrCreate?: Prisma.IncomeCreateOrConnectWithoutUserInput | Prisma.IncomeCreateOrConnectWithoutUserInput[]
-  createMany?: Prisma.IncomeCreateManyUserInputEnvelope
-  connect?: Prisma.IncomeWhereUniqueInput | Prisma.IncomeWhereUniqueInput[]
-}
-
-export type IncomeUncheckedCreateNestedManyWithoutUserInput = {
-  create?: Prisma.XOR<Prisma.IncomeCreateWithoutUserInput, Prisma.IncomeUncheckedCreateWithoutUserInput> | Prisma.IncomeCreateWithoutUserInput[] | Prisma.IncomeUncheckedCreateWithoutUserInput[]
-  connectOrCreate?: Prisma.IncomeCreateOrConnectWithoutUserInput | Prisma.IncomeCreateOrConnectWithoutUserInput[]
-  createMany?: Prisma.IncomeCreateManyUserInputEnvelope
-  connect?: Prisma.IncomeWhereUniqueInput | Prisma.IncomeWhereUniqueInput[]
-}
-
-export type IncomeUpdateManyWithoutUserNestedInput = {
-  create?: Prisma.XOR<Prisma.IncomeCreateWithoutUserInput, Prisma.IncomeUncheckedCreateWithoutUserInput> | Prisma.IncomeCreateWithoutUserInput[] | Prisma.IncomeUncheckedCreateWithoutUserInput[]
-  connectOrCreate?: Prisma.IncomeCreateOrConnectWithoutUserInput | Prisma.IncomeCreateOrConnectWithoutUserInput[]
-  upsert?: Prisma.IncomeUpsertWithWhereUniqueWithoutUserInput | Prisma.IncomeUpsertWithWhereUniqueWithoutUserInput[]
-  createMany?: Prisma.IncomeCreateManyUserInputEnvelope
-  set?: Prisma.IncomeWhereUniqueInput | Prisma.IncomeWhereUniqueInput[]
-  disconnect?: Prisma.IncomeWhereUniqueInput | Prisma.IncomeWhereUniqueInput[]
-  delete?: Prisma.IncomeWhereUniqueInput | Prisma.IncomeWhereUniqueInput[]
-  connect?: Prisma.IncomeWhereUniqueInput | Prisma.IncomeWhereUniqueInput[]
-  update?: Prisma.IncomeUpdateWithWhereUniqueWithoutUserInput | Prisma.IncomeUpdateWithWhereUniqueWithoutUserInput[]
-  updateMany?: Prisma.IncomeUpdateManyWithWhereWithoutUserInput | Prisma.IncomeUpdateManyWithWhereWithoutUserInput[]
-  deleteMany?: Prisma.IncomeScalarWhereInput | Prisma.IncomeScalarWhereInput[]
-}
-
-export type IncomeUncheckedUpdateManyWithoutUserNestedInput = {
-  create?: Prisma.XOR<Prisma.IncomeCreateWithoutUserInput, Prisma.IncomeUncheckedCreateWithoutUserInput> | Prisma.IncomeCreateWithoutUserInput[] | Prisma.IncomeUncheckedCreateWithoutUserInput[]
-  connectOrCreate?: Prisma.IncomeCreateOrConnectWithoutUserInput | Prisma.IncomeCreateOrConnectWithoutUserInput[]
-  upsert?: Prisma.IncomeUpsertWithWhereUniqueWithoutUserInput | Prisma.IncomeUpsertWithWhereUniqueWithoutUserInput[]
-  createMany?: Prisma.IncomeCreateManyUserInputEnvelope
-  set?: Prisma.IncomeWhereUniqueInput | Prisma.IncomeWhereUniqueInput[]
-  disconnect?: Prisma.IncomeWhereUniqueInput | Prisma.IncomeWhereUniqueInput[]
-  delete?: Prisma.IncomeWhereUniqueInput | Prisma.IncomeWhereUniqueInput[]
-  connect?: Prisma.IncomeWhereUniqueInput | Prisma.IncomeWhereUniqueInput[]
-  update?: Prisma.IncomeUpdateWithWhereUniqueWithoutUserInput | Prisma.IncomeUpdateWithWhereUniqueWithoutUserInput[]
-  updateMany?: Prisma.IncomeUpdateManyWithWhereWithoutUserInput | Prisma.IncomeUpdateManyWithWhereWithoutUserInput[]
-  deleteMany?: Prisma.IncomeScalarWhereInput | Prisma.IncomeScalarWhereInput[]
+export type DecimalFieldUpdateOperationsInput = {
+  set?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  increment?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  decrement?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  multiply?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  divide?: runtime.Decimal | runtime.DecimalJsLike | number | string
 }
 
 export type IncomeCreateNestedOneWithoutPaymentsInput = {
@@ -424,61 +356,12 @@ export type IncomeUncheckedUpdateOneWithoutMovementNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.IncomeUpdateToOneWithWhereWithoutMovementInput, Prisma.IncomeUpdateWithoutMovementInput>, Prisma.IncomeUncheckedUpdateWithoutMovementInput>
 }
 
-export type IncomeCreateWithoutUserInput = {
-  investmentPercentage?: runtime.Decimal | runtime.DecimalJsLike | number | string
-  movement: Prisma.MovementCreateNestedOneWithoutIncomeInput
-  payments?: Prisma.IncomePaymentCreateNestedManyWithoutIncomeInput
-}
-
-export type IncomeUncheckedCreateWithoutUserInput = {
-  investmentPercentage?: runtime.Decimal | runtime.DecimalJsLike | number | string
-  movementId: string
-  payments?: Prisma.IncomePaymentUncheckedCreateNestedManyWithoutIncomeInput
-}
-
-export type IncomeCreateOrConnectWithoutUserInput = {
-  where: Prisma.IncomeWhereUniqueInput
-  create: Prisma.XOR<Prisma.IncomeCreateWithoutUserInput, Prisma.IncomeUncheckedCreateWithoutUserInput>
-}
-
-export type IncomeCreateManyUserInputEnvelope = {
-  data: Prisma.IncomeCreateManyUserInput | Prisma.IncomeCreateManyUserInput[]
-  skipDuplicates?: boolean
-}
-
-export type IncomeUpsertWithWhereUniqueWithoutUserInput = {
-  where: Prisma.IncomeWhereUniqueInput
-  update: Prisma.XOR<Prisma.IncomeUpdateWithoutUserInput, Prisma.IncomeUncheckedUpdateWithoutUserInput>
-  create: Prisma.XOR<Prisma.IncomeCreateWithoutUserInput, Prisma.IncomeUncheckedCreateWithoutUserInput>
-}
-
-export type IncomeUpdateWithWhereUniqueWithoutUserInput = {
-  where: Prisma.IncomeWhereUniqueInput
-  data: Prisma.XOR<Prisma.IncomeUpdateWithoutUserInput, Prisma.IncomeUncheckedUpdateWithoutUserInput>
-}
-
-export type IncomeUpdateManyWithWhereWithoutUserInput = {
-  where: Prisma.IncomeScalarWhereInput
-  data: Prisma.XOR<Prisma.IncomeUpdateManyMutationInput, Prisma.IncomeUncheckedUpdateManyWithoutUserInput>
-}
-
-export type IncomeScalarWhereInput = {
-  AND?: Prisma.IncomeScalarWhereInput | Prisma.IncomeScalarWhereInput[]
-  OR?: Prisma.IncomeScalarWhereInput[]
-  NOT?: Prisma.IncomeScalarWhereInput | Prisma.IncomeScalarWhereInput[]
-  userId?: Prisma.StringNullableFilter<"Income"> | string | null
-  investmentPercentage?: Prisma.DecimalFilter<"Income"> | runtime.Decimal | runtime.DecimalJsLike | number | string
-  movementId?: Prisma.StringFilter<"Income"> | string
-}
-
 export type IncomeCreateWithoutPaymentsInput = {
   investmentPercentage?: runtime.Decimal | runtime.DecimalJsLike | number | string
   movement: Prisma.MovementCreateNestedOneWithoutIncomeInput
-  user?: Prisma.UserCreateNestedOneWithoutIncomesInput
 }
 
 export type IncomeUncheckedCreateWithoutPaymentsInput = {
-  userId?: string | null
   investmentPercentage?: runtime.Decimal | runtime.DecimalJsLike | number | string
   movementId: string
 }
@@ -502,23 +385,19 @@ export type IncomeUpdateToOneWithWhereWithoutPaymentsInput = {
 export type IncomeUpdateWithoutPaymentsInput = {
   investmentPercentage?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   movement?: Prisma.MovementUpdateOneRequiredWithoutIncomeNestedInput
-  user?: Prisma.UserUpdateOneWithoutIncomesNestedInput
 }
 
 export type IncomeUncheckedUpdateWithoutPaymentsInput = {
-  userId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   investmentPercentage?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   movementId?: Prisma.StringFieldUpdateOperationsInput | string
 }
 
 export type IncomeCreateWithoutMovementInput = {
   investmentPercentage?: runtime.Decimal | runtime.DecimalJsLike | number | string
-  user?: Prisma.UserCreateNestedOneWithoutIncomesInput
   payments?: Prisma.IncomePaymentCreateNestedManyWithoutIncomeInput
 }
 
 export type IncomeUncheckedCreateWithoutMovementInput = {
-  userId?: string | null
   investmentPercentage?: runtime.Decimal | runtime.DecimalJsLike | number | string
   payments?: Prisma.IncomePaymentUncheckedCreateNestedManyWithoutIncomeInput
 }
@@ -541,36 +420,12 @@ export type IncomeUpdateToOneWithWhereWithoutMovementInput = {
 
 export type IncomeUpdateWithoutMovementInput = {
   investmentPercentage?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
-  user?: Prisma.UserUpdateOneWithoutIncomesNestedInput
   payments?: Prisma.IncomePaymentUpdateManyWithoutIncomeNestedInput
 }
 
 export type IncomeUncheckedUpdateWithoutMovementInput = {
-  userId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   investmentPercentage?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   payments?: Prisma.IncomePaymentUncheckedUpdateManyWithoutIncomeNestedInput
-}
-
-export type IncomeCreateManyUserInput = {
-  investmentPercentage?: runtime.Decimal | runtime.DecimalJsLike | number | string
-  movementId: string
-}
-
-export type IncomeUpdateWithoutUserInput = {
-  investmentPercentage?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
-  movement?: Prisma.MovementUpdateOneRequiredWithoutIncomeNestedInput
-  payments?: Prisma.IncomePaymentUpdateManyWithoutIncomeNestedInput
-}
-
-export type IncomeUncheckedUpdateWithoutUserInput = {
-  investmentPercentage?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
-  movementId?: Prisma.StringFieldUpdateOperationsInput | string
-  payments?: Prisma.IncomePaymentUncheckedUpdateManyWithoutIncomeNestedInput
-}
-
-export type IncomeUncheckedUpdateManyWithoutUserInput = {
-  investmentPercentage?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
-  movementId?: Prisma.StringFieldUpdateOperationsInput | string
 }
 
 
@@ -605,62 +460,50 @@ export type IncomeCountOutputTypeCountPaymentsArgs<ExtArgs extends runtime.Types
 
 
 export type IncomeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
-  userId?: boolean
   investmentPercentage?: boolean
   movementId?: boolean
   movement?: boolean | Prisma.MovementDefaultArgs<ExtArgs>
-  user?: boolean | Prisma.Income$userArgs<ExtArgs>
   payments?: boolean | Prisma.Income$paymentsArgs<ExtArgs>
   _count?: boolean | Prisma.IncomeCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["income"]>
 
 export type IncomeSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
-  userId?: boolean
   investmentPercentage?: boolean
   movementId?: boolean
   movement?: boolean | Prisma.MovementDefaultArgs<ExtArgs>
-  user?: boolean | Prisma.Income$userArgs<ExtArgs>
 }, ExtArgs["result"]["income"]>
 
 export type IncomeSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
-  userId?: boolean
   investmentPercentage?: boolean
   movementId?: boolean
   movement?: boolean | Prisma.MovementDefaultArgs<ExtArgs>
-  user?: boolean | Prisma.Income$userArgs<ExtArgs>
 }, ExtArgs["result"]["income"]>
 
 export type IncomeSelectScalar = {
-  userId?: boolean
   investmentPercentage?: boolean
   movementId?: boolean
 }
 
-export type IncomeOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"userId" | "investmentPercentage" | "movementId", ExtArgs["result"]["income"]>
+export type IncomeOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"investmentPercentage" | "movementId", ExtArgs["result"]["income"]>
 export type IncomeInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   movement?: boolean | Prisma.MovementDefaultArgs<ExtArgs>
-  user?: boolean | Prisma.Income$userArgs<ExtArgs>
   payments?: boolean | Prisma.Income$paymentsArgs<ExtArgs>
   _count?: boolean | Prisma.IncomeCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type IncomeIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   movement?: boolean | Prisma.MovementDefaultArgs<ExtArgs>
-  user?: boolean | Prisma.Income$userArgs<ExtArgs>
 }
 export type IncomeIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   movement?: boolean | Prisma.MovementDefaultArgs<ExtArgs>
-  user?: boolean | Prisma.Income$userArgs<ExtArgs>
 }
 
 export type $IncomePayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Income"
   objects: {
     movement: Prisma.$MovementPayload<ExtArgs>
-    user: Prisma.$UserPayload<ExtArgs> | null
     payments: Prisma.$IncomePaymentPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
-    userId: string | null
     investmentPercentage: runtime.Decimal
     movementId: string
   }, ExtArgs["result"]["income"]>
@@ -746,8 +589,8 @@ export interface IncomeDelegate<ExtArgs extends runtime.Types.Extensions.Interna
    * // Get first 10 Incomes
    * const incomes = await prisma.income.findMany({ take: 10 })
    * 
-   * // Only select the `userId`
-   * const incomeWithUserIdOnly = await prisma.income.findMany({ select: { userId: true } })
+   * // Only select the `investmentPercentage`
+   * const incomeWithInvestmentPercentageOnly = await prisma.income.findMany({ select: { investmentPercentage: true } })
    * 
    */
   findMany<T extends IncomeFindManyArgs>(args?: Prisma.SelectSubset<T, IncomeFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$IncomePayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
@@ -791,9 +634,9 @@ export interface IncomeDelegate<ExtArgs extends runtime.Types.Extensions.Interna
    *   ]
    * })
    * 
-   * // Create many Incomes and only return the `userId`
-   * const incomeWithUserIdOnly = await prisma.income.createManyAndReturn({
-   *   select: { userId: true },
+   * // Create many Incomes and only return the `investmentPercentage`
+   * const incomeWithInvestmentPercentageOnly = await prisma.income.createManyAndReturn({
+   *   select: { investmentPercentage: true },
    *   data: [
    *     // ... provide data here
    *   ]
@@ -882,9 +725,9 @@ export interface IncomeDelegate<ExtArgs extends runtime.Types.Extensions.Interna
    *   ]
    * })
    * 
-   * // Update zero or more Incomes and only return the `userId`
-   * const incomeWithUserIdOnly = await prisma.income.updateManyAndReturn({
-   *   select: { userId: true },
+   * // Update zero or more Incomes and only return the `investmentPercentage`
+   * const incomeWithInvestmentPercentageOnly = await prisma.income.updateManyAndReturn({
+   *   select: { investmentPercentage: true },
    *   where: {
    *     // ... provide filter here
    *   },
@@ -1058,7 +901,6 @@ readonly fields: IncomeFieldRefs;
 export interface Prisma__IncomeClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
   movement<T extends Prisma.MovementDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.MovementDefaultArgs<ExtArgs>>): Prisma.Prisma__MovementClient<runtime.Types.Result.GetResult<Prisma.$MovementPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
-  user<T extends Prisma.Income$userArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Income$userArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   payments<T extends Prisma.Income$paymentsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Income$paymentsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$IncomePaymentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -1089,7 +931,6 @@ export interface Prisma__IncomeClient<T, Null = never, ExtArgs extends runtime.T
  * Fields of the Income model
  */
 export interface IncomeFieldRefs {
-  readonly userId: Prisma.FieldRef<"Income", 'String'>
   readonly investmentPercentage: Prisma.FieldRef<"Income", 'Decimal'>
   readonly movementId: Prisma.FieldRef<"Income", 'String'>
 }
@@ -1490,25 +1331,6 @@ export type IncomeDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.Intern
    * Limit how many Incomes to delete.
    */
   limit?: number
-}
-
-/**
- * Income.user
- */
-export type Income$userArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the User
-   */
-  select?: Prisma.UserSelect<ExtArgs> | null
-  /**
-   * Omit specific fields from the User
-   */
-  omit?: Prisma.UserOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.UserInclude<ExtArgs> | null
-  where?: Prisma.UserWhereInput
 }
 
 /**

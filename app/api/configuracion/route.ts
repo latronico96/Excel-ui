@@ -1,8 +1,6 @@
 import { NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
-
-import { authOptions } from "@/app/api/auth/auth-options";
 import { prisma } from "@/prisma/prisma";
+import { getCurrentWorkspace } from "@/server/services/workspace.service";
 
 const VALID_TITHE_BASES = [
     "NET_INCOME",
@@ -13,22 +11,21 @@ type TitheBase = (typeof VALID_TITHE_BASES)[number];
 
 export async function GET() {
     try {
-        const session = await getServerSession(
-            authOptions
-        );
+        const current = await getCurrentWorkspace();
 
-        if (!session?.user?.email) {
+        if (!current) {
             return NextResponse.json(
                 { error: "No autenticado" },
                 { status: 401 }
             );
         }
 
-        const user = await prisma.user.findUnique({
+        const workspace = await prisma.workspace.findUnique({
             where: {
-                email: session.user.email,
+                id: current.workspaceId,
             },
             select: {
+                name: true,
                 defaultInvestmentPercentage: true,
                 onboardingCompleted: true,
                 titheEnabled: true,
@@ -37,36 +34,28 @@ export async function GET() {
             },
         });
 
-        if (!user) {
+        if (!workspace) {
             return NextResponse.json(
-                { error: "Usuario no encontrado" },
+                { error: "Espacio de trabajo no encontrado" },
                 { status: 404 }
             );
         }
 
         return NextResponse.json({
+            name: workspace.name,
             defaultInvestmentPercentage: Number(
-                user.defaultInvestmentPercentage
+                workspace.defaultInvestmentPercentage
             ),
-            onboardingCompleted:
-                user.onboardingCompleted,
-            titheEnabled: user.titheEnabled,
-            tithePercentage: Number(
-                user.tithePercentage
-            ),
-            titheBase: user.titheBase,
+            onboardingCompleted: workspace.onboardingCompleted,
+            titheEnabled: workspace.titheEnabled,
+            tithePercentage: Number(workspace.tithePercentage),
+            titheBase: workspace.titheBase,
         });
     } catch (error) {
-        console.error(
-            "GET /api/configuracion:",
-            error
-        );
+        console.error("GET /api/configuracion:", error);
 
         return NextResponse.json(
-            {
-                error:
-                    "No se pudo cargar la configuración",
-            },
+            { error: "No se pudo cargar la configuración" },
             { status: 500 }
         );
     }
@@ -74,50 +63,51 @@ export async function GET() {
 
 export async function PATCH(request: Request) {
     try {
-        const session = await getServerSession(
-            authOptions
-        );
+        const current = await getCurrentWorkspace();
 
-        if (!session?.user?.email) {
+        if (!current) {
             return NextResponse.json(
                 { error: "No autenticado" },
                 { status: 401 }
             );
         }
 
-        const user = await prisma.user.findUnique({
-            where: {
-                email: session.user.email,
-            },
-            select: {
-                id: true,
-            },
-        });
-
-        if (!user) {
-            return NextResponse.json(
-                { error: "Usuario no encontrado" },
-                { status: 404 }
-            );
-        }
-
         const body = await request.json();
 
         const data: {
+            name?: string;
             defaultInvestmentPercentage?: number;
             onboardingCompleted?: boolean;
             titheEnabled?: boolean;
             tithePercentage?: number;
             titheBase?: TitheBase;
         } = {};
+        /*
+        * Workspace Name
+        */
+        if (body.name !== undefined) {
+            if (typeof body.name !== "string") {
+                return NextResponse.json(
+                    { error: "El nombre debe ser un texto" },
+                    { status: 400 }
+                );
+            }
 
+            const name = body.name.trim();
+
+            if (name.length < 2 || name.length > 80) {
+                return NextResponse.json(
+                    { error: "El nombre debe tener entre 2 y 80 caracteres" },
+                    { status: 400 }
+                );
+            }
+
+            data.name = name;
+        }
         /*
          * Porcentaje de inversión
          */
-        if (
-            body.defaultInvestmentPercentage !==
-            undefined
-        ) {
+        if (body.defaultInvestmentPercentage !== undefined) {
             const percentage = Number(
                 body.defaultInvestmentPercentage
             );
@@ -136,20 +126,14 @@ export async function PATCH(request: Request) {
                 );
             }
 
-            data.defaultInvestmentPercentage =
-                percentage;
+            data.defaultInvestmentPercentage = percentage;
         }
 
         /*
          * Estado del onboarding
          */
-        if (
-            body.onboardingCompleted !== undefined
-        ) {
-            if (
-                typeof body.onboardingCompleted !==
-                "boolean"
-            ) {
+        if (body.onboardingCompleted !== undefined) {
+            if (typeof body.onboardingCompleted !== "boolean") {
                 return NextResponse.json(
                     {
                         error:
@@ -159,22 +143,17 @@ export async function PATCH(request: Request) {
                 );
             }
 
-            data.onboardingCompleted =
-                body.onboardingCompleted;
+            data.onboardingCompleted = body.onboardingCompleted;
         }
 
         /*
          * Activar / desactivar diezmo
          */
         if (body.titheEnabled !== undefined) {
-            if (
-                typeof body.titheEnabled !==
-                "boolean"
-            ) {
+            if (typeof body.titheEnabled !== "boolean") {
                 return NextResponse.json(
                     {
-                        error:
-                            "titheEnabled debe ser boolean",
+                        error: "titheEnabled debe ser boolean",
                     },
                     { status: 400 }
                 );
@@ -186,12 +165,8 @@ export async function PATCH(request: Request) {
         /*
          * Porcentaje de diezmo
          */
-        if (
-            body.tithePercentage !== undefined
-        ) {
-            const percentage = Number(
-                body.tithePercentage
-            );
+        if (body.tithePercentage !== undefined) {
+            const percentage = Number(body.tithePercentage);
 
             if (
                 !Number.isFinite(percentage) ||
@@ -215,14 +190,14 @@ export async function PATCH(request: Request) {
          */
         if (body.titheBase !== undefined) {
             if (
-                !VALID_TITHE_BASES.includes(
-                    body.titheBase
+                typeof body.titheBase !== "string" ||
+                !VALID_TITHE_BASES.some(
+                    (base) => base === body.titheBase
                 )
             ) {
                 return NextResponse.json(
                     {
-                        error:
-                            "La base del diezmo no es válida",
+                        error: "La base del diezmo no es válida",
                     },
                     { status: 400 }
                 );
@@ -241,45 +216,38 @@ export async function PATCH(request: Request) {
             );
         }
 
-        const updatedUser =
-            await prisma.user.update({
-                where: {
-                    id: user.id,
-                },
-                data,
-                select: {
-                    defaultInvestmentPercentage: true,
-                    onboardingCompleted: true,
-                    titheEnabled: true,
-                    tithePercentage: true,
-                    titheBase: true,
-                },
-            });
+        const updatedWorkspace = await prisma.workspace.update({
+            where: {
+                id: current.workspaceId,
+            },
+            data,
+            select: {
+                name: true,
+                defaultInvestmentPercentage: true,
+                onboardingCompleted: true,
+                titheEnabled: true,
+                tithePercentage: true,
+                titheBase: true,
+            },
+        });
 
         return NextResponse.json({
+            name: updatedWorkspace.name,
             defaultInvestmentPercentage: Number(
-                updatedUser.defaultInvestmentPercentage
+                updatedWorkspace.defaultInvestmentPercentage
             ),
-            onboardingCompleted:
-                updatedUser.onboardingCompleted,
-            titheEnabled:
-                updatedUser.titheEnabled,
+            onboardingCompleted: updatedWorkspace.onboardingCompleted,
+            titheEnabled: updatedWorkspace.titheEnabled,
             tithePercentage: Number(
-                updatedUser.tithePercentage
+                updatedWorkspace.tithePercentage
             ),
-            titheBase: updatedUser.titheBase,
+            titheBase: updatedWorkspace.titheBase,
         });
     } catch (error) {
-        console.error(
-            "PATCH /api/configuracion:",
-            error
-        );
+        console.error("PATCH /api/configuracion:", error);
 
         return NextResponse.json(
-            {
-                error:
-                    "No se pudo actualizar la configuración",
-            },
+            { error: "No se pudo actualizar la configuración" },
             { status: 500 }
         );
     }

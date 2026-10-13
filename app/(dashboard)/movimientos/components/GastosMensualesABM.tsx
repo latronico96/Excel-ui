@@ -1106,6 +1106,22 @@ export default function GastosMensualesABM() {
                                                     <Pencil size={16} />
                                                     Editar
                                                 </button>
+                                                <button
+                                                    type="button"
+                                                    className="btn"
+                                                    onClick={() => {
+                                                        if (
+                                                            window.confirm(
+                                                                `¿Desactivar "${expense.name}"? Dejará de aparecer entre los gastos mensuales activos, pero conservará su historial de pagos.`
+                                                            )
+                                                        ) {
+                                                            void toggleActive(expense);
+                                                        }
+                                                    }}
+                                                >
+                                                    <Power size={16} />
+                                                    Desactivar
+                                                </button>
                                             </div>
                                         </div>
                                     );
@@ -1212,6 +1228,22 @@ export default function GastosMensualesABM() {
                                             >
                                                 <Pencil size={16} />
                                                 Editar
+                                            </button>
+                                            <button
+                                                type="button"
+                                                className="btn"
+                                                onClick={() => {
+                                                    if (
+                                                        window.confirm(
+                                                            `¿Desactivar "${expense.name}"? Dejará de aparecer entre los gastos mensuales activos, pero conservará su historial de pagos.`
+                                                        )
+                                                    ) {
+                                                        void toggleActive(expense);
+                                                    }
+                                                }}
+                                            >
+                                                <Power size={16} />
+                                                Desactivar
                                             </button>
                                         </div>
                                     </div>

@@ -1,49 +1,36 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/prisma/prisma";
 import crypto from "crypto";
+import { getOrCreateWorkspaceForUser } from "@/server/services/workspace.service";
+
+const demoEmail = "demo@excel-ui.demo";
 
 export async function POST() {
     try {
-        const demoEmail = "demo@excelpro.local";
-
-        // Buscar o crear usuario demo
-        let user = await prisma.user.findUnique({
-            where: {
+        const user = await prisma.user.upsert({
+            where: { email: demoEmail },
+            update: {},
+            create: {
+                name: "Demo Excel Pro",
                 email: demoEmail,
             },
         });
+        await getOrCreateWorkspaceForUser(user.id);
 
-        if (!user) {
-            user = await prisma.user.create({
-                data: {
-                    name: "Demo Excel Pro",
-                    email: demoEmail,
-                    isDemo: true,
-                    onboardingCompleted: true,
-                    defaultInvestmentPercentage: 50,
-                    titheEnabled: false,
-                    tithePercentage: 10,
-                    titheBase: "NET_INCOME",
-                },
-            });
-        }
-
-        // Crear sesión compatible con NextAuth database sessions
         const sessionToken = crypto.randomBytes(32).toString("hex");
 
         await prisma.session.create({
             data: {
                 sessionToken,
                 userId: user.id,
-                expires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+                expires: new Date(
+                    Date.now() + 30 * 24 * 60 * 60 * 1000
+                ),
             },
         });
 
-        const response = NextResponse.json({
-            success: true,
-        });
+        const response = NextResponse.json({ success: true });
 
-        // Cookie utilizada por NextAuth 4
         response.cookies.set(
             process.env.NODE_ENV === "production"
                 ? "__Secure-next-auth.session-token"
@@ -63,12 +50,8 @@ export async function POST() {
         console.error("Error creando sesión demo:", error);
 
         return NextResponse.json(
-            {
-                error: "No se pudo iniciar la demo",
-            },
-            {
-                status: 500,
-            }
+            { error: "No se pudo iniciar la demo" },
+            { status: 500 }
         );
     }
 }

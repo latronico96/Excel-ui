@@ -1,33 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
-import { authOptions } from "../auth/auth-options";
 import { MovimientosService } from "@/server/services/movimientos.service";
-import { prisma } from "@/prisma/prisma";
+import { getCurrentWorkspace } from "@/server/services/workspace.service";
 import { MovementWithDetails } from "@/shared/types";
 
-async function getUserId() {
-    const session = await getServerSession(authOptions);
-
-    if (!session?.user?.email) {
-        return null;
-    }
-
-    const user = await prisma.user.findUnique({
-        where: {
-            email: session.user.email,
-        },
-        select: {
-            id: true,
-        },
-    });
-
-    return user?.id ?? null;
-}
-
 export async function GET() {
-    const userId = await getUserId();
+    const current = await getCurrentWorkspace();
 
-    if (!userId) {
+    if (!current) {
         return NextResponse.json(
             { error: "Unauthorized" },
             { status: 401 }
@@ -35,7 +14,10 @@ export async function GET() {
     }
 
     try {
-        const movements = await MovimientosService.fetchMovements(userId);
+        const movements =
+            await MovimientosService.fetchMovements(
+                current.workspaceId
+            );
 
         const formattedMovements = movements.map(
             (movement: MovementWithDetails) => {
@@ -53,40 +35,25 @@ export async function GET() {
                 ) {
                     return {
                         ...baseMovement,
-
                         investmentPercentage: Number(
                             movement.income.investmentPercentage
                         ),
-
-                        payments:
-                            movement.income.payments.map(
-                                (payment) => ({
-                                    paymentMethodId:
-                                        payment.paymentMethodId,
-
-                                    paymentMethodName:
-                                        payment.paymentMethod.name,
-
-                                    amount: Number(
-                                        payment.amount
-                                    ),
-
-                                    commissionPercentage:
-                                        Number(
-                                            payment.commissionPercentage
-                                        ),
-
-                                    commissionAmount:
-                                        Number(
-                                            payment.commissionAmount
-                                        ),
-
-                                    netAmount:
-                                        Number(
-                                            payment.netAmount
-                                        ),
-                                })
-                            ),
+                        payments: movement.income.payments.map(
+                            (payment) => ({
+                                paymentMethodId:
+                                    payment.paymentMethodId,
+                                paymentMethodName:
+                                    payment.paymentMethod.name,
+                                amount: Number(payment.amount),
+                                commissionPercentage: Number(
+                                    payment.commissionPercentage
+                                ),
+                                commissionAmount: Number(
+                                    payment.commissionAmount
+                                ),
+                                netAmount: Number(payment.netAmount),
+                            })
+                        ),
                     };
                 }
 
@@ -96,12 +63,10 @@ export async function GET() {
                 ) {
                     return {
                         ...baseMovement,
-
                         expenseType: {
                             id: movement.expense.expenseType.id,
                             name: movement.expense.expenseType.name,
                         },
-
                         paymentMethod: {
                             id: movement.expense.paymentMethod.id,
                             name: movement.expense.paymentMethod.name,
@@ -115,26 +80,19 @@ export async function GET() {
 
         return NextResponse.json(formattedMovements);
     } catch (error) {
-        console.error(
-            "GET /api/movimientos:",
-            error
-        );
+        console.error("GET /api/movimientos:", error);
 
         return NextResponse.json(
-            {
-                error: "Error fetching movements",
-            },
-            {
-                status: 500,
-            }
+            { error: "Error fetching movements" },
+            { status: 500 }
         );
     }
 }
 
 export async function POST(req: NextRequest) {
-    const userId = await getUserId();
+    const current = await getCurrentWorkspace();
 
-    if (!userId) {
+    if (!current) {
         return NextResponse.json(
             { error: "Unauthorized" },
             { status: 401 }
@@ -144,21 +102,15 @@ export async function POST(req: NextRequest) {
     try {
         const body = await req.json();
 
-        const movement =
-            await MovimientosService.saveMovement(
-                userId,
-                body
-            );
+        const movement = await MovimientosService.saveMovement(
+            current.workspaceId,
+            current.userId,
+            body
+        );
 
-        return NextResponse.json(
-            movement,
-            { status: 201 }
-        );
+        return NextResponse.json(movement, { status: 201 });
     } catch (error) {
-        console.error(
-            "POST /api/movimientos:",
-            error
-        );
+        console.error("POST /api/movimientos:", error);
 
         if (
             error instanceof Error &&
@@ -171,9 +123,7 @@ export async function POST(req: NextRequest) {
                         ""
                     ),
                 },
-                {
-                    status: 400,
-                }
+                { status: 400 }
             );
         }
 
@@ -184,17 +134,15 @@ export async function POST(req: NextRequest) {
                         ? error.message
                         : "Error creating movement",
             },
-            {
-                status: 500,
-            }
+            { status: 500 }
         );
     }
 }
 
 export async function PUT(req: NextRequest) {
-    const userId = await getUserId();
+    const current = await getCurrentWorkspace();
 
-    if (!userId) {
+    if (!current) {
         return NextResponse.json(
             { error: "Unauthorized" },
             { status: 401 }
@@ -203,35 +151,26 @@ export async function PUT(req: NextRequest) {
 
     try {
         const body = await req.json();
-
         const { id, ...movement } = body;
 
         if (!id) {
             return NextResponse.json(
-                {
-                    error: "Debe indicar el movimiento a editar",
-                },
-                {
-                    status: 400,
-                }
+                { error: "Debe indicar el movimiento a editar" },
+                { status: 400 }
             );
         }
 
         const updatedMovement =
             await MovimientosService.updateMovement(
-                userId,
+                current.workspaceId,
+                current.userId,
                 id,
                 movement
             );
 
-        return NextResponse.json(
-            updatedMovement
-        );
+        return NextResponse.json(updatedMovement);
     } catch (error) {
-        console.error(
-            "PUT /api/movimientos:",
-            error
-        );
+        console.error("PUT /api/movimientos:", error);
 
         if (
             error instanceof Error &&
@@ -244,9 +183,7 @@ export async function PUT(req: NextRequest) {
                         ""
                     ),
                 },
-                {
-                    status: 400,
-                }
+                { status: 400 }
             );
         }
 
@@ -257,17 +194,15 @@ export async function PUT(req: NextRequest) {
                         ? error.message
                         : "Error updating movement",
             },
-            {
-                status: 500,
-            }
+            { status: 500 }
         );
     }
 }
 
 export async function DELETE(req: NextRequest) {
-    const userId = await getUserId();
+    const current = await getCurrentWorkspace();
 
-    if (!userId) {
+    if (!current) {
         return NextResponse.json(
             { error: "Unauthorized" },
             { status: 401 }
@@ -275,33 +210,24 @@ export async function DELETE(req: NextRequest) {
     }
 
     try {
-        const id =
-            req.nextUrl.searchParams.get("id");
+        const id = req.nextUrl.searchParams.get("id");
 
         if (!id) {
             return NextResponse.json(
-                {
-                    error: "Debe indicar el movimiento a eliminar",
-                },
-                {
-                    status: 400,
-                }
+                { error: "Debe indicar el movimiento a eliminar" },
+                { status: 400 }
             );
         }
 
         await MovimientosService.deleteMovement(
-            userId,
+            current.workspaceId,
+            current.userId,
             id
         );
 
-        return NextResponse.json({
-            success: true,
-        });
+        return NextResponse.json({ success: true });
     } catch (error) {
-        console.error(
-            "DELETE /api/movimientos:",
-            error
-        );
+        console.error("DELETE /api/movimientos:", error);
 
         if (
             error instanceof Error &&
@@ -314,9 +240,7 @@ export async function DELETE(req: NextRequest) {
                         ""
                     ),
                 },
-                {
-                    status: 400,
-                }
+                { status: 400 }
             );
         }
 
@@ -327,9 +251,7 @@ export async function DELETE(req: NextRequest) {
                         ? error.message
                         : "Error deleting movement",
             },
-            {
-                status: 500,
-            }
+            { status: 500 }
         );
     }
 }

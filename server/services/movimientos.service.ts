@@ -4,7 +4,11 @@ import { Prisma } from "@/prisma/generated/client";
 import { getArgentinaDateString, parseMovementDate, ARGENTINA_OFFSET } from "@/shared/utils/dates";
 
 export class MovimientosService {
-    static async saveMovement(userId: string, movement: MovementInput) {
+    static async saveMovement(
+        workspaceId: string,
+        userId: string,
+        movement: MovementInput
+    ) {
         return prisma.$transaction(async (tx) => {
             if (movement.type === "INGRESO") {
                 const date = parseMovementDate(movement.date);
@@ -72,7 +76,7 @@ export class MovimientosService {
                         await tx.paymentMethod.findFirst({
                             where: {
                                 id: payment.paymentMethodId,
-                                userId,
+                                workspaceId,
                                 active: true,
                             },
                         });
@@ -109,8 +113,7 @@ export class MovimientosService {
 
                     const netAmount =
                         Math.round(
-                            (payment.amount - commissionAmount) *
-                            100
+                            (payment.amount - commissionAmount) * 100
                         ) / 100;
 
                     incomePayments.push({
@@ -124,7 +127,8 @@ export class MovimientosService {
 
                 const movementRecord = await tx.movement.create({
                     data: {
-                        userId,
+                        workspaceId,
+                        createdById: userId,
                         type: "INGRESO",
                         amount: total,
                         date,
@@ -174,7 +178,7 @@ export class MovimientosService {
                 await tx.paymentMethod.findFirst({
                     where: {
                         id: movement.paymentMethodId,
-                        userId,
+                        workspaceId,
                         active: true,
                     },
                 });
@@ -189,7 +193,7 @@ export class MovimientosService {
                 await tx.expenseType.findFirst({
                     where: {
                         id: movement.expenseTypeId,
-                        userId,
+                        workspaceId,
                         active: true,
                     },
                 });
@@ -202,7 +206,8 @@ export class MovimientosService {
 
             const movementRecord = await tx.movement.create({
                 data: {
-                    userId,
+                    workspaceId,
+                    createdById: userId,
                     type: "EGRESO",
                     amount: movement.amount,
                     date,
@@ -223,18 +228,17 @@ export class MovimientosService {
     }
 
     static async updateMovement(
+        workspaceId: string,
         userId: string,
         movementId: string,
         movement: MovementInput
     ) {
         return prisma.$transaction(async (tx) => {
-            // Primero verificamos que el movimiento exista
-            // y pertenezca al usuario actual.
             const existingMovement =
                 await tx.movement.findFirst({
                     where: {
                         id: movementId,
-                        userId,
+                        workspaceId,
                     },
                     include: {
                         income: true,
@@ -248,18 +252,13 @@ export class MovimientosService {
                 );
             }
 
-            // No permitimos cambiar INGRESO <-> EGRESO
-            // durante una edición.
             if (existingMovement.type !== movement.type) {
                 throw new Error(
                     "VALIDATION: No se puede cambiar el tipo de movimiento"
                 );
             }
 
-            // =========================================================
             // INGRESO
-            // =========================================================
-
             if (movement.type === "INGRESO") {
                 const date = parseMovementDate(movement.date);
 
@@ -326,7 +325,7 @@ export class MovimientosService {
                         await tx.paymentMethod.findFirst({
                             where: {
                                 id: payment.paymentMethodId,
-                                userId,
+                                workspaceId,
                                 active: true,
                             },
                         });
@@ -357,14 +356,12 @@ export class MovimientosService {
                         Math.round(
                             (payment.amount *
                                 commissionPercentage /
-                                100) *
-                            100
+                                100) * 100
                         ) / 100;
 
                     const netAmount =
                         Math.round(
-                            (payment.amount - commissionAmount) *
-                            100
+                            (payment.amount - commissionAmount) * 100
                         ) / 100;
 
                     incomePayments.push({
@@ -376,23 +373,28 @@ export class MovimientosService {
                     });
                 }
 
-                // Actualizamos el movimiento principal.
-                await tx.movement.update({
+                if (!existingMovement.income) {
+                    throw new Error(
+                        "VALIDATION: El ingreso asociado al movimiento no existe"
+                    );
+                }
+
+                const updated = await tx.movement.updateMany({
                     where: {
                         id: movementId,
+                        workspaceId,
                     },
                     data: {
                         amount: total,
                         date,
                         description: movement.description || null,
+                        updatedById: userId,
                     },
                 });
 
-                // El Income ya debería existir porque el movimiento
-                // es de tipo INGRESO.
-                if (!existingMovement.income) {
+                if (updated.count !== 1) {
                     throw new Error(
-                        "VALIDATION: El ingreso asociado al movimiento no existe"
+                        "VALIDATION: Movimiento no encontrado"
                     );
                 }
 
@@ -405,9 +407,6 @@ export class MovimientosService {
                     },
                 });
 
-                // Para el MVP reemplazamos todos los payments.
-                // Está dentro de la misma transacción, por lo que
-                // si algo falla no queda el movimiento a medias.
                 await tx.incomePayment.deleteMany({
                     where: {
                         incomeId: movementId,
@@ -421,8 +420,7 @@ export class MovimientosService {
                         amount: payment.amount,
                         commissionPercentage:
                             payment.commissionPercentage,
-                        commissionAmount:
-                            payment.commissionAmount,
+                        commissionAmount: payment.commissionAmount,
                         netAmount: payment.netAmount,
                     })),
                 });
@@ -434,10 +432,7 @@ export class MovimientosService {
                 });
             }
 
-            // =========================================================
             // EGRESO
-            // =========================================================
-
             const date = parseMovementDate(movement.date);
 
             if (
@@ -465,7 +460,7 @@ export class MovimientosService {
                 await tx.paymentMethod.findFirst({
                     where: {
                         id: movement.paymentMethodId,
-                        userId,
+                        workspaceId,
                         active: true,
                     },
                 });
@@ -480,7 +475,7 @@ export class MovimientosService {
                 await tx.expenseType.findFirst({
                     where: {
                         id: movement.expenseTypeId,
-                        userId,
+                        workspaceId,
                         active: true,
                     },
                 });
@@ -491,20 +486,29 @@ export class MovimientosService {
                 );
             }
 
-            await tx.movement.update({
+            if (!existingMovement.expense) {
+                throw new Error(
+                    "VALIDATION: El egreso asociado al movimiento no existe"
+                );
+            }
+
+
+            const updated = await tx.movement.updateMany({
                 where: {
                     id: movementId,
+                    workspaceId,
                 },
                 data: {
                     amount: movement.amount,
                     date,
                     description: movement.description || null,
+                    updatedById: userId,
                 },
             });
 
-            if (!existingMovement.expense) {
+            if (updated.count !== 1) {
                 throw new Error(
-                    "VALIDATION: El egreso asociado al movimiento no existe"
+                    "VALIDATION: Movimiento no encontrado"
                 );
             }
 
@@ -527,6 +531,7 @@ export class MovimientosService {
     }
 
     static async deleteMovement(
+        workspaceId: string,
         userId: string,
         movementId: string
     ) {
@@ -534,7 +539,7 @@ export class MovimientosService {
             const movement = await tx.movement.findFirst({
                 where: {
                     id: movementId,
-                    userId,
+                    workspaceId,
                 },
                 select: {
                     id: true,
@@ -547,18 +552,27 @@ export class MovimientosService {
                 );
             }
 
-            return tx.movement.delete({
+            const deleted = await tx.movement.deleteMany({
                 where: {
-                    id: movementId,
+                    id: movement.id,
+                    workspaceId,
                 },
             });
+
+            if (deleted.count !== 1) {
+                throw new Error(
+                    "VALIDATION: Movimiento no encontrado"
+                );
+            }
+
+            return { id: movement.id };
         });
     }
 
-    static async fetchMovements(userId: string) {
+    static async fetchMovements(workspaceId: string) {
         return prisma.movement.findMany({
             where: {
-                userId,
+                workspaceId,
             },
             include: {
                 expense: {
@@ -577,14 +591,18 @@ export class MovimientosService {
                     },
                 },
             },
-            orderBy: {
-                date: "desc",
-            },
+            orderBy: [
+                { date: "desc" },
+                { createdAt: "desc" },
+                { id: "desc" },
+            ],
+
         });
     }
 
+
     static async fetchSummary(
-        userId: string,
+        workspaceId: string,
         period: "day" | "week" | "month" | "year" = "month"
     ) {
         const now = new Date();
@@ -654,9 +672,9 @@ export class MovimientosService {
          * El diezmo se calcula acá, en el backend,
          * y no en cada pantalla.
          */
-        const user = await prisma.user.findUnique({
+        const workspace = await prisma.workspace.findUnique({
             where: {
-                id: userId,
+                id: workspaceId,
             },
             select: {
                 titheEnabled: true,
@@ -668,7 +686,7 @@ export class MovimientosService {
         const movements =
             await prisma.movement.findMany({
                 where: {
-                    userId,
+                    workspaceId,
                     date: {
                         gte: startDate,
                         lte: now,
@@ -817,15 +835,15 @@ export class MovimientosService {
                 let tithe = 0;
 
                 if (
-                    user?.titheEnabled
+                    workspace?.titheEnabled
                 ) {
                     const tithePercentage =
                         Number(
-                            user.tithePercentage
+                            workspace.tithePercentage
                         );
 
                     const titheBase =
-                        user.titheBase ===
+                        workspace.titheBase ===
                             "AFTER_INVESTMENT"
                             ? Math.max(
                                 0,
@@ -988,15 +1006,15 @@ export class MovimientosService {
             period,
             tithe: {
                 enabled:
-                    user?.titheEnabled ??
+                    workspace?.titheEnabled ??
                     false,
                 percentage:
                     Number(
-                        user?.tithePercentage ??
+                        workspace?.tithePercentage ??
                         0
                     ),
                 base:
-                    user?.titheBase ??
+                    workspace?.titheBase ??
                     "NET_INCOME",
             },
             totals,

@@ -9,7 +9,7 @@ const adapter = new PrismaPg({
 
 const prisma = new PrismaClient({ adapter });
 
-const DEMO_EMAIL = "demo@excelpro.local";
+const DEMO_EMAIL = "demo@excel-ui.demo";
 
 
 const ARS = (value: number) =>
@@ -70,9 +70,14 @@ async function main() {
     console.log("   GENERANDO DATOS DEMO - EXCEL PRO");
     console.log("======================================");
 
-    const user = await prisma.user.findUnique({
-        where: {
+    const user = await prisma.user.upsert({
+        where: { email: DEMO_EMAIL },
+        update: {
+            name: "Demo Excel Pro",
+        },
+        create: {
             email: DEMO_EMAIL,
+            name: "Demo Excel Pro",
         },
     });
 
@@ -85,11 +90,35 @@ async function main() {
         throw new Error(`No existe el usuario demo: ${DEMO_EMAIL}`);
     }
     const userId = user.id;
+
+    const membership = await prisma.workspaceMember.findFirst({
+        where: { userId },
+        include: { workspace: true },
+        orderBy: { createdAt: "asc" },
+    });
+
+    const workspace = membership
+        ? membership.workspace
+        : await prisma.workspace.create({
+            data: {
+                name: "Espacio Demo",
+                isDemo: true,
+                onboardingCompleted: true,
+                members: {
+                    create: {
+                        userId,
+                        role: "OWNER",
+                    },
+                },
+            },
+        });
+
+    const workspaceId = workspace.id;
+
     console.log(`Usuario encontrado: ${user.email}`);
     console.log(`User ID: ${userId}`);
-
-    console.log("");
-    console.log("Eliminando datos anteriores de la DEMO...");
+    console.log(`Workspace: ${workspace.name}`);
+    console.log(`Workspace ID: ${workspaceId}`);
 
     /*
      * IMPORTANTE:
@@ -98,57 +127,46 @@ async function main() {
      *
      * Solamente eliminamos los datos del negocio.
      */
-
     await prisma.recurringExpensePayment.deleteMany({
         where: {
-            movement: {
-                userId: userId,
-            },
+            movement: { workspaceId },
         },
     });
 
     await prisma.incomePayment.deleteMany({
         where: {
             income: {
-                userId: userId,
+                movement: { workspaceId },
             },
         },
     });
 
     await prisma.expense.deleteMany({
         where: {
-            userId: userId,
+            movement: { workspaceId },
         },
     });
 
     await prisma.income.deleteMany({
         where: {
-            userId: userId,
+            movement: { workspaceId },
         },
     });
 
     await prisma.movement.deleteMany({
-        where: {
-            userId: userId,
-        },
+        where: { workspaceId },
     });
 
     await prisma.recurringExpense.deleteMany({
-        where: {
-            userId: userId,
-        },
+        where: { workspaceId },
     });
 
     await prisma.expenseType.deleteMany({
-        where: {
-            userId: userId,
-        },
+        where: { workspaceId },
     });
 
     await prisma.paymentMethod.deleteMany({
-        where: {
-            userId: userId,
-        },
+        where: { workspaceId },
     });
 
     console.log("Datos anteriores eliminados.");
@@ -157,18 +175,15 @@ async function main() {
     // CONFIGURACIÓN DEL USUARIO
     // =========================================================
 
-    await prisma.user.update({
-        where: {
-            id: userId,
-        },
+    await prisma.workspace.update({
+        where: { id: workspaceId },
         data: {
             onboardingCompleted: true,
-
             defaultInvestmentPercentage: 50,
-
             titheEnabled: true,
             tithePercentage: 10,
             titheBase: "NET_INCOME",
+            isDemo: true,
         },
     });
 
@@ -178,7 +193,7 @@ async function main() {
 
     const efectivo = await prisma.paymentMethod.create({
         data: {
-            userId: userId,
+            workspaceId: workspaceId,
             name: "Efectivo",
             active: true,
             defaultCommissionPercentage: 0,
@@ -187,7 +202,7 @@ async function main() {
 
     const transferencia = await prisma.paymentMethod.create({
         data: {
-            userId: userId,
+            workspaceId: workspaceId,
             name: "Transferencia",
             active: true,
             defaultCommissionPercentage: 0,
@@ -196,7 +211,7 @@ async function main() {
 
     const credito = await prisma.paymentMethod.create({
         data: {
-            userId: userId,
+            workspaceId: workspaceId,
             name: "Crédito",
             active: true,
             defaultCommissionPercentage: 23,
@@ -205,7 +220,7 @@ async function main() {
 
     const debito = await prisma.paymentMethod.create({
         data: {
-            userId: userId,
+            workspaceId: workspaceId,
             name: "Débito",
             active: true,
             defaultCommissionPercentage: 0,
@@ -247,7 +262,7 @@ async function main() {
     for (const name of expenseTypeNames) {
         const type = await prisma.expenseType.create({
             data: {
-                userId: userId,
+                workspaceId: workspaceId,
                 name,
                 active: true,
             },
@@ -259,6 +274,62 @@ async function main() {
     console.log(
         `${expenseTypeNames.length} tipos de gasto creados.`
     );
+
+    // =========================================================
+    // GASTOS MENSUALES RECURRENTES
+    // =========================================================
+
+    await prisma.recurringExpense.createMany({
+        data: [
+            {
+                workspaceId,
+                name: "Alquiler del local",
+                amount: 350000,
+                dueDay: 1,
+                expenseTypeId: expenseTypes["Alquiler"].id,
+                paymentMethodId: transferencia.id,
+                active: true,
+            },
+            {
+                workspaceId,
+                name: "Factura de luz",
+                amount: 85000,
+                dueDay: 7,
+                expenseTypeId: expenseTypes["Luz"].id,
+                paymentMethodId: transferencia.id,
+                active: true,
+            },
+            {
+                workspaceId,
+                name: "Internet",
+                amount: 35000,
+                dueDay: 10,
+                expenseTypeId: expenseTypes["Internet"].id,
+                paymentMethodId: transferencia.id,
+                active: true,
+            },
+            {
+                workspaceId,
+                name: "Honorarios del contador",
+                amount: 70000,
+                dueDay: 5,
+                expenseTypeId: expenseTypes["Contador"].id,
+                paymentMethodId: transferencia.id,
+                active: true,
+            },
+            {
+                workspaceId,
+                name: "Publicidad mensual",
+                amount: 40000,
+                dueDay: 15,
+                expenseTypeId: expenseTypes["Publicidad"].id,
+                paymentMethodId: credito.id,
+                active: true,
+            },
+        ],
+    });
+
+    console.log("5 gastos mensuales recurrentes creados.");
 
     // =========================================================
     // FECHAS
@@ -317,7 +388,8 @@ async function main() {
     ) {
         const movement = await prisma.movement.create({
             data: {
-                userId: userId,
+                workspaceId: workspaceId,
+                createdById: userId,
                 type: "INGRESO",
                 amount: ARS(amount),
                 date,
@@ -330,7 +402,6 @@ async function main() {
         const income = await prisma.income.create({
             data: {
                 movementId: movement.id,
-                userId: userId,
                 investmentPercentage: random(45, 55),
             },
         });
@@ -557,7 +628,8 @@ async function main() {
         const movement =
             await prisma.movement.create({
                 data: {
-                    userId: userId,
+                    workspaceId: workspaceId,
+                    createdById: userId,
                     type: "EGRESO",
                     amount: ARS(amount),
                     date,
@@ -568,7 +640,6 @@ async function main() {
         await prisma.expense.create({
             data: {
                 movementId: movement.id,
-                userId: userId,
                 expenseTypeId:
                     expenseTypes[typeName].id,
                 paymentMethodId:
@@ -999,7 +1070,7 @@ async function main() {
     const incomeResult =
         await prisma.movement.aggregate({
             where: {
-                userId: userId,
+                workspaceId,
                 type: "INGRESO",
             },
             _sum: {
@@ -1011,7 +1082,7 @@ async function main() {
     const expenseResult =
         await prisma.movement.aggregate({
             where: {
-                userId: userId,
+                workspaceId,
                 type: "EGRESO",
             },
             _sum: {
@@ -1031,7 +1102,7 @@ async function main() {
 
     console.log(
         `Monto ingresos: $${Number(
-            incomeResult._sum.amount ?? 0
+            incomeResult._sum?.amount ?? 0
         ).toLocaleString("es-AR")}`
     );
 
@@ -1041,7 +1112,7 @@ async function main() {
 
     console.log(
         `Monto egresos: $${Number(
-            expenseResult._sum.amount ?? 0
+            expenseResult._sum?.amount ?? 0
         ).toLocaleString("es-AR")}`
     );
 

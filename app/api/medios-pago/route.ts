@@ -1,24 +1,8 @@
+
 import { NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
-import { authOptions } from "../auth/auth-options";
+
 import { prisma } from "@/prisma/prisma";
-
-async function getUser() {
-    const session = await getServerSession(authOptions);
-
-    if (!session?.user?.email) {
-        return null;
-    }
-
-    return prisma.user.findUnique({
-        where: {
-            email: session.user.email,
-        },
-        select: {
-            id: true,
-        },
-    });
-}
+import { getCurrentWorkspace } from "@/server/services/workspace.service";
 
 function isUniqueError(error: unknown) {
     return (
@@ -30,22 +14,24 @@ function isUniqueError(error: unknown) {
 }
 
 export async function GET(request: Request) {
-    const user = await getUser();
-
-    if (!user) {
-        return NextResponse.json(
-            { error: "Unauthorized" },
-            { status: 401 }
-        );
-    }
-
     try {
+        const current = await getCurrentWorkspace();
+
+        if (!current) {
+            return NextResponse.json(
+                { error: "Unauthorized" },
+                { status: 401 }
+            );
+        }
+
+        const { workspaceId } = current;
+
         const showAll =
             new URL(request.url).searchParams.get("all") === "true";
 
         const existingCount = await prisma.paymentMethod.count({
             where: {
-                userId: user.id,
+                workspaceId,
             },
         });
 
@@ -53,22 +39,22 @@ export async function GET(request: Request) {
             await prisma.paymentMethod.createMany({
                 data: [
                     {
-                        userId: user.id,
+                        workspaceId,
                         name: "Efectivo",
                         defaultCommissionPercentage: 0,
                     },
                     {
-                        userId: user.id,
+                        workspaceId,
                         name: "Débito",
                         defaultCommissionPercentage: 0,
                     },
                     {
-                        userId: user.id,
+                        workspaceId,
                         name: "Crédito",
                         defaultCommissionPercentage: 23,
                     },
                     {
-                        userId: user.id,
+                        workspaceId,
                         name: "Transferencia",
                         defaultCommissionPercentage: 0,
                     },
@@ -79,7 +65,7 @@ export async function GET(request: Request) {
 
         const paymentMethods = await prisma.paymentMethod.findMany({
             where: {
-                userId: user.id,
+                workspaceId,
                 ...(showAll ? {} : { active: true }),
             },
             select: {
@@ -94,21 +80,14 @@ export async function GET(request: Request) {
         });
 
         return NextResponse.json(
-            paymentMethods.map(
-                (method: {
-                    id: string;
-                    name: string;
-                    active: boolean;
-                    defaultCommissionPercentage: unknown;
-                }) => ({
-                    id: method.id,
-                    name: method.name,
-                    active: method.active,
-                    defaultCommissionPercentage: Number(
-                        method.defaultCommissionPercentage
-                    ),
-                })
-            )
+            paymentMethods.map((method) => ({
+                id: method.id,
+                name: method.name,
+                active: method.active,
+                defaultCommissionPercentage: Number(
+                    method.defaultCommissionPercentage
+                ),
+            }))
         );
     } catch (error) {
         console.error("GET /api/medios-pago:", error);
@@ -121,16 +100,17 @@ export async function GET(request: Request) {
 }
 
 export async function POST(req: Request) {
-    const user = await getUser();
-
-    if (!user) {
-        return NextResponse.json(
-            { error: "Unauthorized" },
-            { status: 401 }
-        );
-    }
-
     try {
+        const current = await getCurrentWorkspace();
+
+        if (!current) {
+            return NextResponse.json(
+                { error: "Unauthorized" },
+                { status: 401 }
+            );
+        }
+
+        const { workspaceId } = current;
         const body = await req.json();
 
         const name =
@@ -156,8 +136,7 @@ export async function POST(req: Request) {
         ) {
             return NextResponse.json(
                 {
-                    error:
-                        "La comisión debe estar entre 0 y 100",
+                    error: "La comisión debe estar entre 0 y 100",
                 },
                 { status: 400 }
             );
@@ -165,7 +144,7 @@ export async function POST(req: Request) {
 
         const existing = await prisma.paymentMethod.findFirst({
             where: {
-                userId: user.id,
+                workspaceId,
                 name: {
                     equals: name,
                     mode: "insensitive",
@@ -185,7 +164,7 @@ export async function POST(req: Request) {
 
         const paymentMethod = await prisma.paymentMethod.create({
             data: {
-                userId: user.id,
+                workspaceId,
                 name,
                 defaultCommissionPercentage: commission,
             },
@@ -227,16 +206,17 @@ export async function POST(req: Request) {
 }
 
 export async function PATCH(req: Request) {
-    const user = await getUser();
-
-    if (!user) {
-        return NextResponse.json(
-            { error: "Unauthorized" },
-            { status: 401 }
-        );
-    }
-
     try {
+        const current = await getCurrentWorkspace();
+
+        if (!current) {
+            return NextResponse.json(
+                { error: "Unauthorized" },
+                { status: 401 }
+            );
+        }
+
+        const { workspaceId } = current;
         const body = await req.json();
 
         const id =
@@ -254,7 +234,7 @@ export async function PATCH(req: Request) {
         const existing = await prisma.paymentMethod.findFirst({
             where: {
                 id,
-                userId: user.id,
+                workspaceId,
             },
         });
 
@@ -287,7 +267,7 @@ export async function PATCH(req: Request) {
             const duplicate =
                 await prisma.paymentMethod.findFirst({
                     where: {
-                        userId: user.id,
+                        workspaceId,
                         name: {
                             equals: name,
                             mode: "insensitive",
@@ -311,9 +291,7 @@ export async function PATCH(req: Request) {
             data.name = name;
         }
 
-        if (
-            body.defaultCommissionPercentage !== undefined
-        ) {
+        if (body.defaultCommissionPercentage !== undefined) {
             const commission = Number(
                 body.defaultCommissionPercentage
             );
@@ -325,8 +303,7 @@ export async function PATCH(req: Request) {
             ) {
                 return NextResponse.json(
                     {
-                        error:
-                            "La comisión debe estar entre 0 y 100",
+                        error: "La comisión debe estar entre 0 y 100",
                     },
                     { status: 400 }
                 );
@@ -346,19 +323,40 @@ export async function PATCH(req: Request) {
             data.active = body.active;
         }
 
-        const paymentMethod =
-            await prisma.paymentMethod.update({
-                where: {
-                    id,
-                },
-                data,
-                select: {
-                    id: true,
-                    name: true,
-                    active: true,
-                    defaultCommissionPercentage: true,
-                },
-            });
+        const updated = await prisma.paymentMethod.updateMany({
+            where: {
+                id: existing.id,
+                workspaceId,
+            },
+            data,
+        });
+
+        if (updated.count !== 1) {
+            return NextResponse.json(
+                { error: "Medio de pago no encontrado" },
+                { status: 404 }
+            );
+        }
+
+        const paymentMethod = await prisma.paymentMethod.findFirst({
+            where: {
+                id: existing.id,
+                workspaceId,
+            },
+            select: {
+                id: true,
+                name: true,
+                active: true,
+                defaultCommissionPercentage: true,
+            },
+        });
+
+        if (!paymentMethod) {
+            return NextResponse.json(
+                { error: "Medio de pago no encontrado" },
+                { status: 404 }
+            );
+        }
 
         return NextResponse.json({
             ...paymentMethod,

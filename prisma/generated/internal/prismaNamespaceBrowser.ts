@@ -62,7 +62,10 @@ export const ModelName = {
   Expense: 'Expense',
   PaymentMethod: 'PaymentMethod',
   RecurringExpense: 'RecurringExpense',
-  RecurringExpensePayment: 'RecurringExpensePayment'
+  RecurringExpensePayment: 'RecurringExpensePayment',
+  Workspace: 'Workspace',
+  WorkspaceMember: 'WorkspaceMember',
+  WorkspaceInvitation: 'WorkspaceInvitation'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -88,13 +91,7 @@ export const UserScalarFieldEnum = {
   image: 'image',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
-  emailVerified: 'emailVerified',
-  onboardingCompleted: 'onboardingCompleted',
-  defaultInvestmentPercentage: 'defaultInvestmentPercentage',
-  titheEnabled: 'titheEnabled',
-  tithePercentage: 'tithePercentage',
-  titheBase: 'titheBase',
-  isDemo: 'isDemo'
+  emailVerified: 'emailVerified'
 } as const
 
 export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
@@ -139,7 +136,7 @@ export type VerificationTokenScalarFieldEnum = (typeof VerificationTokenScalarFi
 
 export const ExpenseTypeScalarFieldEnum = {
   id: 'id',
-  userId: 'userId',
+  workspaceId: 'workspaceId',
   name: 'name',
   active: 'active',
   createdAt: 'createdAt',
@@ -150,7 +147,6 @@ export type ExpenseTypeScalarFieldEnum = (typeof ExpenseTypeScalarFieldEnum)[key
 
 
 export const IncomeScalarFieldEnum = {
-  userId: 'userId',
   investmentPercentage: 'investmentPercentage',
   movementId: 'movementId'
 } as const
@@ -175,7 +171,9 @@ export type IncomePaymentScalarFieldEnum = (typeof IncomePaymentScalarFieldEnum)
 
 export const MovementScalarFieldEnum = {
   id: 'id',
-  userId: 'userId',
+  workspaceId: 'workspaceId',
+  createdById: 'createdById',
+  updatedById: 'updatedById',
   type: 'type',
   amount: 'amount',
   date: 'date',
@@ -188,7 +186,6 @@ export type MovementScalarFieldEnum = (typeof MovementScalarFieldEnum)[keyof typ
 
 
 export const ExpenseScalarFieldEnum = {
-  userId: 'userId',
   expenseTypeId: 'expenseTypeId',
   paymentMethodId: 'paymentMethodId',
   movementId: 'movementId'
@@ -199,7 +196,7 @@ export type ExpenseScalarFieldEnum = (typeof ExpenseScalarFieldEnum)[keyof typeo
 
 export const PaymentMethodScalarFieldEnum = {
   id: 'id',
-  userId: 'userId',
+  workspaceId: 'workspaceId',
   name: 'name',
   active: 'active',
   createdAt: 'createdAt',
@@ -212,7 +209,7 @@ export type PaymentMethodScalarFieldEnum = (typeof PaymentMethodScalarFieldEnum)
 
 export const RecurringExpenseScalarFieldEnum = {
   id: 'id',
-  userId: 'userId',
+  workspaceId: 'workspaceId',
   name: 'name',
   amount: 'amount',
   dueDay: 'dueDay',
@@ -237,6 +234,50 @@ export const RecurringExpensePaymentScalarFieldEnum = {
 } as const
 
 export type RecurringExpensePaymentScalarFieldEnum = (typeof RecurringExpensePaymentScalarFieldEnum)[keyof typeof RecurringExpensePaymentScalarFieldEnum]
+
+
+export const WorkspaceScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  onboardingCompleted: 'onboardingCompleted',
+  defaultInvestmentPercentage: 'defaultInvestmentPercentage',
+  titheEnabled: 'titheEnabled',
+  tithePercentage: 'tithePercentage',
+  titheBase: 'titheBase',
+  isDemo: 'isDemo'
+} as const
+
+export type WorkspaceScalarFieldEnum = (typeof WorkspaceScalarFieldEnum)[keyof typeof WorkspaceScalarFieldEnum]
+
+
+export const WorkspaceMemberScalarFieldEnum = {
+  id: 'id',
+  workspaceId: 'workspaceId',
+  userId: 'userId',
+  role: 'role',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type WorkspaceMemberScalarFieldEnum = (typeof WorkspaceMemberScalarFieldEnum)[keyof typeof WorkspaceMemberScalarFieldEnum]
+
+
+export const WorkspaceInvitationScalarFieldEnum = {
+  id: 'id',
+  workspaceId: 'workspaceId',
+  invitedByUserId: 'invitedByUserId',
+  acceptedByUserId: 'acceptedByUserId',
+  tokenHash: 'tokenHash',
+  role: 'role',
+  expiresAt: 'expiresAt',
+  acceptedAt: 'acceptedAt',
+  revokedAt: 'revokedAt',
+  createdAt: 'createdAt'
+} as const
+
+export type WorkspaceInvitationScalarFieldEnum = (typeof WorkspaceInvitationScalarFieldEnum)[keyof typeof WorkspaceInvitationScalarFieldEnum]
 
 
 export const SortOrder = {

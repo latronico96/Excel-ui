@@ -15,3 +15,12 @@ export const MovementType = {
 } as const
 
 export type MovementType = (typeof MovementType)[keyof typeof MovementType]
+
+
+export const WorkspaceRole = {
+  OWNER: 'OWNER',
+  ADMIN: 'ADMIN',
+  MEMBER: 'MEMBER'
+} as const
+
+export type WorkspaceRole = (typeof WorkspaceRole)[keyof typeof WorkspaceRole]

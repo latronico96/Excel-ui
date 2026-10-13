@@ -4,11 +4,13 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "../auth/auth-options";
 import { MovimientosService } from "@/server/services/movimientos.service";
 import { prisma } from "@/prisma/prisma";
+import { getCurrentWorkspace } from "@/server/services/workspace.service";
 
 export async function GET(request: NextRequest) {
+    const currentWorkspace = await getCurrentWorkspace();
     const session = await getServerSession(authOptions);
 
-    if (!session?.user?.email) {
+    if (!currentWorkspace || !session || !session.user || !session.user.email) {
         return NextResponse.json(
             { error: "Unauthorized" },
             { status: 401 }
@@ -45,7 +47,7 @@ export async function GET(request: NextRequest) {
 
         const summary =
             await MovimientosService.fetchSummary(
-                user.id,
+                currentWorkspace.workspaceId,
                 period
             );
 

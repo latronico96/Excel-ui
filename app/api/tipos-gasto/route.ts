@@ -1,24 +1,8 @@
+
 import { NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
-import { authOptions } from "../auth/auth-options";
+
 import { prisma } from "@/prisma/prisma";
-
-async function getUser() {
-    const session = await getServerSession(authOptions);
-
-    if (!session?.user?.email) {
-        return null;
-    }
-
-    return prisma.user.findUnique({
-        where: {
-            email: session.user.email,
-        },
-        select: {
-            id: true,
-        },
-    });
-}
+import { getCurrentWorkspace } from "@/server/services/workspace.service";
 
 function isUniqueError(error: unknown) {
     return (
@@ -30,44 +14,34 @@ function isUniqueError(error: unknown) {
 }
 
 export async function GET(request: Request) {
-    const user = await getUser();
-
-    if (!user) {
-        return NextResponse.json(
-            { error: "Unauthorized" },
-            { status: 401 }
-        );
-    }
-
     try {
+        const current = await getCurrentWorkspace();
+
+        if (!current) {
+            return NextResponse.json(
+                { error: "Unauthorized" },
+                { status: 401 }
+            );
+        }
+
+        const { workspaceId } = current;
+
         const showAll =
             new URL(request.url).searchParams.get("all") === "true";
 
         const existingCount = await prisma.expenseType.count({
             where: {
-                userId: user.id,
+                workspaceId,
             },
         });
 
         if (existingCount === 0) {
             await prisma.expenseType.createMany({
                 data: [
-                    {
-                        userId: user.id,
-                        name: "Insumos",
-                    },
-                    {
-                        userId: user.id,
-                        name: "Servicios",
-                    },
-                    {
-                        userId: user.id,
-                        name: "Impuestos",
-                    },
-                    {
-                        userId: user.id,
-                        name: "Otros",
-                    },
+                    { workspaceId, name: "Insumos" },
+                    { workspaceId, name: "Servicios" },
+                    { workspaceId, name: "Impuestos" },
+                    { workspaceId, name: "Otros" },
                 ],
                 skipDuplicates: true,
             });
@@ -75,7 +49,7 @@ export async function GET(request: Request) {
 
         const expenseTypes = await prisma.expenseType.findMany({
             where: {
-                userId: user.id,
+                workspaceId,
                 ...(showAll ? {} : { active: true }),
             },
             select: {
@@ -100,16 +74,17 @@ export async function GET(request: Request) {
 }
 
 export async function POST(req: Request) {
-    const user = await getUser();
-
-    if (!user) {
-        return NextResponse.json(
-            { error: "Unauthorized" },
-            { status: 401 }
-        );
-    }
-
     try {
+        const current = await getCurrentWorkspace();
+
+        if (!current) {
+            return NextResponse.json(
+                { error: "Unauthorized" },
+                { status: 401 }
+            );
+        }
+
+        const { workspaceId } = current;
         const body = await req.json();
 
         const name =
@@ -126,7 +101,7 @@ export async function POST(req: Request) {
 
         const existing = await prisma.expenseType.findFirst({
             where: {
-                userId: user.id,
+                workspaceId,
                 name: {
                     equals: name,
                     mode: "insensitive",
@@ -146,7 +121,7 @@ export async function POST(req: Request) {
 
         const expenseType = await prisma.expenseType.create({
             data: {
-                userId: user.id,
+                workspaceId,
                 name,
             },
             select: {
@@ -156,10 +131,7 @@ export async function POST(req: Request) {
             },
         });
 
-        return NextResponse.json(
-            expenseType,
-            { status: 201 }
-        );
+        return NextResponse.json(expenseType, { status: 201 });
     } catch (error) {
         console.error("POST /api/tipos-gasto:", error);
 
@@ -181,16 +153,17 @@ export async function POST(req: Request) {
 }
 
 export async function PATCH(req: Request) {
-    const user = await getUser();
-
-    if (!user) {
-        return NextResponse.json(
-            { error: "Unauthorized" },
-            { status: 401 }
-        );
-    }
-
     try {
+        const current = await getCurrentWorkspace();
+
+        if (!current) {
+            return NextResponse.json(
+                { error: "Unauthorized" },
+                { status: 401 }
+            );
+        }
+
+        const { workspaceId } = current;
         const body = await req.json();
 
         const id =
@@ -208,7 +181,7 @@ export async function PATCH(req: Request) {
         const existing = await prisma.expenseType.findFirst({
             where: {
                 id,
-                userId: user.id,
+                workspaceId,
             },
         });
 
@@ -239,7 +212,7 @@ export async function PATCH(req: Request) {
 
             const duplicate = await prisma.expenseType.findFirst({
                 where: {
-                    userId: user.id,
+                    workspaceId,
                     name: {
                         equals: name,
                         mode: "insensitive",
@@ -274,17 +247,39 @@ export async function PATCH(req: Request) {
             data.active = body.active;
         }
 
-        const expenseType = await prisma.expenseType.update({
+        const updated = await prisma.expenseType.updateMany({
             where: {
-                id,
+                id: existing.id,
+                workspaceId,
             },
             data,
+        });
+
+        if (updated.count !== 1) {
+            return NextResponse.json(
+                { error: "Tipo de gasto no encontrado" },
+                { status: 404 }
+            );
+        }
+
+        const expenseType = await prisma.expenseType.findFirst({
+            where: {
+                id: existing.id,
+                workspaceId,
+            },
             select: {
                 id: true,
                 name: true,
                 active: true,
             },
         });
+
+        if (!expenseType) {
+            return NextResponse.json(
+                { error: "Tipo de gasto no encontrado" },
+                { status: 404 }
+            );
+        }
 
         return NextResponse.json(expenseType);
     } catch (error) {

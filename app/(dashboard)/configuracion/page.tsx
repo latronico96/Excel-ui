@@ -9,13 +9,14 @@ import {
 } from "lucide-react";
 
 interface Configuracion {
+    name: string;
     defaultInvestmentPercentage: number;
     onboardingCompleted: boolean;
     titheEnabled: boolean;
     tithePercentage: number;
     titheBase:
-        | "NET_INCOME"
-        | "AFTER_INVESTMENT";
+    | "NET_INCOME"
+    | "AFTER_INVESTMENT";
 }
 
 export default function ConfiguracionPage() {
@@ -51,6 +52,7 @@ export default function ConfiguracionPage() {
         useState<
             "success" | "error" | ""
         >("");
+    const [workspaceName, setWorkspaceName] = useState("");
 
     useEffect(() => {
         loadConfig();
@@ -97,6 +99,8 @@ export default function ConfiguracionPage() {
                     ? "AFTER_INVESTMENT"
                     : "NET_INCOME"
             );
+
+            setWorkspaceName(data.name ?? "");
         } catch (error) {
             console.error(error);
 
@@ -160,6 +164,7 @@ export default function ConfiguracionPage() {
                             "application/json",
                     },
                     body: JSON.stringify({
+                        name: workspaceName,
                         defaultInvestmentPercentage:
                             investment,
 
@@ -179,7 +184,7 @@ export default function ConfiguracionPage() {
             if (!response.ok) {
                 throw new Error(
                     data.error ||
-                        "No se pudo guardar la configuración"
+                    "No se pudo guardar la configuración"
                 );
             }
 
@@ -206,6 +211,14 @@ export default function ConfiguracionPage() {
                     "AFTER_INVESTMENT"
                     ? "AFTER_INVESTMENT"
                     : "NET_INCOME"
+            );
+
+            setWorkspaceName(data.name ?? "");
+
+            window.dispatchEvent(
+                new CustomEvent("workspace-updated", {
+                    detail: { name: data.name ?? "" },
+                })
             );
 
             setMessage(
@@ -294,9 +307,44 @@ export default function ConfiguracionPage() {
                 </div>
             </div>
 
+            <div className="card config-card">
+                <div>
+                    <h2>Espacio de trabajo</h2>
+                    <p>
+                        Personalizá el nombre de tu negocio.
+                    </p>
+                </div>
+
+                <div className="config-field">
+                    <label htmlFor="workspaceName">
+                        Nombre del negocio
+                    </label>
+
+                    <input
+                        id="workspaceName"
+                        type="text"
+                        maxLength={80}
+                        value={workspaceName}
+                        onChange={(event) =>
+                            setWorkspaceName(event.target.value)
+                        }
+                        className="input"
+                        placeholder="Mi negocio"
+                    />
+                </div>
+
+                <p>
+                    Este nombre identifica tu espacio de trabajo.
+                </p>
+            </div>
+
             {/* Preferencias */}
 
-            <div className="card config-card">
+            <div className="card config-card"
+                style={{
+                    marginTop: "1rem",
+                }}
+            >
                 <div>
                     <h2>
                         Preferencias del negocio
@@ -570,8 +618,8 @@ export default function ConfiguracionPage() {
                                             event
                                                 .target
                                                 .value as
-                                                | "NET_INCOME"
-                                                | "AFTER_INVESTMENT"
+                                            | "NET_INCOME"
+                                            | "AFTER_INVESTMENT"
                                         )
                                     }
                                     className="input"
@@ -711,19 +759,18 @@ export default function ConfiguracionPage() {
                         borderRadius: "8px",
                         background:
                             messageType ===
-                            "success"
+                                "success"
                                 ? "rgb(16 185 129 / 0.1)"
                                 : "rgb(239 68 68 / 0.1)",
                         border:
-                            `1px solid ${
-                                messageType ===
+                            `1px solid ${messageType ===
                                 "success"
-                                    ? "rgb(16 185 129 / 0.2)"
-                                    : "rgb(239 68 68 / 0.2)"
+                                ? "rgb(16 185 129 / 0.2)"
+                                : "rgb(239 68 68 / 0.2)"
                             }`,
                         color:
                             messageType ===
-                            "success"
+                                "success"
                                 ? "var(--success)"
                                 : "var(--error)",
                         fontSize:
