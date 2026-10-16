@@ -1,55 +1,29 @@
-
 import { NextResponse } from "next/server";
 import { randomBytes, createHash } from "crypto";
-import { getCurrentWorkspace } from "@/server/services/workspace.service";
+import { requireWorkspaceAdmin } from "@/server/services/workspace-permissions";
 import { prisma } from "@/prisma/prisma";
 
 export async function POST() {
     try {
-        const current = await getCurrentWorkspace();
+        const permission = await requireWorkspaceAdmin();
 
-        if (!current) {
+        if (!permission.ok) {
             return NextResponse.json(
-                { error: "No autenticado" },
-                { status: 401 }
+                { error: permission.error },
+                { status: permission.status }
             );
         }
 
-        // Solo OWNER y ADMIN pueden invitar.
-        if (current.role !== "OWNER" && current.role !== "ADMIN") {
+        const current = permission.current;
+
+        if (current.workspace.isDemo) {
             return NextResponse.json(
-                { error: "No tenés permisos para invitar miembros" },
+                {
+                    error: "Las invitaciones no están disponibles en el espacio demo",
+                },
                 { status: 403 }
             );
         }
-
-        /*/ Los espacios demo no generan invitaciones reales.
-        if (false && current.workspace.isDemo) {
-            return NextResponse.json(
-                { error: "Las invitaciones no están disponibles en el espacio demo" },
-                { status: 403 }
-            );
-        }// */
-
-        // El token original solo se entrega al usuario una vez.
-        const token = randomBytes(32).toString("hex");
-        const tokenHash = createHash("sha256")
-            .update(token)
-            .digest("hex");
-
-        const expiresAt = new Date(
-            Date.now() + 7 * 24 * 60 * 60 * 1000
-        );
-
-        await prisma.workspaceInvitation.create({
-            data: {
-                workspaceId: current.workspaceId,
-                invitedByUserId: current.userId,
-                tokenHash,
-                role: "MEMBER",
-                expiresAt,
-            },
-        });
 
         const baseUrl = process.env.NEXTAUTH_URL;
 
@@ -60,6 +34,25 @@ export async function POST() {
             );
         }
 
+        const token = randomBytes(32).toString("hex");
+        const tokenHash = createHash("sha256")
+            .update(token)
+            .digest("hex");
+
+        const expiresAt = new Date(
+            Date.now() + 7 * 24 * 60 * 60 * 1000
+        );
+
+        const invitation = await prisma.workspaceInvitation.create({
+            data: {
+                workspaceId: current.workspaceId,
+                invitedByUserId: current.userId,
+                tokenHash,
+                role: "MEMBER",
+                expiresAt,
+            },
+        });
+
         const inviteUrl = new URL(
             `/invitacion/${token}`,
             baseUrl
@@ -67,7 +60,7 @@ export async function POST() {
 
         return NextResponse.json({
             inviteUrl,
-            expiresAt,
+            expiresAt: invitation.expiresAt,
         });
     } catch (error) {
         console.error("Error al crear invitación:", error);

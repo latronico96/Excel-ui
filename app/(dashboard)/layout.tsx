@@ -10,6 +10,7 @@ import {
     Calendar,
     ChevronRight,
     CreditCard,
+    Folder,
     LayoutDashboard,
     LogOut,
     Menu,
@@ -22,6 +23,11 @@ import {
     Users,
     X,
 } from "lucide-react";
+type WorkspaceOption = {
+    id: string;
+    name: string;
+    role: string;
+};
 
 export default function DashboardLayout({
     children,
@@ -36,6 +42,9 @@ export default function DashboardLayout({
     const [quickMenuOpen, setQuickMenuOpen] = useState(false);
     const [checkingOnboarding, setCheckingOnboarding] = useState(true);
     const [workspaceName, setWorkspaceName] = useState("");
+    const [workspaces, setWorkspaces] = useState<WorkspaceOption[]>([]);
+    const [activeWorkspaceId, setActiveWorkspaceId] = useState("");
+    const [switchingWorkspace, setSwitchingWorkspace] = useState(false);
 
     useEffect(() => {
         if (status === "unauthenticated") {
@@ -63,6 +72,23 @@ export default function DashboardLayout({
                 if (!cancelled && typeof data.name === "string") {
                     setWorkspaceName(data.name);
                 }
+
+                if (!data.onboardingCompleted) {
+                    router.replace("/onboarding");
+                    return;
+                }
+
+                setCheckingOnboarding(false);
+
+                const responseEspacios = await fetch("/api/espacios");
+
+                if (!responseEspacios.ok) return;
+
+                const dataEspacios = await responseEspacios.json();
+
+                setWorkspaces(dataEspacios.workspaces);
+                setActiveWorkspaceId(dataEspacios.activeWorkspaceId ?? "");
+
             } catch (error) {
                 console.error("Error cargando el workspace:", error);
             }
@@ -91,7 +117,7 @@ export default function DashboardLayout({
                 handleWorkspaceUpdate
             );
         };
-    }, [status]);
+    }, [status, router]);
 
     useEffect(() => {
         document.title = workspaceName
@@ -114,40 +140,44 @@ export default function DashboardLayout({
             setCheckingOnboarding(false);
             return;
         }
-
-        const checkOnboarding = async () => {
-            try {
-                const response = await fetch(
-                    "/api/configuracion"
-                );
-
-                if (!response.ok) {
-                    throw new Error(
-                        "No se pudo verificar el onboarding"
-                    );
-                }
-
-                const data = await response.json();
-
-                if (!data.onboardingCompleted) {
-                    router.replace("/onboarding");
-                    return;
-                }
-
-                setCheckingOnboarding(false);
-            } catch (error) {
-                console.error(
-                    "Error verificando onboarding:",
-                    error
-                );
-
-                setCheckingOnboarding(false);
-            }
-        };
-
-        checkOnboarding();
     }, [status, pathname, router]);
 
+    async function switchWorkspace(workspaceId: string) {
+        if (!workspaceId || workspaceId === activeWorkspaceId) return;
+
+        setSwitchingWorkspace(true);
+
+        try {
+            const response = await fetch("/api/espacios/activo", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ workspaceId }),
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.error || "No se pudo cambiar el espacio");
+            }
+
+            setActiveWorkspaceId(data.workspace.id);
+            setWorkspaceName(data.workspace.name);
+
+            // Recargar los datos y permisos del espacio seleccionado.
+            window.location.reload();
+        } catch (error) {
+            console.error("Error al cambiar de espacio:", error);
+            alert(
+                error instanceof Error
+                    ? error.message
+                    : "No se pudo cambiar el espacio"
+            );
+        } finally {
+            setSwitchingWorkspace(false);
+        }
+    }
 
     if (
         status === "loading" ||
@@ -198,29 +228,68 @@ export default function DashboardLayout({
             <aside className="sidebar">
                 <div>
                     <div
-                        style={{
-                            fontSize: "1.25rem",
-                            marginBottom: "2rem",
-                            display: "flex",
-                            alignItems: "center",
-                            gap: "8px",
-                            fontWeight: 700,
-                        }}
+                        className="mb-8 flex w-full min-w-0 items-center gap-2"
+                        style={{ fontSize: "1.25rem", fontWeight: 700 }}
                     >
                         <LayoutDashboard
-                            size={24}
+                            size={20}
                             color="var(--primary)"
+                            className="shrink-0"
                         />
 
-                        {workspaceName || process.env.NEXT_PUBLIC_APP_TITLE ||
-                            "Mi Comercio"}
+                        {workspaces.length > 1 ? (
+                            <div className="min-w-0 flex-1">
+                                <div className="relative w-full min-w-0">
+                                    <select
+                                        id="workspace-select"
+                                        value={activeWorkspaceId}
+                                        onChange={(event) =>
+                                            switchWorkspace(event.target.value)
+                                        }
+                                        disabled={switchingWorkspace}
+                                        aria-label="Cambiar espacio de trabajo"
+                                        style={{
+                                            display: "block",
+                                            boxSizing: "border-box",
+                                            width: "100%",
+                                            minWidth: 0,
+                                            maxWidth: "100%",
+                                            overflow: "hidden",
+                                            padding: "8px 30px 8px 10px",
+                                            border: "1px solid var(--border, #e5e7eb)",
+                                            borderRadius: 8,
+                                            background: "var(--card, #fff)",
+                                            color: "var(--foreground, #374151)",
+                                            font: "500 14px/1.4 inherit",
+                                            textOverflow: "ellipsis",
+                                            whiteSpace: "nowrap",
+                                            cursor: "pointer",
+                                        }}
+                                    >
+                                        {workspaces.map((workspace) => (
+                                            <option
+                                                key={workspace.id}
+                                                value={workspace.id}
+                                            >
+                                                {workspace.name}
+                                            </option>
+                                        ))}
+                                    </select>
+                                </div>
+                            </div>
+                        ) : (
+                            <span className="min-w-0 truncate text-base font-bold">
+                                {workspaceName ||
+                                    process.env.NEXT_PUBLIC_APP_TITLE ||
+                                    "Mi Comercio"}
+                            </span>
+                        )}
                     </div>
 
                     <nav className="sidebar-nav">
                         <Link
                             href="/hoy"
-                            className={`nav-link ${isActive("/hoy") ? "active" : ""
-                                }`}
+                            className={`nav-link ${isActive("/hoy") ? "active" : ""}`}
                         >
                             <LayoutDashboard size={20} />
                             Inicio
@@ -228,8 +297,7 @@ export default function DashboardLayout({
 
                         <Link
                             href="/resumen"
-                            className={`nav-link ${isActive("/resumen") ? "active" : ""
-                                }`}
+                            className={`nav-link ${isActive("/resumen") ? "active" : ""}`}
                         >
                             <PieChart size={20} />
                             Resumen
@@ -237,8 +305,7 @@ export default function DashboardLayout({
 
                         <Link
                             href="/movimientos"
-                            className={`nav-link ${isActive("/movimientos") ? "active" : ""
-                                }`}
+                            className={`nav-link ${isActive("/movimientos") ? "active" : ""}`}
                         >
                             <Receipt size={20} />
                             Movimientos
@@ -246,10 +313,7 @@ export default function DashboardLayout({
 
                         <Link
                             href="/gastos-mensuales"
-                            className={`nav-link ${isActive("/gastos-mensuales")
-                                ? "active"
-                                : ""
-                                }`}
+                            className={`nav-link ${isActive("/gastos-mensuales") ? "active" : ""}`}
                         >
                             <Calendar size={20} />
                             Gastos mensuales
@@ -262,20 +326,14 @@ export default function DashboardLayout({
                             </div>
                             <Link
                                 href="/configuracion"
-                                className={`nav-link nav-link-sub ${isActive("/configuracion")
-                                    ? "active"
-                                    : ""
-                                    }`}
+                                className={`nav-link nav-link-sub ${isActive("/configuracion") ? "active" : ""}`}
                             >
                                 <SlidersHorizontal size={19} />
                                 General
                             </Link>
                             <Link
                                 href="/tipos-gasto"
-                                className={`nav-link nav-link-sub ${isActive("/tipos-gasto")
-                                    ? "active"
-                                    : ""
-                                    }`}
+                                className={`nav-link nav-link-sub ${isActive("/tipos-gasto") ? "active" : ""}`}
                             >
                                 <Tags size={19} />
                                 Tipos de gasto
@@ -283,23 +341,24 @@ export default function DashboardLayout({
 
                             <Link
                                 href="/medios-pago"
-                                className={`nav-link nav-link-sub ${isActive("/medios-pago")
-                                    ? "active"
-                                    : ""
-                                    }`}
+                                className={`nav-link nav-link-sub ${isActive("/medios-pago") ? "active" : ""}`}
                             >
                                 <CreditCard size={19} />
                                 Medios de pago
                             </Link>
                             <Link
                                 href="/miembros"
-                                className={`nav-link nav-link-sub ${isActive("/miembros")
-                                    ? "active"
-                                    : ""
-                                    }`}
+                                className={`nav-link nav-link-sub ${isActive("/miembros") ? "active" : ""}`}
                             >
                                 <Users size={19} />
                                 Miembros
+                            </Link>
+                            <Link
+                                href="/espacios"
+                                className={`nav-link nav-link-sub ${isActive("/espacios") ? "active" : ""}`}
+                            >
+                                <Folder size={19} />
+                                Espacios
                             </Link>
                         </div>
                     </nav>
@@ -337,7 +396,8 @@ export default function DashboardLayout({
                 </button>
 
                 <div className="mobile-header-title">
-                    {process.env.NEXT_PUBLIC_APP_TITLE ||
+                    {workspaceName ||
+                        process.env.NEXT_PUBLIC_APP_TITLE ||
                         "Mi Comercio"}
                 </div>
 
@@ -354,16 +414,12 @@ export default function DashboardLayout({
                 >
                     <aside
                         className="mobile-drawer"
-                        onClick={(event) =>
-                            event.stopPropagation()
-                        }
+                        onClick={(event) => event.stopPropagation()}
                     >
                         <div className="mobile-drawer-header">
                             <div
+                                className="flex min-w-0 flex-1 items-center gap-2"
                                 style={{
-                                    display: "flex",
-                                    alignItems: "center",
-                                    gap: "8px",
                                     fontWeight: 700,
                                     fontSize: "1.1rem",
                                 }}
@@ -371,18 +427,66 @@ export default function DashboardLayout({
                                 <LayoutDashboard
                                     size={22}
                                     color="var(--primary)"
+                                    style={{ flexShrink: 0 }}
                                 />
 
-                                {process.env.NEXT_PUBLIC_APP_TITLE ||
-                                    "Mi Comercio"}
+                                {workspaces.length > 1 ? (
+                                    <div className="min-w-0 flex-1">
+                                        <div className="relative w-full min-w-0">
+                                            <select
+                                                id="workspace-select-mobile"
+                                                value={activeWorkspaceId}
+                                                onChange={(event) =>
+                                                    switchWorkspace(event.target.value)
+                                                }
+                                                disabled={switchingWorkspace}
+                                                aria-label="Cambiar espacio de trabajo"
+                                                style={{
+                                                    display: "block",
+                                                    boxSizing: "border-box",
+                                                    width: "100%",
+                                                    minWidth: 0,
+                                                    maxWidth: "100%",
+                                                    overflow: "hidden",
+                                                    padding: "8px 30px 8px 10px",
+                                                    border: "1px solid var(--border, #e5e7eb)",
+                                                    borderRadius: 8,
+                                                    background: "var(--card, #fff)",
+                                                    color: "var(--foreground, #374151)",
+                                                    fontSize: "14px",
+                                                    fontWeight: 500,
+                                                    textOverflow: "ellipsis",
+                                                    whiteSpace: "nowrap",
+                                                    cursor: "pointer",
+                                                }}
+                                            >
+                                                {workspaces.map((workspace) => (
+                                                    <option
+                                                        key={workspace.id}
+                                                        value={workspace.id}
+                                                    >
+                                                        {workspace.name}
+                                                    </option>
+                                                ))}
+                                            </select>
+                                        </div>
+                                    </div>
+                                ) : (
+                                    <span
+                                        className="min-w-0 truncate"
+                                        style={{ fontSize: "1rem" }}
+                                    >
+                                        {workspaceName ||
+                                            process.env.NEXT_PUBLIC_APP_TITLE ||
+                                            "Mi Comercio"}
+                                    </span>
+                                )}
                             </div>
 
                             <button
                                 type="button"
                                 className="mobile-drawer-close"
-                                onClick={() =>
-                                    setMobileMenuOpen(false)
-                                }
+                                onClick={() => setMobileMenuOpen(false)}
                                 aria-label="Cerrar menú"
                             >
                                 <X size={22} />
@@ -393,10 +497,7 @@ export default function DashboardLayout({
                             <Link
                                 href="/hoy"
                                 onClick={closeMenus}
-                                className={`nav-link ${isActive("/hoy")
-                                    ? "active"
-                                    : ""
-                                    }`}
+                                className={`nav-link ${isActive("/hoy") ? "active" : ""}`}
                             >
                                 <LayoutDashboard size={20} />
                                 Inicio
@@ -405,10 +506,7 @@ export default function DashboardLayout({
                             <Link
                                 href="/resumen"
                                 onClick={closeMenus}
-                                className={`nav-link ${isActive("/resumen")
-                                    ? "active"
-                                    : ""
-                                    }`}
+                                className={`nav-link ${isActive("/resumen") ? "active" : ""}`}
                             >
                                 <PieChart size={20} />
                                 Resumen
@@ -417,10 +515,7 @@ export default function DashboardLayout({
                             <Link
                                 href="/movimientos"
                                 onClick={closeMenus}
-                                className={`nav-link ${isActive("/movimientos")
-                                    ? "active"
-                                    : ""
-                                    }`}
+                                className={`nav-link ${isActive("/movimientos") ? "active" : ""}`}
                             >
                                 <Receipt size={20} />
                                 Movimientos
@@ -429,12 +524,7 @@ export default function DashboardLayout({
                             <Link
                                 href="/gastos-mensuales"
                                 onClick={closeMenus}
-                                className={`nav-link ${isActive(
-                                    "/gastos-mensuales"
-                                )
-                                    ? "active"
-                                    : ""
-                                    }`}
+                                className={`nav-link ${isActive("/gastos-mensuales") ? "active" : ""}`}
                             >
                                 <Calendar size={20} />
                                 Gastos mensuales
@@ -447,10 +537,7 @@ export default function DashboardLayout({
                                 </div>
                                 <Link
                                     href="/configuracion"
-                                    className={`nav-link nav-link-sub ${isActive("/configuracion")
-                                        ? "active"
-                                        : ""
-                                        }`}
+                                    className={`nav-link nav-link-sub ${isActive("/configuracion") ? "active" : ""}`}
                                 >
                                     <SlidersHorizontal size={19} />
                                     General
@@ -458,12 +545,7 @@ export default function DashboardLayout({
                                 <Link
                                     href="/tipos-gasto"
                                     onClick={closeMenus}
-                                    className={`nav-link nav-link-sub ${isActive(
-                                        "/tipos-gasto"
-                                    )
-                                        ? "active"
-                                        : ""
-                                        }`}
+                                    className={`nav-link nav-link-sub ${isActive("/tipos-gasto") ? "active" : ""}`}
                                 >
                                     <Tags size={19} />
                                     Tipos de gasto
@@ -472,12 +554,7 @@ export default function DashboardLayout({
                                 <Link
                                     href="/medios-pago"
                                     onClick={closeMenus}
-                                    className={`nav-link nav-link-sub ${isActive(
-                                        "/medios-pago"
-                                    )
-                                        ? "active"
-                                        : ""
-                                        }`}
+                                    className={`nav-link nav-link-sub ${isActive("/medios-pago") ? "active" : ""}`}
                                 >
                                     <CreditCard size={19} />
                                     Medios de pago
@@ -485,15 +562,17 @@ export default function DashboardLayout({
                                 <Link
                                     href="/miembros"
                                     onClick={closeMenus}
-                                    className={`nav-link nav-link-sub ${isActive(
-                                        "/miembros"
-                                    )
-                                        ? "active"
-                                        : ""
-                                        }`}
+                                    className={`nav-link nav-link-sub ${isActive("/miembros") ? "active" : ""}`}
                                 >
                                     <Users size={19} />
                                     Miembros
+                                </Link>
+                                <Link
+                                    href="/espacios"
+                                    className={`nav-link nav-link-sub ${isActive("/espacios") ? "active" : ""}`}
+                                >
+                                    <Folder size={19} />
+                                    Espacios
                                 </Link>
                             </div>
                         </nav>
@@ -521,9 +600,7 @@ export default function DashboardLayout({
             {/* =========================================
                 MAIN CONTENT
             ========================================= */}
-            <main className="main-content">
-                {children}
-            </main>
+            <main className="main-content">{children}</main>
 
             {/* =========================================
                 QUICK ACTION MENU
@@ -543,9 +620,7 @@ export default function DashboardLayout({
                             className="quick-action-item"
                             onClick={() => {
                                 setQuickMenuOpen(false);
-                                router.push(
-                                    "/movimientos?nuevo=ingreso"
-                                );
+                                router.push("/movimientos?nuevo=ingreso");
                             }}
                         >
                             <span className="quick-action-icon income">
@@ -562,9 +637,7 @@ export default function DashboardLayout({
                             className="quick-action-item"
                             onClick={() => {
                                 setQuickMenuOpen(false);
-                                router.push(
-                                    "/movimientos?nuevo=egreso"
-                                );
+                                router.push("/movimientos?nuevo=egreso");
                             }}
                         >
                             <span className="quick-action-icon expense">
@@ -581,9 +654,7 @@ export default function DashboardLayout({
                             className="quick-action-item"
                             onClick={() => {
                                 setQuickMenuOpen(false);
-                                router.push(
-                                    "/gastos-mensuales?accion=pagar"
-                                );
+                                router.push("/gastos-mensuales?accion=pagar");
                             }}
                         >
                             <span className="quick-action-icon recurring">
@@ -599,22 +670,11 @@ export default function DashboardLayout({
 
                 <button
                     type="button"
-                    className={`quick-action-button ${quickMenuOpen ? "open" : ""
-                        }`}
-                    onClick={() =>
-                        setQuickMenuOpen((value) => !value)
-                    }
-                    aria-label={
-                        quickMenuOpen
-                            ? "Cerrar acciones"
-                            : "Nueva operación"
-                    }
+                    className={`quick-action-button ${quickMenuOpen ? "open" : ""}`}
+                    onClick={() => setQuickMenuOpen((value) => !value)}
+                    aria-label={quickMenuOpen ? "Cerrar acciones" : "Nueva operación"}
                 >
-                    {quickMenuOpen ? (
-                        <X size={27} />
-                    ) : (
-                        <Plus size={28} />
-                    )}
+                    {quickMenuOpen ? <X size={27} /> : <Plus size={28} />}
                 </button>
             </div>
         </div>

@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/prisma/prisma";
 import { getCurrentWorkspace } from "@/server/services/workspace.service";
+import { requireWorkspaceOwner } from "@/server/services/workspace-permissions";
 
 const VALID_TITHE_BASES = [
     "NET_INCOME",
@@ -63,7 +64,16 @@ export async function GET() {
 
 export async function PATCH(request: Request) {
     try {
-        const current = await getCurrentWorkspace();
+        const permission = await requireWorkspaceOwner();
+
+        if (!permission.ok) {
+            return NextResponse.json(
+                { error: permission.error },
+                { status: permission.status }
+            );
+        }
+
+        const current = permission.current;
 
         if (!current) {
             return NextResponse.json(

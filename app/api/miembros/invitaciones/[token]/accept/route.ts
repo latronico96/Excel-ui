@@ -112,17 +112,6 @@ export async function POST(
                 throw new Error("ALREADY_MEMBER");
             }
 
-            // La app todavía no tiene selector de espacios.
-            // No permitir unirse si ya pertenece a otro espacio.
-            const otherMembership = await tx.workspaceMember.findFirst({
-                where: { userId: user.id },
-                select: { id: true },
-            });
-
-            if (otherMembership) {
-                throw new Error("OTHER_WORKSPACE");
-            }
-
             await tx.workspaceMember.create({
                 data: {
                     userId: user.id,
@@ -181,10 +170,6 @@ export async function POST(
             },
             ALREADY_MEMBER: {
                 message: "Ya sos miembro de este espacio.",
-                status: 409,
-            },
-            OTHER_WORKSPACE: {
-                message: "Ya pertenecés a otro espacio. Primero necesitamos habilitar el cambio de espacio.",
                 status: 409,
             },
             INVITATION_ALREADY_PROCESSED: {

@@ -76,7 +76,6 @@ export default function MiembrosPage() {
         loadMembers();
     }, []);
 
-
     async function generateInviteLink() {
         setGeneratingInvite(true);
         setInviteError("");
@@ -111,7 +110,6 @@ export default function MiembrosPage() {
             setGeneratingInvite(false);
         }
     }
-
 
     async function shareInviteLink() {
         if (!inviteLink) return;

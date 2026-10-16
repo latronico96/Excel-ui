@@ -1,0 +1,269 @@
+generator client {
+  provider = "prisma-client"
+  output = "./generated-sqlite"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model User {
+  id             String          @id @default(cuid())
+  name           String?
+  email          String          @unique
+  image          String?
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+  emailVerified  DateTime?
+
+  workspaceMembers WorkspaceMember[]
+  accounts         Account[]
+  sessions         Session[]
+
+  createdMovements Movement[] @relation("MovementCreatedBy")
+  updatedMovements Movement[] @relation("MovementUpdatedBy")
+  
+  createdInvitations  WorkspaceInvitation[] @relation("WorkspaceInvitationCreatedBy")
+  acceptedInvitations WorkspaceInvitation[] @relation("WorkspaceInvitationAcceptedBy")
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@index([userId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+model ExpenseType {
+  id          String @id @default(cuid())
+  workspaceId String
+
+  name        String
+  active      Boolean  @default(true)
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  expenses          Expense[]
+  recurringExpenses RecurringExpense[]
+
+  @@unique([workspaceId, name])
+  @@index([workspaceId])
+}
+
+model Income {
+  investmentPercentage Decimal         @default(0)
+  movementId           String          @id
+  movement             Movement        @relation(fields: [movementId], references: [id], onDelete: Cascade)
+  payments             IncomePayment[]
+}
+
+model IncomePayment {
+  id                   String        @id @default(cuid())
+  incomeId             String
+  paymentMethodId      String
+  amount               Decimal
+  commissionPercentage Decimal       @default(0)
+  commissionAmount     Decimal       @default(0)
+  netAmount            Decimal       @default(0)
+  createdAt            DateTime      @default(now())
+  updatedAt            DateTime      @updatedAt
+  income               Income        @relation(fields: [incomeId], references: [movementId], onDelete: Cascade)
+  paymentMethod        PaymentMethod @relation(fields: [paymentMethodId], references: [id])
+
+  @@unique([incomeId, paymentMethodId])
+  @@index([incomeId])
+  @@index([paymentMethodId])
+}
+
+model Movement {
+  id          String       @id @default(cuid())
+  workspaceId String
+  createdById String
+  updatedById String?
+
+  type        String
+  amount      Decimal
+  date        DateTime
+  description String?
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  createdBy User @relation("MovementCreatedBy", fields: [createdById], references: [id])
+  updatedBy User? @relation("MovementUpdatedBy", fields: [updatedById], references: [id])
+
+  expense Expense?
+  income Income?
+  recurringExpensePayment RecurringExpensePayment?
+
+  @@index([workspaceId])
+  @@index([workspaceId, date])
+  @@index([createdById])
+  @@index([updatedById])
+}
+
+model Expense {
+  expenseTypeId   String
+  paymentMethodId String
+  movementId      String        @id
+  expenseType     ExpenseType   @relation(fields: [expenseTypeId], references: [id])
+  movement        Movement      @relation(fields: [movementId], references: [id], onDelete: Cascade)
+  paymentMethod   PaymentMethod @relation(fields: [paymentMethodId], references: [id])
+}
+
+model PaymentMethod {
+  id                          String          @id @default(cuid())
+  workspaceId                 String
+  name                        String
+  active                      Boolean         @default(true)
+  createdAt                   DateTime        @default(now())
+  updatedAt                   DateTime        @updatedAt
+  defaultCommissionPercentage Decimal         @default(0)
+  expenses                    Expense[]
+  incomePayments              IncomePayment[]
+  workspace Workspace         @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  recurringExpenses RecurringExpense[]
+
+  @@unique([workspaceId, name])
+  @@index([workspaceId])
+}
+
+model RecurringExpense {
+  id                 String   @id @default(cuid())
+  workspaceId        String
+  name               String
+  amount             Decimal?
+  dueDay             Int?
+  active             Boolean  @default(true)
+
+  expenseTypeId      String
+  paymentMethodId    String
+
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  workspace     Workspace     @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  expenseType        ExpenseType  @relation(fields: [expenseTypeId], references: [id])
+  paymentMethod      PaymentMethod @relation(fields: [paymentMethodId], references: [id])
+
+  payments           RecurringExpensePayment[]
+
+  @@index([workspaceId])
+  @@index([expenseTypeId])
+  @@index([paymentMethodId])
+}
+
+model RecurringExpensePayment {
+  id                 String   @id @default(cuid())
+
+  recurringExpenseId String
+  movementId         String   @unique
+
+  period             String
+  amount             Decimal
+  paidAt             DateTime
+
+  createdAt          DateTime @default(now())
+
+  recurringExpense   RecurringExpense @relation(fields: [recurringExpenseId], references: [id], onDelete: Cascade)
+  movement           Movement         @relation(fields: [movementId], references: [id], onDelete: Cascade)
+
+  @@unique([recurringExpenseId, period])
+  @@index([recurringExpenseId])
+}
+
+model Workspace {
+  id        String   @id @default(cuid())
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  onboardingCompleted Boolean @default(false)
+
+  defaultInvestmentPercentage Decimal @default(50)
+  titheEnabled Boolean @default(false)
+  tithePercentage Decimal @default(10)
+  titheBase String @default("NET_INCOME")
+
+  isDemo Boolean @default(false)
+
+  members          WorkspaceMember[]
+  movements        Movement[]
+  expenseTypes     ExpenseType[]
+  paymentMethods   PaymentMethod[]
+  recurringExpenses RecurringExpense[]
+  invitations WorkspaceInvitation[]
+}
+
+model WorkspaceMember {
+  id          String   @id @default(cuid())
+  workspaceId String
+  userId      String
+  role        String @default("MEMBER")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([workspaceId, userId])
+  @@index([userId])
+  @@index([workspaceId])
+}
+
+model WorkspaceInvitation {
+  id             String   @id @default(cuid())
+  workspaceId    String
+  invitedByUserId String
+  acceptedByUserId String?
+  tokenHash      String   @unique
+  role           String @default("MEMBER")
+  expiresAt      DateTime
+  acceptedAt     DateTime?
+  revokedAt      DateTime?
+  createdAt      DateTime @default(now())
+
+  workspace Workspace @relation( fields: [workspaceId], references: [id], onDelete: Cascade)
+  invitedBy User @relation( "WorkspaceInvitationCreatedBy", fields: [invitedByUserId], references: [id], onDelete: Cascade)
+  acceptedBy User? @relation( "WorkspaceInvitationAcceptedBy", fields: [acceptedByUserId], references: [id], onDelete: SetNull)
+
+  @@index([workspaceId])
+  @@index([invitedByUserId])
+  @@index([expiresAt])
+}

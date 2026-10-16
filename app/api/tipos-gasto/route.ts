@@ -43,7 +43,6 @@ export async function GET(request: Request) {
                     { workspaceId, name: "Impuestos" },
                     { workspaceId, name: "Otros" },
                 ],
-                skipDuplicates: true,
             });
         }
 

@@ -27,3 +27,8 @@ export function getArgentinaDateString(date: Date = new Date()): string {
         day: "2-digit",
     }).format(date);
 }
+
+export function getArgentinaStartOfDay(date: Date = new Date()): Date {
+    const dateString = getArgentinaDateString(date);
+    return new Date(`${dateString}T00:00:00-03:00`);
+}

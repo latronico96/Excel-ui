@@ -102,7 +102,7 @@ export default function InvitationPage() {
                 );
             }
 
-            router.replace("/dashboard");
+            router.replace("/hoy");
             router.refresh();
         } catch (error) {
             setAcceptError(

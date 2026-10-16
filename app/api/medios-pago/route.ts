@@ -36,30 +36,31 @@ export async function GET(request: Request) {
         });
 
         if (existingCount === 0) {
+            const defaults = [
+                { name: "Efectivo", defaultCommissionPercentage: 0 },
+                { name: "Débito", defaultCommissionPercentage: 0 },
+                { name: "Crédito", defaultCommissionPercentage: 23 },
+                { name: "Transferencia", defaultCommissionPercentage: 0 },
+            ];
+
+            const existingMethods = await prisma.paymentMethod.findMany({
+                where: { workspaceId },
+                select: { name: true },
+            });
+
+            const existingNames = new Set(
+                existingMethods.map((method) => method.name)
+            );
+
+            const missingMethods = defaults
+                .filter((method) => !existingNames.has(method.name))
+                .map((method) => ({
+                    ...method,
+                    workspaceId,
+                }));
+
             await prisma.paymentMethod.createMany({
-                data: [
-                    {
-                        workspaceId,
-                        name: "Efectivo",
-                        defaultCommissionPercentage: 0,
-                    },
-                    {
-                        workspaceId,
-                        name: "Débito",
-                        defaultCommissionPercentage: 0,
-                    },
-                    {
-                        workspaceId,
-                        name: "Crédito",
-                        defaultCommissionPercentage: 23,
-                    },
-                    {
-                        workspaceId,
-                        name: "Transferencia",
-                        defaultCommissionPercentage: 0,
-                    },
-                ],
-                skipDuplicates: true,
+                data: missingMethods,
             });
         }
 
