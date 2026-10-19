@@ -1,6 +1,13 @@
 import { prisma } from "@/prisma/prisma";
 import { MovementInput } from "@/shared/types";
 import { getArgentinaDateString, parseMovementDate, ARGENTINA_OFFSET } from "@/shared/utils/dates";
+import {
+    calculateCommission,
+    calculateInvestment,
+    calculateTithe,
+    calculateAvailable,
+    roundMoney,
+} from "@/server/utils/finance";
 
 export class MovimientosService {
     static async saveMovement(
@@ -102,18 +109,11 @@ export class MovimientosService {
                         );
                     }
 
-                    const commissionAmount =
-                        Math.round(
-                            (payment.amount *
-                                commissionPercentage /
-                                100) *
-                            100
-                        ) / 100;
-
-                    const netAmount =
-                        Math.round(
-                            (payment.amount - commissionAmount) * 100
-                        ) / 100;
+                    const { commissionAmount, netAmount } =
+                        calculateCommission(
+                            payment.amount,
+                            commissionPercentage
+                        );
 
                     incomePayments.push({
                         paymentMethodId: payment.paymentMethodId,
@@ -351,17 +351,11 @@ export class MovimientosService {
                         );
                     }
 
-                    const commissionAmount =
-                        Math.round(
-                            (payment.amount *
-                                commissionPercentage /
-                                100) * 100
-                        ) / 100;
-
-                    const netAmount =
-                        Math.round(
-                            (payment.amount - commissionAmount) * 100
-                        ) / 100;
+                    const { commissionAmount, netAmount } =
+                        calculateCommission(
+                            payment.amount,
+                            commissionPercentage
+                        );
 
                     incomePayments.push({
                         paymentMethodId: payment.paymentMethodId,
@@ -811,14 +805,10 @@ export class MovimientosService {
                         0
                     );
 
-                const investment =
-                    Math.round(
-                        (
-                            (netIncome *
-                                investmentPercentage) /
-                            100
-                        ) * 100
-                    ) / 100;
+                const investment = calculateInvestment(
+                    netIncome,
+                    investmentPercentage
+                );
 
                 /*
                  * DIEZMO
@@ -833,35 +823,15 @@ export class MovimientosService {
                  *   (ingreso neto - reinversión)
                  *   × porcentaje
                  */
-                let tithe = 0;
-
-                if (
-                    workspace?.titheEnabled
-                ) {
-                    const tithePercentage =
-                        Number(
-                            workspace.tithePercentage
-                        );
-
-                    const titheBase =
-                        workspace.titheBase ===
-                            "AFTER_INVESTMENT"
-                            ? Math.max(
-                                0,
-                                netIncome -
-                                investment
-                            )
-                            : netIncome;
-
-                    tithe =
-                        Math.round(
-                            (
-                                (titheBase *
-                                    tithePercentage) /
-                                100
-                            ) * 100
-                        ) / 100;
-                }
+                const tithe = calculateTithe(
+                    netIncome,
+                    investment,
+                    Number(workspace?.tithePercentage ?? 0),
+                    workspace?.titheBase === "AFTER_INVESTMENT"
+                        ? "AFTER_INVESTMENT"
+                        : "NET_INCOME",
+                    workspace?.titheEnabled ?? false
+                );
 
                 /*
                  * Disponible después de:
@@ -870,14 +840,11 @@ export class MovimientosService {
                  * - reinversión
                  * - diezmo
                  */
-                const available =
-                    Math.round(
-                        (
-                            netIncome -
-                            investment -
-                            tithe
-                        ) * 100
-                    ) / 100;
+                const available = calculateAvailable(
+                    netIncome,
+                    investment,
+                    tithe
+                );
 
                 totals.income +=
                     grossIncome;
@@ -933,45 +900,14 @@ export class MovimientosService {
          * Redondeamos los acumulados.
          * Evita pequeños errores de coma flotante.
          */
-        totals.income =
-            Math.round(
-                totals.income * 100
-            ) / 100;
-
-        totals.expenses =
-            Math.round(
-                totals.expenses * 100
-            ) / 100;
-
-        totals.balance =
-            Math.round(
-                totals.balance * 100
-            ) / 100;
-
-        totals.commissions =
-            Math.round(
-                totals.commissions * 100
-            ) / 100;
-
-        totals.netIncome =
-            Math.round(
-                totals.netIncome * 100
-            ) / 100;
-
-        totals.investment =
-            Math.round(
-                totals.investment * 100
-            ) / 100;
-
-        totals.tithe =
-            Math.round(
-                totals.tithe * 100
-            ) / 100;
-
-        totals.available =
-            Math.round(
-                totals.available * 100
-            ) / 100;
+        totals.income = roundMoney(totals.income);
+        totals.expenses = roundMoney(totals.expenses);
+        totals.balance = roundMoney(totals.balance);
+        totals.commissions = roundMoney(totals.commissions);
+        totals.netIncome = roundMoney(totals.netIncome);
+        totals.investment = roundMoney(totals.investment);
+        totals.tithe = roundMoney(totals.tithe);
+        totals.available = roundMoney(totals.available);
 
         const result = Object.entries(
             breakdown
