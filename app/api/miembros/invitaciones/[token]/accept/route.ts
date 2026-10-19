@@ -14,7 +14,6 @@ export async function POST(
     { params }: RouteContext
 ) {
     try {
-        // 1. Verificar que haya una sesión autenticada.
         const session = await getServerSession(authOptions);
 
         if (!session?.user?.email) {
@@ -33,7 +32,6 @@ export async function POST(
             );
         }
 
-        // 2. Buscar al usuario autenticado.
         const user = await prisma.user.findUnique({
             where: { email: session.user.email },
             select: { id: true, email: true },
@@ -46,7 +44,6 @@ export async function POST(
             );
         }
 
-        // No permitir usar la cuenta demo para aceptar invitaciones.
         if (user.email === "demo@excel-ui.demo") {
             return NextResponse.json(
                 { error: "La cuenta demo no puede aceptar invitaciones." },
@@ -54,12 +51,10 @@ export async function POST(
             );
         }
 
-        // 3. El token original nunca se guarda en la base de datos.
         const tokenHash = createHash("sha256")
             .update(token)
             .digest("hex");
 
-        // 4. Validar y aceptar la invitación en una transacción.
         const result = await prisma.$transaction(async (tx) => {
             const invitation = await tx.workspaceInvitation.findUnique({
                 where: { tokenHash },
@@ -120,7 +115,6 @@ export async function POST(
                 },
             });
 
-            // Actualización condicional para impedir reutilizaciones.
             const updated = await tx.workspaceInvitation.updateMany({
                 where: {
                     id: invitation.id,

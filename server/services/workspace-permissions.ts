@@ -1,4 +1,3 @@
-
 import { getCurrentWorkspace } from "@/server/services/workspace.service";
 
 export async function requireWorkspaceOwner() {

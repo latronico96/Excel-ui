@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Image from "next/image";
 import {
     Users,
     Loader2,
@@ -377,9 +378,11 @@ export default function MiembrosPage() {
                                         }}
                                     >
                                         {member.user.image ? (
-                                            <img
+                                            <Image
                                                 src={member.user.image}
                                                 alt=""
+                                                width={44}
+                                                height={44}
                                                 style={{
                                                     width: "44px",
                                                     height: "44px",

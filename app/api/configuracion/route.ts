@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/prisma/prisma";
 import { getCurrentWorkspace } from "@/server/services/workspace.service";
 import { requireWorkspaceOwner } from "@/server/services/workspace-permissions";
+export const dynamic = "force-dynamic";
 
 const VALID_TITHE_BASES = [
     "NET_INCOME",

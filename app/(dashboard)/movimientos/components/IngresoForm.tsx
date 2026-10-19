@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
     Movement,
     PaymentMethodOption
@@ -37,25 +37,31 @@ export default function IngresoForm({
     onError,
     movement,
 }: IngresoFormProps) {
-    const today = getArgentinaDateString()
+    const today = getArgentinaDateString();
 
     const isEditing = Boolean(movement);
 
-    const createPayments = (): IncomePaymentForm[] =>
-        paymentMethods.map((method) => ({
-            paymentMethodId: method.id,
-            amount: "",
-            commissionPercentage: String(
-                method.defaultCommissionPercentage ?? 0
-            ),
-        }));
+    const createPayments = useCallback(
+        (): IncomePaymentForm[] =>
+            paymentMethods.map((method) => ({
+                paymentMethodId: method.id,
+                amount: "",
+                commissionPercentage: String(
+                    method.defaultCommissionPercentage ?? 0
+                ),
+            })),
+        [paymentMethods]
+    );
 
-    const createForm = (defaultInvestmentPercentage = "50") => ({
-        date: today,
-        investmentPercentage: defaultInvestmentPercentage,
-        description: "",
-        payments: createPayments(),
-    });
+    const createForm = useCallback(
+        (defaultInvestmentPercentage = "50") => ({
+            date: today,
+            investmentPercentage: defaultInvestmentPercentage,
+            description: "",
+            payments: createPayments(),
+        }),
+        [today, createPayments]
+    );
 
     const [saving, setSaving] = useState(false);
 
@@ -157,7 +163,7 @@ export default function IngresoForm({
         };
 
         loadForm();
-    }, [movement, paymentMethods]);
+    }, [movement, paymentMethods, createForm, today]);
 
     const updatePayment = (
         paymentMethodId: string,

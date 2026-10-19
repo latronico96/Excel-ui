@@ -165,7 +165,7 @@ export default function MovimientosPage() {
                 scroll: false,
             });
         }
-    }, [searchParams]);
+    }, [searchParams, router]);
 
     const handleEdit = (movement: Movement) => {
         setError("");

@@ -2,7 +2,6 @@ import { NextRequest, NextResponse } from "next/server";
 import { MovimientosService } from "@/server/services/movimientos.service";
 import { getCurrentWorkspace } from "@/server/services/workspace.service";
 import { MovementWithDetails } from "@/shared/types";
-import { prisma } from "@/prisma/prisma";
 
 export async function GET() {
     const current = await getCurrentWorkspace();
@@ -14,16 +13,6 @@ export async function GET() {
         );
     }
 
-    const movementCount = await prisma.movement.count({
-        where: { workspaceId: current.workspaceId },
-    });
-
-    console.log("[DEBUG movimientos]", {
-        workspaceId: current.workspaceId,
-        workspaceName: current.workspace.name,
-        movementCount,
-    });
-    
     try {
         const movements =
             await MovimientosService.fetchMovements(

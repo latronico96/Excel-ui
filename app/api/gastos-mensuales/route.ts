@@ -1,6 +1,5 @@
 
 import { NextResponse } from "next/server";
-
 import { prisma } from "@/prisma/prisma";
 import { getCurrentWorkspace } from "@/server/services/workspace.service";
 

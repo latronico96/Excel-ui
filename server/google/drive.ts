@@ -6,7 +6,6 @@ export async function findOrCreateSheet() {
     const auth = await getGoogleAuth();
     const drive = google.drive({ version: 'v3', auth });
 
-    // Buscar si ya existe el archivo
     const response = await drive.files.list({
         q: `name = '${GOOGLE_SHEET_NAME}' and mimeType = 'application/vnd.google-apps.spreadsheet' and trashed = false`,
         fields: 'files(id, name)',
@@ -17,7 +16,6 @@ export async function findOrCreateSheet() {
         return response.data.files[0].id;
     }
 
-    // Si no existe, crearlo
     const sheets = google.sheets({ version: 'v4', auth });
     const spreadsheet = await sheets.spreadsheets.create({
         requestBody: {

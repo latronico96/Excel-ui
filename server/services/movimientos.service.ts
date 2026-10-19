@@ -1,7 +1,6 @@
 import { prisma } from "@/prisma/prisma";
 import { MovementInput } from "@/shared/types";
-import { Prisma } from "@/prisma/generated/client";
-import { getArgentinaDateString, parseMovementDate, ARGENTINA_OFFSET, getArgentinaStartOfDay } from "@/shared/utils/dates";
+import { getArgentinaDateString, parseMovementDate, ARGENTINA_OFFSET } from "@/shared/utils/dates";
 
 export class MovimientosService {
     static async saveMovement(
@@ -714,17 +713,6 @@ export class MovimientosService {
                     date: "desc",
                 },
             });
-        console.log("[SUMMARY DEBUG]", {
-            workspaceId,
-            period,
-            now: now.toISOString(),
-            startDate: startDate.toISOString(),
-            movements: movements.map((m) => ({
-                type: m.type,
-                amount: Number(m.amount),
-                date: m.date.toISOString(),
-            })),
-        });
 
         const totals = {
             income: 0,

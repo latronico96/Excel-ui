@@ -1,7 +1,7 @@
-
 import { NextResponse } from "next/server";
 import { getCurrentWorkspace } from "@/server/services/workspace.service";
 import { prisma } from "@/prisma/prisma";
+export const dynamic = "force-dynamic";
 
 export async function GET() {
     try {
