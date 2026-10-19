@@ -1,30 +1,35 @@
 /* =========================================================
    VARIABLES
    ========================================================= */
-
 :root {
-  --primary: #c54b8c;
-  --primary-hover: #a83e76;
-  --primary-light: #fcedf5;
+  /* Identidad visual: lila suave */
+  --primary: #7957c8;
+  --primary-hover: #6042a8;
+  --primary-light: #f0eafe;
 
-  --bg: #fdfafb;
+  /* Fondos */
+  --bg: #fcfaff;
   --card-bg: #ffffff;
 
-  --text: #1e0914;
-  --text-muted: #7d6572;
+  /* Texto */
+  --text: #261d35;
+  --text-muted: #766d83;
 
-  --border: #f0e1e9;
+  /* Bordes y superficies */
+  --border: #e4dafb;
 
+  /* Estados */
   --success: #10b981;
   --error: #ef4444;
 
+  /* Componentes */
   --radius: 12px;
 
   --shadow:
-    0 4px 6px -1px rgb(197 75 140 / 0.1),
-    0 2px 4px -2px rgb(197 75 140 / 0.1);
+    0 4px 6px -1px rgb(121 87 200 / 0.1),
+    0 2px 4px -2px rgb(121 87 200 / 0.1);
 
-  /* Medios de pago */
+  /* Medios de pago: mantener sus colores diferenciados */
   --cash: #10b981;
   --debito: #0ea5e9;
   --credito: #8b5cf6;
