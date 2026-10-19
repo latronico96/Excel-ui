@@ -7,8 +7,7 @@ $OutputDir = Join-Path $Root "review-parts"
 $MaxChars = 25000
 
 $Files = @(
-    "server/services/movimientos.service.ts",
-    "prisma/schema.prisma"
+    "tests\movimientos.save.test.ts"
 )
 
 # Agregar otros tests existentes, sin duplicar los anteriores.

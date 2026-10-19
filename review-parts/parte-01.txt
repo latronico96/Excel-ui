@@ -1,0 +1,571 @@
+﻿
+========================================================================
+ARCHIVO: tests\movimientos.save.test.ts
+========================================================================
+import { beforeEach, describe, expect, it, vi } from "vitest";
+
+const mocks = vi.hoisted(() => ({
+  transaction: vi.fn(),
+  paymentMethodFindFirst: vi.fn(),
+  expenseTypeFindFirst: vi.fn(),
+  movementCreate: vi.fn(),
+  movementFindFirst: vi.fn(),
+  movementUpdateMany: vi.fn(),
+  movementFindUnique: vi.fn(),
+  movementDeleteMany: vi.fn(),
+  incomeCreate: vi.fn(),
+  incomeUpdate: vi.fn(),
+  incomePaymentDeleteMany: vi.fn(),
+  incomePaymentCreateMany: vi.fn(),
+  expenseCreate: vi.fn(),
+  expenseUpdate: vi.fn(),
+}));
+
+vi.mock("@/prisma/prisma", () => ({
+  prisma: { $transaction: mocks.transaction },
+}));
+
+import { MovimientosService } from "@/server/services/movimientos.service";
+import type { MovementInput } from "@/shared/types";
+
+function createIncome(overrides: Record<string, unknown> = {}): MovementInput {
+  return {
+    type: "INGRESO",
+    date: "2026-10-18",
+    description: "Test",
+    investmentPercentage: 50,
+    payments: [],
+    ...overrides,
+  } as unknown as MovementInput;
+}
+
+function createExpense(overrides: Record<string, unknown> = {}): MovementInput {
+  return {
+    type: "EGRESO",
+    date: "2026-10-18",
+    description: "Gasto de prueba",
+    amount: 500,
+    paymentMethodId: "cash",
+    expenseTypeId: "food",
+    ...overrides,
+  } as unknown as MovementInput;
+}
+
+function configureTransaction() {
+  mocks.transaction.mockImplementation(async (callback: (tx: any) => unknown) =>
+    callback({
+      paymentMethod: { findFirst: mocks.paymentMethodFindFirst },
+      expenseType: { findFirst: mocks.expenseTypeFindFirst },
+      movement: {
+        findFirst: mocks.movementFindFirst,
+        create: mocks.movementCreate,
+        updateMany: mocks.movementUpdateMany,
+        findUnique: mocks.movementFindUnique,
+        deleteMany: mocks.movementDeleteMany,
+      },
+      income: { create: mocks.incomeCreate, update: mocks.incomeUpdate },
+      incomePayment: {
+        deleteMany: mocks.incomePaymentDeleteMany,
+        createMany: mocks.incomePaymentCreateMany,
+      },
+      expense: { create: mocks.expenseCreate, update: mocks.expenseUpdate },
+    })
+  );
+}
+
+describe("MovimientosService.saveMovement", () => {
+  beforeEach(() => {
+    vi.resetAllMocks();
+    configureTransaction();
+  });
+
+  it("rechaza porcentajes de inversiÃ³n fuera del rango 0â€“100", async () => {
+    for (const investmentPercentage of [-1, 101]) {
+      await expect(MovimientosService.saveMovement(
+        "workspace-test", "user-test", createIncome({ investmentPercentage })
+      )).rejects.toThrow("VALIDATION:");
+    }
+    expect(mocks.movementCreate).not.toHaveBeenCalled();
+  });
+
+  it("rechaza ingresos sin pagos o con una lista invÃ¡lida", async () => {
+    for (const payments of [[], null]) {
+      await expect(MovimientosService.saveMovement(
+        "workspace-test", "user-test", createIncome({ payments })
+      )).rejects.toThrow("VALIDATION:");
+    }
+    expect(mocks.movementCreate).not.toHaveBeenCalled();
+  });
+
+  it("rechaza medios de pago duplicados", async () => {
+    await expect(MovimientosService.saveMovement(
+      "workspace-test", "user-test",
+      createIncome({ payments: [
+        { paymentMethodId: "cash", amount: 100 },
+        { paymentMethodId: "cash", amount: 200 },
+      ] })
+    )).rejects.toThrow("VALIDATION:");
+    expect(mocks.paymentMethodFindFirst).not.toHaveBeenCalled();
+  });
+
+  it("guarda un ingreso y calcula la comisiÃ³n correctamente", async () => {
+    mocks.paymentMethodFindFirst.mockResolvedValue({
+      id: "cash", defaultCommissionPercentage: 23,
+    });
+    mocks.movementCreate.mockResolvedValue({ id: "movement-test" });
+    mocks.incomeCreate.mockResolvedValue({ movementId: "movement-test" });
+
+    const result = await MovimientosService.saveMovement(
+      "workspace-test", "user-test",
+      createIncome({ payments: [{ paymentMethodId: "cash", amount: 10000 }] })
+    );
+
+    expect(result).toEqual({ id: "movement-test" });
+    expect(mocks.paymentMethodFindFirst).toHaveBeenCalledWith({
+      where: { id: "cash", workspaceId: "workspace-test", active: true },
+    });
+    expect(mocks.movementCreate).toHaveBeenCalledWith({
+      data: expect.objectContaining({
+        workspaceId: "workspace-test", createdById: "user-test",
+        type: "INGRESO", amount: 10000,
+      }),
+    });
+    expect(mocks.incomeCreate).toHaveBeenCalledWith({
+      data: {
+        movementId: "movement-test",
+        investmentPercentage: 50,
+        payments: { create: [{
+          paymentMethodId: "cash", amount: 10000,
+          commissionPercentage: 23, commissionAmount: 2300, netAmount: 7700,
+        }] },
+      },
+    });
+  });
+
+  it("rechaza un medio de pago inexistente o de otro espacio", async () => {
+    mocks.paymentMethodFindFirst.mockResolvedValue(null);
+    await expect(MovimientosService.saveMovement(
+      "workspace-test", "user-test",
+      createIncome({ payments: [{ paymentMethodId: "foreign-method", amount: 100 }] })
+    )).rejects.toThrow("VALIDATION: Medio de pago invÃ¡lido");
+    expect(mocks.movementCreate).not.toHaveBeenCalled();
+  });
+
+  it("rechaza un porcentaje de comisiÃ³n invÃ¡lido", async () => {
+    mocks.paymentMethodFindFirst.mockResolvedValue({
+      id: "cash", defaultCommissionPercentage: 23,
+    });
+    await expect(MovimientosService.saveMovement(
+      "workspace-test", "user-test",
+      createIncome({ payments: [{
+        paymentMethodId: "cash", amount: 10000, commissionPercentage: 101,
+      }] })
+    )).rejects.toThrow("VALIDATION: Porcentaje de comisiÃ³n invÃ¡lido");
+    expect(mocks.movementCreate).not.toHaveBeenCalled();
+  });
+});
+
+
+========================================================================
+ARCHIVO: tests\finance.test.ts
+========================================================================
+
+import { describe, expect, it } from "vitest";
+import {
+    calculateCommission,
+    calculateInvestment,
+    calculateTithe,
+    calculateAvailable,
+} from "../server/utils/finance";
+
+describe("CÃ¡lculos financieros", () => {
+    it("calcula una comisiÃ³n del 23%", () => {
+        expect(calculateCommission(10000, 23)).toEqual({
+            commissionAmount: 2300,
+            netAmount: 7700,
+        });
+    });
+
+    it("calcula correctamente una comisiÃ³n con centavos", () => {
+        expect(calculateCommission(1000, 2.5)).toEqual({
+            commissionAmount: 25,
+            netAmount: 975,
+        });
+    });
+
+    it("permite invertir el 0% o el 100%", () => {
+        expect(calculateInvestment(1000, 0)).toBe(0);
+        expect(calculateInvestment(1000, 100)).toBe(1000);
+    });
+
+    it("calcula la inversiÃ³n predeterminada del 50%", () => {
+        expect(calculateInvestment(7700, 50)).toBe(3850);
+    });
+
+    it("calcula el diezmo sobre el ingreso neto", () => {
+        expect(
+            calculateTithe(7700, 3850, 10, "NET_INCOME", true)
+        ).toBe(770);
+    });
+
+    it("calcula el diezmo despuÃ©s de la inversiÃ³n", () => {
+        expect(
+            calculateTithe(
+                7700, 3850, 10, "AFTER_INVESTMENT", true
+            )
+        ).toBe(385);
+    });
+
+    it("no calcula diezmo si estÃ¡ desactivado", () => {
+        expect(
+            calculateTithe(7700, 3850, 10, "NET_INCOME", false)
+        ).toBe(0);
+    });
+
+    it("calcula el disponible despuÃ©s de inversiÃ³n y diezmo", () => {
+        expect(calculateAvailable(7700, 3850, 385)).toBe(3465);
+    });
+
+    it("rechaza porcentajes fuera del rango permitido", () => {
+        expect(() => calculateInvestment(1000, -1)).toThrow();
+        expect(() => calculateInvestment(1000, 101)).toThrow();
+        expect(() => calculateCommission(1000, 101)).toThrow();
+    });
+});
+
+
+========================================================================
+ARCHIVO: tests\movimientos.delete.test.ts
+========================================================================
+import { beforeEach, describe, expect, it, vi } from "vitest";
+
+const mocks = vi.hoisted(() => ({
+  transaction: vi.fn(),
+  paymentMethodFindFirst: vi.fn(),
+  expenseTypeFindFirst: vi.fn(),
+  movementCreate: vi.fn(),
+  movementFindFirst: vi.fn(),
+  movementUpdateMany: vi.fn(),
+  movementFindUnique: vi.fn(),
+  movementDeleteMany: vi.fn(),
+  incomeCreate: vi.fn(),
+  incomeUpdate: vi.fn(),
+  incomePaymentDeleteMany: vi.fn(),
+  incomePaymentCreateMany: vi.fn(),
+  expenseCreate: vi.fn(),
+  expenseUpdate: vi.fn(),
+}));
+
+vi.mock("@/prisma/prisma", () => ({
+  prisma: { $transaction: mocks.transaction },
+}));
+
+import { MovimientosService } from "@/server/services/movimientos.service";
+import type { MovementInput } from "@/shared/types";
+
+function createIncome(overrides: Record<string, unknown> = {}): MovementInput {
+  return {
+    type: "INGRESO",
+    date: "2026-10-18",
+    description: "Test",
+    investmentPercentage: 50,
+    payments: [],
+    ...overrides,
+  } as unknown as MovementInput;
+}
+
+function createExpense(overrides: Record<string, unknown> = {}): MovementInput {
+  return {
+    type: "EGRESO",
+    date: "2026-10-18",
+    description: "Gasto de prueba",
+    amount: 500,
+    paymentMethodId: "cash",
+    expenseTypeId: "food",
+    ...overrides,
+  } as unknown as MovementInput;
+}
+
+function configureTransaction() {
+  mocks.transaction.mockImplementation(async (callback: (tx: any) => unknown) =>
+    callback({
+      paymentMethod: { findFirst: mocks.paymentMethodFindFirst },
+      expenseType: { findFirst: mocks.expenseTypeFindFirst },
+      movement: {
+        findFirst: mocks.movementFindFirst,
+        create: mocks.movementCreate,
+        updateMany: mocks.movementUpdateMany,
+        findUnique: mocks.movementFindUnique,
+        deleteMany: mocks.movementDeleteMany,
+      },
+      income: { create: mocks.incomeCreate, update: mocks.incomeUpdate },
+      incomePayment: {
+        deleteMany: mocks.incomePaymentDeleteMany,
+        createMany: mocks.incomePaymentCreateMany,
+      },
+      expense: { create: mocks.expenseCreate, update: mocks.expenseUpdate },
+    })
+  );
+}
+
+describe("MovimientosService.deleteMovement", () => {
+  beforeEach(() => {
+    vi.resetAllMocks();
+    configureTransaction();
+  });
+
+  it("rechaza eliminar un movimiento inexistente", async () => {
+    mocks.movementFindFirst.mockResolvedValue(null);
+    await expect(MovimientosService.deleteMovement(
+      "workspace-test", "missing"
+    )).rejects.toThrow("VALIDATION: Movimiento no encontrado");
+    expect(mocks.movementDeleteMany).not.toHaveBeenCalled();
+  });
+
+  it("elimina el movimiento filtrando por ID y espacio", async () => {
+    mocks.movementFindFirst.mockResolvedValue({
+      id: "movement-test", workspaceId: "workspace-test",
+    });
+    mocks.movementDeleteMany.mockResolvedValue({ count: 1 });
+
+    const result = await MovimientosService.deleteMovement(
+      "workspace-test", "movement-test"
+    );
+
+    expect(result).toEqual({ id: "movement-test" });
+    expect(mocks.movementFindFirst).toHaveBeenCalledWith({
+      where: {
+        id: "movement-test",
+        workspaceId: "workspace-test"
+      },
+      select: {
+        id: true,
+      },
+    });
+    expect(mocks.movementDeleteMany).toHaveBeenCalledWith({
+      where: { id: "movement-test", workspaceId: "workspace-test" },
+    });
+  });
+
+  it("rechaza si no se elimina exactamente un movimiento", async () => {
+    mocks.movementFindFirst.mockResolvedValue({
+      id: "movement-test", workspaceId: "workspace-test",
+    });
+    mocks.movementDeleteMany.mockResolvedValue({ count: 0 });
+
+    await expect(MovimientosService.deleteMovement(
+      "workspace-test", "movement-test"
+    )).rejects.toThrow("VALIDATION:");
+  });
+});
+
+
+========================================================================
+ARCHIVO: tests\movimientos.update.test.ts
+========================================================================
+import { beforeEach, describe, expect, it, vi } from "vitest";
+
+const mocks = vi.hoisted(() => ({
+  transaction: vi.fn(),
+  paymentMethodFindFirst: vi.fn(),
+  expenseTypeFindFirst: vi.fn(),
+  movementCreate: vi.fn(),
+  movementFindFirst: vi.fn(),
+  movementUpdateMany: vi.fn(),
+  movementFindUnique: vi.fn(),
+  movementDeleteMany: vi.fn(),
+  incomeCreate: vi.fn(),
+  incomeUpdate: vi.fn(),
+  incomePaymentDeleteMany: vi.fn(),
+  incomePaymentCreateMany: vi.fn(),
+  expenseCreate: vi.fn(),
+  expenseUpdate: vi.fn(),
+}));
+
+vi.mock("@/prisma/prisma", () => ({
+  prisma: { $transaction: mocks.transaction },
+}));
+
+import { MovimientosService } from "@/server/services/movimientos.service";
+import type { MovementInput } from "@/shared/types";
+
+function createIncome(overrides: Record<string, unknown> = {}): MovementInput {
+  return {
+    type: "INGRESO",
+    date: "2026-10-18",
+    description: "Test",
+    investmentPercentage: 50,
+    payments: [],
+    ...overrides,
+  } as unknown as MovementInput;
+}
+
+function createExpense(overrides: Record<string, unknown> = {}): MovementInput {
+  return {
+    type: "EGRESO",
+    date: "2026-10-18",
+    description: "Gasto de prueba",
+    amount: 500,
+    paymentMethodId: "cash",
+    expenseTypeId: "food",
+    ...overrides,
+  } as unknown as MovementInput;
+}
+
+function configureTransaction() {
+  mocks.transaction.mockImplementation(async (callback: (tx: any) => unknown) =>
+    callback({
+      paymentMethod: { findFirst: mocks.paymentMethodFindFirst },
+      expenseType: { findFirst: mocks.expenseTypeFindFirst },
+      movement: {
+        findFirst: mocks.movementFindFirst,
+        create: mocks.movementCreate,
+        updateMany: mocks.movementUpdateMany,
+        findUnique: mocks.movementFindUnique,
+        deleteMany: mocks.movementDeleteMany,
+      },
+      income: { create: mocks.incomeCreate, update: mocks.incomeUpdate },
+      incomePayment: {
+        deleteMany: mocks.incomePaymentDeleteMany,
+        createMany: mocks.incomePaymentCreateMany,
+      },
+      expense: { create: mocks.expenseCreate, update: mocks.expenseUpdate },
+    })
+  );
+}
+
+describe("MovimientosService.updateMovement", () => {
+  beforeEach(() => {
+    vi.resetAllMocks();
+    configureTransaction();
+  });
+
+  it("rechaza actualizar un movimiento inexistente", async () => {
+    mocks.movementFindFirst.mockResolvedValue(null);
+    await expect(MovimientosService.updateMovement(
+      "workspace-test", "user-test", "missing",
+      createIncome({ payments: [{ paymentMethodId: "cash", amount: 100 }] })
+    )).rejects.toThrow("VALIDATION: Movimiento no encontrado");
+    expect(mocks.movementUpdateMany).not.toHaveBeenCalled();
+  });
+
+  it("rechaza cambiar el tipo de un movimiento", async () => {
+    mocks.movementFindFirst.mockResolvedValue({
+      id: "movement-test", type: "EGRESO",
+      income: null, expense: { movementId: "movement-test" },
+    });
+    await expect(MovimientosService.updateMovement(
+      "workspace-test", "user-test", "movement-test",
+      createIncome({ payments: [{ paymentMethodId: "cash", amount: 100 }] })
+    )).rejects.toThrow("VALIDATION: No se puede cambiar el tipo de movimiento");
+    expect(mocks.movementUpdateMany).not.toHaveBeenCalled();
+  });
+
+  it("actualiza un ingreso y recalcula la comisiÃ³n", async () => {
+    mocks.movementFindFirst.mockResolvedValue({
+      id: "movement-test", type: "INGRESO",
+      income: { movementId: "movement-test" }, expense: null,
+    });
+    mocks.paymentMethodFindFirst.mockResolvedValue({
+      id: "cash", defaultCommissionPercentage: 23,
+    });
+    mocks.movementUpdateMany.mockResolvedValue({ count: 1 });
+    mocks.incomeUpdate.mockResolvedValue({});
+    mocks.incomePaymentDeleteMany.mockResolvedValue({ count: 1 });
+    mocks.incomePaymentCreateMany.mockResolvedValue({ count: 1 });
+    mocks.movementFindUnique.mockResolvedValue({ id: "movement-test", type: "INGRESO" });
+
+    const result = await MovimientosService.updateMovement(
+      "workspace-test", "user-test", "movement-test",
+      createIncome({
+        description: "Ingreso actualizado", investmentPercentage: 40,
+        payments: [{ paymentMethodId: "cash", amount: 10000 }],
+      })
+    );
+
+    expect(result).toEqual({ id: "movement-test", type: "INGRESO" });
+    expect(mocks.movementUpdateMany).toHaveBeenCalledWith({
+      where: { id: "movement-test", workspaceId: "workspace-test" },
+      data: expect.objectContaining({
+        amount: 10000, description: "Ingreso actualizado", updatedById: "user-test",
+      }),
+    });
+    expect(mocks.incomeUpdate).toHaveBeenCalledWith({
+      where: { movementId: "movement-test" }, data: { investmentPercentage: 40 },
+    });
+    expect(mocks.incomePaymentDeleteMany).toHaveBeenCalledWith({
+      where: { incomeId: "movement-test" },
+    });
+    expect(mocks.incomePaymentCreateMany).toHaveBeenCalledWith({
+      data: [{
+        incomeId: "movement-test", paymentMethodId: "cash", amount: 10000,
+        commissionPercentage: 23, commissionAmount: 2300, netAmount: 7700,
+      }],
+    });
+  });
+
+  it("rechaza pagos duplicados", async () => {
+    mocks.movementFindFirst.mockResolvedValue({
+      id: "movement-test", type: "INGRESO",
+      income: { movementId: "movement-test" }, expense: null,
+    });
+    await expect(MovimientosService.updateMovement(
+      "workspace-test", "user-test", "movement-test",
+      createIncome({ payments: [
+        { paymentMethodId: "cash", amount: 100 },
+        { paymentMethodId: "cash", amount: 200 },
+      ] })
+    )).rejects.toThrow("VALIDATION:");
+    expect(mocks.movementUpdateMany).not.toHaveBeenCalled();
+    expect(mocks.incomePaymentDeleteMany).not.toHaveBeenCalled();
+  });
+
+  // Regression test: con la implementaciÃ³n actual este caso podrÃ­a fallar
+  // porque filtra importes <= 0 antes de validar todos los pagos.
+  it("rechaza un pago negativo aunque haya otro pago vÃ¡lido", async () => {
+    mocks.movementFindFirst.mockResolvedValue({
+      id: "movement-test", type: "INGRESO",
+      income: { movementId: "movement-test" }, expense: null,
+    });
+    await expect(MovimientosService.updateMovement(
+      "workspace-test", "user-test", "movement-test",
+      createIncome({ payments: [
+        { paymentMethodId: "cash", amount: 100 },
+        { paymentMethodId: "card", amount: -10 },
+      ] })
+    )).rejects.toThrow("VALIDATION:");
+    expect(mocks.movementUpdateMany).not.toHaveBeenCalled();
+    expect(mocks.incomePaymentDeleteMany).not.toHaveBeenCalled();
+  });
+
+  it("actualiza un egreso con medio de pago y tipo validados", async () => {
+    mocks.movementFindFirst.mockResolvedValue({
+      id: "movement-test", type: "EGRESO",
+      income: null, expense: { movementId: "movement-test" },
+    });
+    mocks.paymentMethodFindFirst.mockResolvedValue({ id: "cash" });
+    mocks.expenseTypeFindFirst.mockResolvedValue({ id: "food" });
+    mocks.movementUpdateMany.mockResolvedValue({ count: 1 });
+    mocks.expenseUpdate.mockResolvedValue({});
+    mocks.movementFindUnique.mockResolvedValue({ id: "movement-test", type: "EGRESO" });
+
+    const result = await MovimientosService.updateMovement(
+      "workspace-test", "user-test", "movement-test",
+      createExpense({ amount: 750, description: "Compra actualizada" })
+    );
+
+    expect(result).toEqual({ id: "movement-test", type: "EGRESO" });
+    expect(mocks.movementUpdateMany).toHaveBeenCalledWith({
+      where: { id: "movement-test", workspaceId: "workspace-test" },
+      data: expect.objectContaining({
+        amount: 750, description: "Compra actualizada", updatedById: "user-test",
+      }),
+    });
+    expect(mocks.expenseUpdate).toHaveBeenCalledWith({
+      where: { movementId: "movement-test" },
+      data: { paymentMethodId: "cash", expenseTypeId: "food" },
+    });
+  });
+});
+
+

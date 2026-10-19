@@ -146,10 +146,12 @@ describe("MovimientosService.updateMovement", () => {
     });
     await expect(MovimientosService.updateMovement(
       "workspace-test", "user-test", "movement-test",
-      createIncome({ payments: [
-        { paymentMethodId: "cash", amount: 100 },
-        { paymentMethodId: "cash", amount: 200 },
-      ] })
+      createIncome({
+        payments: [
+          { paymentMethodId: "cash", amount: 100 },
+          { paymentMethodId: "cash", amount: 200 },
+        ]
+      })
     )).rejects.toThrow("VALIDATION:");
     expect(mocks.movementUpdateMany).not.toHaveBeenCalled();
     expect(mocks.incomePaymentDeleteMany).not.toHaveBeenCalled();
@@ -164,10 +166,12 @@ describe("MovimientosService.updateMovement", () => {
     });
     await expect(MovimientosService.updateMovement(
       "workspace-test", "user-test", "movement-test",
-      createIncome({ payments: [
-        { paymentMethodId: "cash", amount: 100 },
-        { paymentMethodId: "card", amount: -10 },
-      ] })
+      createIncome({
+        payments: [
+          { paymentMethodId: "cash", amount: 100 },
+          { paymentMethodId: "card", amount: -10 },
+        ]
+      })
     )).rejects.toThrow("VALIDATION:");
     expect(mocks.movementUpdateMany).not.toHaveBeenCalled();
     expect(mocks.incomePaymentDeleteMany).not.toHaveBeenCalled();
@@ -200,5 +204,251 @@ describe("MovimientosService.updateMovement", () => {
       where: { movementId: "movement-test" },
       data: { paymentMethodId: "cash", expenseTypeId: "food" },
     });
+  });
+
+
+  it("rechaza un porcentaje de comisión superior al 100%", async () => {
+    mocks.movementFindFirst.mockResolvedValue({
+      id: "movement-test",
+      type: "INGRESO",
+      income: { movementId: "movement-test" },
+      expense: null,
+    });
+    mocks.paymentMethodFindFirst.mockResolvedValue({
+      id: "cash",
+      defaultCommissionPercentage: 0,
+    });
+
+    await expect(
+      MovimientosService.updateMovement(
+        "workspace-test",
+        "user-test",
+        "movement-test",
+        createIncome({
+          payments: [
+            {
+              paymentMethodId: "cash",
+              amount: 100,
+              commissionPercentage: 101,
+            },
+          ],
+        })
+      )
+    ).rejects.toThrow("VALIDATION:");
+
+    expect(mocks.movementUpdateMany).not.toHaveBeenCalled();
+  });
+
+  it("rechaza un ingreso sin su registro asociado", async () => {
+    mocks.movementFindFirst.mockResolvedValue({
+      id: "movement-test",
+      type: "INGRESO",
+      income: null,
+      expense: null,
+    });
+    mocks.paymentMethodFindFirst.mockResolvedValue({
+      id: "cash",
+      defaultCommissionPercentage: 0,
+    });
+
+    await expect(
+      MovimientosService.updateMovement(
+        "workspace-test",
+        "user-test",
+        "movement-test",
+        createIncome({
+          payments: [{ paymentMethodId: "cash", amount: 100 }],
+        })
+      )
+    ).rejects.toThrow(
+      "VALIDATION: El ingreso asociado al movimiento no existe"
+    );
+
+    expect(mocks.movementUpdateMany).not.toHaveBeenCalled();
+  });
+
+  it("rechaza la actualización de un ingreso si updateMany no encuentra el movimiento", async () => {
+    mocks.movementFindFirst.mockResolvedValue({
+      id: "movement-test",
+      type: "INGRESO",
+      income: { movementId: "movement-test" },
+      expense: null,
+    });
+    mocks.paymentMethodFindFirst.mockResolvedValue({
+      id: "cash",
+      defaultCommissionPercentage: 0,
+    });
+    mocks.movementUpdateMany.mockResolvedValue({ count: 0 });
+
+    await expect(
+      MovimientosService.updateMovement(
+        "workspace-test",
+        "user-test",
+        "movement-test",
+        createIncome({
+          payments: [{ paymentMethodId: "cash", amount: 100 }],
+        })
+      )
+    ).rejects.toThrow("VALIDATION: Movimiento no encontrado");
+
+    expect(mocks.incomeUpdate).not.toHaveBeenCalled();
+  });
+
+  it("rechaza un egreso con monto cero", async () => {
+    mocks.movementFindFirst.mockResolvedValue({
+      id: "movement-test",
+      type: "EGRESO",
+      income: null,
+      expense: { movementId: "movement-test" },
+    });
+
+    await expect(
+      MovimientosService.updateMovement(
+        "workspace-test",
+        "user-test",
+        "movement-test",
+        createExpense({ amount: 0 })
+      )
+    ).rejects.toThrow(
+      "VALIDATION: El egreso debe tener un monto mayor a 0"
+    );
+
+    expect(mocks.paymentMethodFindFirst).not.toHaveBeenCalled();
+    expect(mocks.movementUpdateMany).not.toHaveBeenCalled();
+  });
+
+  it("rechaza un egreso sin medio de pago", async () => {
+    mocks.movementFindFirst.mockResolvedValue({
+      id: "movement-test",
+      type: "EGRESO",
+      income: null,
+      expense: { movementId: "movement-test" },
+    });
+
+    await expect(
+      MovimientosService.updateMovement(
+        "workspace-test",
+        "user-test",
+        "movement-test",
+        createExpense({ paymentMethodId: "" })
+      )
+    ).rejects.toThrow(
+      "VALIDATION: Debe seleccionar un medio de pago"
+    );
+
+    expect(mocks.paymentMethodFindFirst).not.toHaveBeenCalled();
+  });
+
+  it("rechaza un egreso sin tipo de gasto", async () => {
+    mocks.movementFindFirst.mockResolvedValue({
+      id: "movement-test",
+      type: "EGRESO",
+      income: null,
+      expense: { movementId: "movement-test" },
+    });
+
+    await expect(
+      MovimientosService.updateMovement(
+        "workspace-test",
+        "user-test",
+        "movement-test",
+        createExpense({ expenseTypeId: "" })
+      )
+    ).rejects.toThrow(
+      "VALIDATION: Debe seleccionar un tipo de gasto"
+    );
+
+    expect(mocks.paymentMethodFindFirst).not.toHaveBeenCalled();
+  });
+
+  it("rechaza un egreso cuyo medio de pago no existe o está inactivo", async () => {
+    mocks.movementFindFirst.mockResolvedValue({
+      id: "movement-test",
+      type: "EGRESO",
+      income: null,
+      expense: { movementId: "movement-test" },
+    });
+    mocks.paymentMethodFindFirst.mockResolvedValue(null);
+
+    await expect(
+      MovimientosService.updateMovement(
+        "workspace-test",
+        "user-test",
+        "movement-test",
+        createExpense()
+      )
+    ).rejects.toThrow("VALIDATION: Medio de pago inválido");
+
+    expect(mocks.expenseTypeFindFirst).not.toHaveBeenCalled();
+    expect(mocks.movementUpdateMany).not.toHaveBeenCalled();
+  });
+
+  it("rechaza un egreso cuyo tipo de gasto no existe o está inactivo", async () => {
+    mocks.movementFindFirst.mockResolvedValue({
+      id: "movement-test",
+      type: "EGRESO",
+      income: null,
+      expense: { movementId: "movement-test" },
+    });
+    mocks.paymentMethodFindFirst.mockResolvedValue({ id: "cash" });
+    mocks.expenseTypeFindFirst.mockResolvedValue(null);
+
+    await expect(
+      MovimientosService.updateMovement(
+        "workspace-test",
+        "user-test",
+        "movement-test",
+        createExpense()
+      )
+    ).rejects.toThrow("VALIDATION: Tipo de gasto inválido");
+
+    expect(mocks.movementUpdateMany).not.toHaveBeenCalled();
+  });
+
+  it("rechaza un egreso sin su registro asociado", async () => {
+    mocks.movementFindFirst.mockResolvedValue({
+      id: "movement-test",
+      type: "EGRESO",
+      income: null,
+      expense: null,
+    });
+    mocks.paymentMethodFindFirst.mockResolvedValue({ id: "cash" });
+    mocks.expenseTypeFindFirst.mockResolvedValue({ id: "food" });
+
+    await expect(
+      MovimientosService.updateMovement(
+        "workspace-test",
+        "user-test",
+        "movement-test",
+        createExpense()
+      )
+    ).rejects.toThrow(
+      "VALIDATION: El egreso asociado al movimiento no existe"
+    );
+
+    expect(mocks.movementUpdateMany).not.toHaveBeenCalled();
+  });
+
+  it("rechaza la actualización de un egreso si updateMany no encuentra el movimiento", async () => {
+    mocks.movementFindFirst.mockResolvedValue({
+      id: "movement-test",
+      type: "EGRESO",
+      income: null,
+      expense: { movementId: "movement-test" },
+    });
+    mocks.paymentMethodFindFirst.mockResolvedValue({ id: "cash" });
+    mocks.expenseTypeFindFirst.mockResolvedValue({ id: "food" });
+    mocks.movementUpdateMany.mockResolvedValue({ count: 0 });
+
+    await expect(
+      MovimientosService.updateMovement(
+        "workspace-test",
+        "user-test",
+        "movement-test",
+        createExpense()
+      )
+    ).rejects.toThrow("VALIDATION: Movimiento no encontrado");
+
+    expect(mocks.expenseUpdate).not.toHaveBeenCalled();
   });
 });

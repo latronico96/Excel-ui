@@ -200,5 +200,296 @@ describe("API /api/movimientos - seguridad", () => {
             expect(response.status).toBe(400);
             expect(mocks.deleteMovement).not.toHaveBeenCalled();
         });
+
+        it("GET devuelve los ingresos con pagos y comisiones formateados", async () => {
+            mocks.fetchMovements.mockResolvedValue([
+                {
+                    id: "income-1",
+                    type: "INGRESO",
+                    date: new Date("2026-10-19T03:00:00.000Z"),
+                    amount: { toString: () => "10000" },
+                    description: "Sueldo",
+                    income: {
+                        investmentPercentage: { toString: () => "50" },
+                        payments: [
+                            {
+                                paymentMethodId: "payment-1",
+                                paymentMethod: {
+                                    name: "Transferencia",
+                                },
+                                amount: { toString: () => "10000" },
+                                commissionPercentage: { toString: () => "0" },
+                                commissionAmount: { toString: () => "0" },
+                                netAmount: { toString: () => "10000" },
+                            },
+                        ],
+                    },
+                    expense: null,
+                },
+            ]);
+
+            const response = await GET();
+            const data = await response.json();
+
+            expect(response.status).toBe(200);
+            expect(data).toHaveLength(1);
+            expect(data[0]).toMatchObject({
+                id: "income-1",
+                type: "INGRESO",
+                amount: 10000,
+                description: "Sueldo",
+                investmentPercentage: 50,
+                payments: [
+                    {
+                        paymentMethodId: "payment-1",
+                        paymentMethodName: "Transferencia",
+                        amount: 10000,
+                        commissionPercentage: 0,
+                        commissionAmount: 0,
+                        netAmount: 10000,
+                    },
+                ],
+            });
+        });
+
+        it("GET devuelve los egresos con tipo de gasto y medio de pago", async () => {
+            mocks.fetchMovements.mockResolvedValue([
+                {
+                    id: "expense-1",
+                    type: "EGRESO",
+                    date: new Date("2026-10-19T03:00:00.000Z"),
+                    amount: { toString: () => "2500" },
+                    description: "Supermercado",
+                    income: null,
+                    expense: {
+                        expenseType: {
+                            id: "type-1",
+                            name: "Alimentos",
+                        },
+                        paymentMethod: {
+                            id: "payment-1",
+                            name: "Débito",
+                        },
+                    },
+                },
+            ]);
+
+            const response = await GET();
+            const data = await response.json();
+
+            expect(response.status).toBe(200);
+            expect(data).toHaveLength(1);
+            expect(data[0]).toMatchObject({
+                id: "expense-1",
+                type: "EGRESO",
+                amount: 2500,
+                description: "Supermercado",
+                expenseType: {
+                    id: "type-1",
+                    name: "Alimentos",
+                },
+                paymentMethod: {
+                    id: "payment-1",
+                    name: "Débito",
+                },
+            });
+        });
+
+        it("GET devuelve el movimiento base si faltan sus detalles", async () => {
+            mocks.fetchMovements.mockResolvedValue([
+                {
+                    id: "movement-1",
+                    type: "INGRESO",
+                    date: new Date("2026-10-19T03:00:00.000Z"),
+                    amount: { toString: () => "5000" },
+                    description: "Ingreso sin detalles",
+                    income: null,
+                    expense: null,
+                },
+            ]);
+
+            const response = await GET();
+            const data = await response.json();
+
+            expect(response.status).toBe(200);
+            expect(data[0]).toEqual({
+                id: "movement-1",
+                type: "INGRESO",
+                date: "2026-10-19T03:00:00.000Z",
+                amount: 5000,
+                description: "Ingreso sin detalles",
+            });
+        });
+
+        it("GET devuelve 500 si falla la consulta", async () => {
+            const consoleError = vi
+                .spyOn(console, "error")
+                .mockImplementation(() => { });
+
+            try {
+                mocks.fetchMovements.mockRejectedValue(
+                    new Error("Database error"),
+                );
+
+                const response = await GET();
+                const data = await response.json();
+
+                expect(response.status).toBe(500);
+                expect(data).toEqual({
+                    error: "Error interno del servidor",
+                });
+            } finally {
+                consoleError.mockRestore();
+            }
+        });
+
+        it("POST devuelve 400 cuando saveMovement lanza un error de validación", async () => {
+            mocks.saveMovement.mockRejectedValue(
+                new Error("VALIDATION: Fecha inválida"),
+            );
+
+            const consoleError = vi
+                .spyOn(console, "error")
+                .mockImplementation(() => { });
+
+            try {
+                const response = await POST(
+                    jsonRequest("POST", { description: "Prueba" }),
+                );
+
+                expect(response.status).toBe(400);
+                expect(await response.json()).toEqual({
+                    error: "Fecha inválida",
+                });
+            } finally {
+                consoleError.mockRestore();
+            }
+
+        });
+
+        it("POST devuelve 500 cuando ocurre un error inesperado", async () => {
+            mocks.saveMovement.mockRejectedValue(new Error("Database error"));
+
+            const consoleError = vi
+                .spyOn(console, "error")
+                .mockImplementation(() => { });
+
+            try {
+                const response = await POST(
+                    jsonRequest("POST", { description: "Prueba" }),
+                );
+
+                expect(response.status).toBe(500);
+                expect(await response.json()).toEqual({
+                    error: "Error interno del servidor",
+                });
+            } finally {
+                consoleError.mockRestore();
+            }
+
+        });
+
+        it("PUT devuelve 400 cuando updateMovement lanza un error de validación", async () => {
+            mocks.updateMovement.mockRejectedValue(
+                new Error("VALIDATION: Importe inválido"),
+            );
+
+            const consoleError = vi
+                .spyOn(console, "error")
+                .mockImplementation(() => { });
+
+            try {
+                const response = await PUT(
+                    jsonRequest("PUT", {
+                        id: "movement-1",
+                        amount: -100,
+                    }),
+                );
+
+                expect(response.status).toBe(400);
+                expect(await response.json()).toEqual({
+                    error: "Importe inválido",
+                });
+            } finally {
+                consoleError.mockRestore();
+            }
+
+        });
+
+        it("PUT devuelve 500 cuando ocurre un error inesperado", async () => {
+            mocks.updateMovement.mockRejectedValue(new Error("Database error"));
+
+            const consoleError = vi
+                .spyOn(console, "error")
+                .mockImplementation(() => { });
+
+            try {
+                const response = await PUT(
+                    jsonRequest("PUT", {
+                        id: "movement-1",
+                        description: "Prueba",
+                    }),
+                );
+
+                expect(response.status).toBe(500);
+                expect(await response.json()).toEqual({
+                    error: "Error interno del servidor",
+                });
+            } finally {
+                consoleError.mockRestore();
+            }
+
+        });
+
+        it("DELETE devuelve 400 cuando deleteMovement lanza un error de validación", async () => {
+            mocks.deleteMovement.mockRejectedValue(
+                new Error("VALIDATION: Movimiento inválido"),
+            );
+
+            const consoleError = vi
+                .spyOn(console, "error")
+                .mockImplementation(() => { });
+
+            try {
+                const request = new NextRequest(
+                    "http://localhost:8080/api/movimientos?id=movement-1",
+                    { method: "DELETE" },
+                );
+
+                const response = await DELETE(request);
+
+                expect(response.status).toBe(400);
+                expect(await response.json()).toEqual({
+                    error: "Movimiento inválido",
+                });
+            } finally {
+                consoleError.mockRestore();
+            }
+
+        });
+
+        it("DELETE devuelve 500 cuando ocurre un error inesperado", async () => {
+            mocks.deleteMovement.mockRejectedValue(new Error("Database error"));
+            const consoleError = vi
+                .spyOn(console, "error")
+                .mockImplementation(() => { });
+
+            try {
+                const request = new NextRequest(
+                    "http://localhost:8080/api/movimientos?id=movement-1",
+                    { method: "DELETE" },
+                );
+
+                const response = await DELETE(request);
+
+                expect(response.status).toBe(500);
+                expect(await response.json()).toEqual({
+                    error: "Error interno del servidor",
+                });
+            } finally {
+                consoleError.mockRestore();
+            }
+
+        });
     });
 });

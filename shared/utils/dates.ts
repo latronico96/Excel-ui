@@ -6,13 +6,20 @@ export function parseMovementDate(dateString: string): Date {
         throw new Error("VALIDATION: Fecha inválida");
     }
 
-    const date = new Date(`${dateString}T00:00:00${ARGENTINA_OFFSET}`);
+    const [year, month, day] = dateString.split("-").map(Number);
 
-    if (Number.isNaN(date.getTime())) {
+    // Validar que la fecha exista realmente en el calendario.
+    const validationDate = new Date(Date.UTC(year, month - 1, day));
+
+    if (
+        validationDate.getUTCFullYear() !== year ||
+        validationDate.getUTCMonth() !== month - 1 ||
+        validationDate.getUTCDate() !== day
+    ) {
         throw new Error("VALIDATION: Fecha inválida");
     }
 
-    return date;
+    return new Date(`${dateString}T00:00:00${ARGENTINA_OFFSET}`);
 }
 
 export function getArgentinaNow(): Date {
