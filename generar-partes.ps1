@@ -7,27 +7,8 @@ $OutputDir = Join-Path $Root "review-parts"
 $MaxChars = 25000
 
 $Files = @(
-    "package.json",
-    "prisma7.config.ts",
-    "vitest.config.ts",
-    "tsconfig.json",
-    "eslint.config.mjs",
-    ".eslintrc.json",
-    "prisma/schema.prisma",
-    "server/services/workspace-permissions.ts",
-    "server/services/workspace.service.ts",
     "server/services/movimientos.service.ts",
-    "app/api/movimientos/route.ts",
-    "app/api/espacios/route.ts",
-    "app/api/espacios/activo/route.ts",
-    "app/api/configuracion/route.ts",
-    "app/api/medios-pago/route.ts",
-    "app/api/tipos-gasto/route.ts",
-    "app/api/gastos-mensuales/route.ts",
-    "tests/finance.test.ts",
-    "tests/movimientos.save.test.ts",
-    "tests/movimientos.update.test.ts",
-    "tests/movimientos.delete.test.ts"
+    "server/services/workspace.service.ts"
 )
 
 # Agregar otros tests existentes, sin duplicar los anteriores.

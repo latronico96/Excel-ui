@@ -1,0 +1,673 @@
+import { beforeEach, describe, expect, it, vi } from "vitest";
+
+const mocks = vi.hoisted(() => ({
+    getServerSession: vi.fn(),
+    cookies: vi.fn(),
+    userFindUnique: vi.fn(),
+    workspaceMemberFindUnique: vi.fn(),
+    workspaceMemberFindFirst: vi.fn(),
+    workspaceMemberFindMany: vi.fn(),
+    workspaceMemberCount: vi.fn(),
+    workspaceCreate: vi.fn(),
+    workspaceUpdate: vi.fn(),
+    workspaceDelete: vi.fn(),
+    movementCount: vi.fn(),
+    expenseTypeCount: vi.fn(),
+    paymentMethodCount: vi.fn(),
+    recurringExpenseCount: vi.fn(),
+    workspaceInvitationCount: vi.fn(),
+}));
+
+vi.mock("next/headers", () => ({
+    cookies: mocks.cookies,
+}));
+
+vi.mock("next-auth", () => ({
+    getServerSession: mocks.getServerSession,
+}));
+
+vi.mock("@/app/api/auth/auth-options", () => ({
+    authOptions: {},
+}));
+
+vi.mock("@/prisma/prisma", () => ({
+    prisma: {
+        user: {
+            findUnique: mocks.userFindUnique,
+        },
+        workspaceMember: {
+            findUnique: mocks.workspaceMemberFindUnique,
+            findFirst: mocks.workspaceMemberFindFirst,
+            findMany: mocks.workspaceMemberFindMany,
+            count: mocks.workspaceMemberCount,
+        },
+        workspace: {
+            create: mocks.workspaceCreate,
+            update: mocks.workspaceUpdate,
+            delete: mocks.workspaceDelete,
+        },
+        movement: {
+            count: mocks.movementCount,
+        },
+        expenseType: {
+            count: mocks.expenseTypeCount,
+        },
+        paymentMethod: {
+            count: mocks.paymentMethodCount,
+        },
+        recurringExpense: {
+            count: mocks.recurringExpenseCount,
+        },
+        workspaceInvitation: {
+            count: mocks.workspaceInvitationCount,
+        },
+    },
+}));
+
+import {
+    ACTIVE_WORKSPACE_COOKIE,
+    DEMO_EMAIL,
+    WorkspaceServiceError,
+    createWorkspace,
+    deleteWorkspace,
+    getAuthenticatedWorkspaceUser,
+    getCurrentWorkspace,
+    getOrCreateWorkspaceForUser,
+    getWorkspaceMembership,
+    listWorkspacesForUser,
+    renameWorkspace,
+} from "@/server/services/workspace.service";
+
+function mockCookie(value?: string) {
+    mocks.cookies.mockResolvedValue({
+        get: vi.fn((name: string) =>
+            name === ACTIVE_WORKSPACE_COOKIE && value
+                ? { value }
+                : undefined,
+        ),
+    });
+}
+
+function configureEmptyWorkspaceCounts() {
+    mocks.movementCount.mockResolvedValue(0);
+    mocks.expenseTypeCount.mockResolvedValue(0);
+    mocks.paymentMethodCount.mockResolvedValue(0);
+    mocks.recurringExpenseCount.mockResolvedValue(0);
+    mocks.workspaceInvitationCount.mockResolvedValue(0);
+}
+
+describe("WorkspaceService", () => {
+    beforeEach(() => {
+        vi.resetAllMocks();
+        mockCookie();
+        configureEmptyWorkspaceCounts();
+    });
+
+    describe("getAuthenticatedWorkspaceUser", () => {
+        it("rechaza si no hay sesión autenticada", async () => {
+            mocks.getServerSession.mockResolvedValue(null);
+
+            await expect(
+                getAuthenticatedWorkspaceUser(),
+            ).rejects.toMatchObject({
+                name: "WorkspaceServiceError",
+                status: 401,
+            });
+
+            expect(mocks.userFindUnique).not.toHaveBeenCalled();
+        });
+
+        it("busca al usuario usando el email de la sesión", async () => {
+            mocks.getServerSession.mockResolvedValue({
+                user: { email: "user-a@example.com" },
+            });
+
+            mocks.userFindUnique.mockResolvedValue({
+                id: "user-A",
+                name: "Usuario A",
+                email: "user-a@example.com",
+            });
+
+            const user = await getAuthenticatedWorkspaceUser();
+
+            expect(user.id).toBe("user-A");
+
+            expect(mocks.userFindUnique).toHaveBeenCalledWith({
+                where: { email: "user-a@example.com" },
+                select: { id: true, name: true, email: true },
+            });
+        });
+
+        it("rechaza si el usuario de la sesión no existe", async () => {
+            mocks.getServerSession.mockResolvedValue({
+                user: { email: "missing@example.com" },
+            });
+
+            mocks.userFindUnique.mockResolvedValue(null);
+
+            await expect(
+                getAuthenticatedWorkspaceUser(),
+            ).rejects.toMatchObject({
+                status: 404,
+            });
+        });
+    });
+
+    describe("getWorkspaceMembership", () => {
+        it("consulta la membresía por usuario y espacio", async () => {
+            mocks.workspaceMemberFindUnique.mockResolvedValue({
+                role: "MEMBER",
+                workspace: {
+                    id: "workspace-A",
+                    name: "Casa",
+                },
+            });
+
+            await getWorkspaceMembership("user-A", "workspace-A");
+
+            expect(
+                mocks.workspaceMemberFindUnique,
+            ).toHaveBeenCalledWith({
+                where: {
+                    workspaceId_userId: {
+                        workspaceId: "workspace-A",
+                        userId: "user-A",
+                    },
+                },
+                select: {
+                    role: true,
+                    workspace: {
+                        select: {
+                            id: true,
+                            name: true,
+                        },
+                    },
+                },
+            });
+        });
+    });
+
+    describe("getOrCreateWorkspaceForUser", () => {
+        it("devuelve el espacio existente del usuario", async () => {
+            mocks.userFindUnique.mockResolvedValue({
+                id: "user-A",
+                name: "Usuario A",
+                email: "user-a@example.com",
+            });
+
+            mocks.workspaceMemberFindFirst.mockResolvedValue({
+                workspaceId: "workspace-A",
+                role: "OWNER",
+                workspace: {
+                    id: "workspace-A",
+                    name: "Mi espacio",
+                },
+            });
+
+            const result = await getOrCreateWorkspaceForUser("user-A");
+
+            expect(result.workspaceId).toBe("workspace-A");
+            expect(mocks.workspaceCreate).not.toHaveBeenCalled();
+        });
+
+        it("crea un espacio inicial si el usuario no tiene membresías", async () => {
+            mocks.userFindUnique.mockResolvedValue({
+                id: "user-A",
+                name: "Usuario A",
+                email: "user-a@example.com",
+            });
+
+            mocks.workspaceMemberFindFirst.mockResolvedValue(null);
+
+            mocks.workspaceCreate.mockResolvedValue({
+                id: "workspace-new",
+                name: "Espacio de Usuario A",
+            });
+
+            const result = await getOrCreateWorkspaceForUser("user-A");
+
+            expect(mocks.workspaceCreate).toHaveBeenCalledWith({
+                data: {
+                    name: "Espacio de Usuario A",
+                    isDemo: false,
+                    onboardingCompleted: false,
+                    members: {
+                        create: {
+                            userId: "user-A",
+                            role: "OWNER",
+                        },
+                    },
+                },
+            });
+
+            expect(result).toMatchObject({
+                userId: "user-A",
+                workspaceId: "workspace-new",
+                role: "OWNER",
+            });
+        });
+
+        it("configura correctamente el espacio de la cuenta demo", async () => {
+            mocks.userFindUnique.mockResolvedValue({
+                id: "demo-user",
+                name: "Demo",
+                email: DEMO_EMAIL,
+            });
+
+            mocks.workspaceMemberFindFirst.mockResolvedValue(null);
+
+            mocks.workspaceCreate.mockResolvedValue({
+                id: "workspace-demo",
+                name: "Espacio Demo",
+            });
+
+            await getOrCreateWorkspaceForUser("demo-user");
+
+            expect(mocks.workspaceCreate).toHaveBeenCalledWith({
+                data: {
+                    name: "Espacio Demo",
+                    isDemo: true,
+                    onboardingCompleted: true,
+                    members: {
+                        create: {
+                            userId: "demo-user",
+                            role: "OWNER",
+                        },
+                    },
+                },
+            });
+        });
+
+        it("rechaza si el usuario no existe", async () => {
+            mocks.userFindUnique.mockResolvedValue(null);
+
+            await expect(
+                getOrCreateWorkspaceForUser("missing-user"),
+            ).rejects.toMatchObject({
+                status: 404,
+            });
+
+            expect(mocks.workspaceCreate).not.toHaveBeenCalled();
+        });
+    });
+
+    describe("getCurrentWorkspace", () => {
+        beforeEach(() => {
+            mocks.getServerSession.mockResolvedValue({
+                user: { email: "user-a@example.com" },
+            });
+
+            mocks.userFindUnique.mockResolvedValue({
+                id: "user-A",
+            });
+
+            mocks.workspaceMemberFindFirst.mockResolvedValue({
+                workspaceId: "workspace-A",
+                role: "OWNER",
+                workspace: {
+                    id: "workspace-A",
+                    name: "Espacio A",
+                },
+            });
+        });
+
+        it("devuelve null cuando no hay sesión", async () => {
+            mocks.getServerSession.mockResolvedValue(null);
+
+            await expect(getCurrentWorkspace()).resolves.toBeNull();
+
+            expect(mocks.userFindUnique).not.toHaveBeenCalled();
+        });
+
+        it("devuelve el espacio predeterminado si no hay cookie", async () => {
+            mockCookie();
+
+            const result = await getCurrentWorkspace();
+
+            expect(result).toMatchObject({
+                userId: "user-A",
+                workspaceId: "workspace-A",
+                role: "OWNER",
+            });
+        });
+
+        it("permite seleccionar otro espacio si el usuario es miembro", async () => {
+            mockCookie("workspace-B");
+
+            mocks.workspaceMemberFindUnique.mockResolvedValue({
+                workspaceId: "workspace-B",
+                role: "MEMBER",
+                workspace: {
+                    id: "workspace-B",
+                    name: "Espacio B",
+                },
+            });
+
+            const result = await getCurrentWorkspace();
+
+            expect(result).toMatchObject({
+                userId: "user-A",
+                workspaceId: "workspace-B",
+                role: "MEMBER",
+            });
+
+            expect(mocks.workspaceMemberFindUnique).toHaveBeenCalledWith({
+                where: {
+                    workspaceId_userId: {
+                        workspaceId: "workspace-B",
+                        userId: "user-A",
+                    },
+                },
+                include: { workspace: true },
+            });
+        });
+
+        it("ignora una cookie que apunta a un espacio ajeno", async () => {
+            mockCookie("workspace-B");
+
+            mocks.workspaceMemberFindUnique.mockResolvedValue(null);
+
+            const result = await getCurrentWorkspace();
+
+            expect(result).toMatchObject({
+                userId: "user-A",
+                workspaceId: "workspace-A",
+                role: "OWNER",
+            });
+
+            expect(result?.workspaceId).not.toBe("workspace-B");
+        });
+
+        it("devuelve null si el usuario autenticado no existe", async () => {
+            mocks.userFindUnique.mockResolvedValue(null);
+
+            await expect(getCurrentWorkspace()).resolves.toBeNull();
+
+            expect(mocks.workspaceMemberFindFirst).not.toHaveBeenCalled();
+        });
+    });
+
+    describe("listWorkspacesForUser", () => {
+        it("lista únicamente las membresías del usuario solicitado", async () => {
+            mocks.workspaceMemberFindMany.mockResolvedValue([
+                {
+                    role: "OWNER",
+                    workspace: {
+                        id: "workspace-A",
+                        name: "Casa",
+                    },
+                },
+                {
+                    role: "MEMBER",
+                    workspace: {
+                        id: "workspace-B",
+                        name: "Proyecto",
+                    },
+                },
+            ]);
+
+            const result = await listWorkspacesForUser("user-A");
+
+            expect(mocks.workspaceMemberFindMany).toHaveBeenCalledWith({
+                where: { userId: "user-A" },
+                include: {
+                    workspace: {
+                        select: {
+                            id: true,
+                            name: true,
+                        },
+                    },
+                },
+                orderBy: { createdAt: "asc" },
+            });
+
+            expect(result).toEqual([
+                {
+                    id: "workspace-A",
+                    name: "Casa",
+                    role: "OWNER",
+                },
+                {
+                    id: "workspace-B",
+                    name: "Proyecto",
+                    role: "MEMBER",
+                },
+            ]);
+        });
+    });
+
+    describe("createWorkspace", () => {
+        it("recorta el nombre y crea al usuario como OWNER", async () => {
+            mocks.workspaceCreate.mockResolvedValue({
+                id: "workspace-new",
+                name: "Proyecto",
+            });
+
+            const result = await createWorkspace(
+                "user-A",
+                "  Proyecto  ",
+            );
+
+            expect(mocks.workspaceCreate).toHaveBeenCalledWith({
+                data: {
+                    name: "Proyecto",
+                    members: {
+                        create: {
+                            userId: "user-A",
+                            role: "OWNER",
+                        },
+                    },
+                },
+                select: {
+                    id: true,
+                    name: true,
+                },
+            });
+
+            expect(result).toEqual({
+                id: "workspace-new",
+                name: "Proyecto",
+                role: "OWNER",
+            });
+        });
+
+        it.each(["", " ", "A", "x".repeat(81)])(
+            "rechaza un nombre inválido (%j)",
+            async (name) => {
+                await expect(
+                    createWorkspace("user-A", name),
+                ).rejects.toBeInstanceOf(WorkspaceServiceError);
+
+                expect(mocks.workspaceCreate).not.toHaveBeenCalled();
+            },
+        );
+    });
+
+    describe("renameWorkspace", () => {
+        it("rechaza si el usuario no pertenece al espacio", async () => {
+            mocks.workspaceMemberFindUnique.mockResolvedValue(null);
+
+            await expect(
+                renameWorkspace("user-A", "workspace-B", "Nuevo nombre"),
+            ).rejects.toMatchObject({
+                status: 403,
+            });
+
+            expect(mocks.workspaceUpdate).not.toHaveBeenCalled();
+        });
+
+        it.each(["MEMBER", "VIEWER"])(
+            "rechaza el cambio de nombre para el rol %s",
+            async (role) => {
+                mocks.workspaceMemberFindUnique.mockResolvedValue({
+                    role,
+                    workspace: {
+                        id: "workspace-A",
+                        name: "Actual",
+                    },
+                });
+
+                await expect(
+                    renameWorkspace("user-A", "workspace-A", "Nuevo nombre"),
+                ).rejects.toMatchObject({
+                    status: 403,
+                });
+
+                expect(mocks.workspaceUpdate).not.toHaveBeenCalled();
+            },
+        );
+
+        it.each(["OWNER", "ADMIN"])(
+            "permite renombrar al rol %s",
+            async (role) => {
+                mocks.workspaceMemberFindUnique.mockResolvedValue({
+                    role,
+                    workspace: {
+                        id: "workspace-A",
+                        name: "Actual",
+                    },
+                });
+
+                mocks.workspaceUpdate.mockResolvedValue({
+                    id: "workspace-A",
+                    name: "Nuevo nombre",
+                });
+
+                await expect(
+                    renameWorkspace("user-A", "workspace-A", "Nuevo nombre"),
+                ).resolves.toEqual({
+                    id: "workspace-A",
+                    name: "Nuevo nombre",
+                    role,
+                });
+
+                expect(mocks.workspaceUpdate).toHaveBeenCalledWith({
+                    where: { id: "workspace-A" },
+                    data: { name: "Nuevo nombre" },
+                    select: { id: true, name: true },
+                });
+            },
+        );
+    });
+
+    describe("deleteWorkspace", () => {
+        function configureOwnerMembership() {
+            mocks.workspaceMemberFindUnique.mockResolvedValue({
+                role: "OWNER",
+                workspace: {
+                    id: "workspace-A",
+                    name: "Espacio A",
+                },
+            });
+
+            mocks.workspaceMemberCount.mockResolvedValue(2);
+        }
+
+        it("rechaza si el usuario no pertenece al espacio", async () => {
+            mocks.workspaceMemberFindUnique.mockResolvedValue(null);
+
+            await expect(
+                deleteWorkspace("user-A", "workspace-B"),
+            ).rejects.toMatchObject({
+                status: 403,
+            });
+
+            expect(mocks.workspaceDelete).not.toHaveBeenCalled();
+        });
+
+        it("rechaza si el usuario no es OWNER", async () => {
+            mocks.workspaceMemberFindUnique.mockResolvedValue({
+                role: "ADMIN",
+                workspace: {
+                    id: "workspace-A",
+                    name: "Espacio A",
+                },
+            });
+
+            await expect(
+                deleteWorkspace("user-A", "workspace-A"),
+            ).rejects.toThrow("Solo el propietario");
+
+            expect(mocks.workspaceDelete).not.toHaveBeenCalled();
+        });
+
+        it("impide borrar el único espacio del usuario", async () => {
+            configureOwnerMembership();
+            mocks.workspaceMemberCount.mockResolvedValue(1);
+
+            await expect(
+                deleteWorkspace("user-A", "workspace-A"),
+            ).rejects.toThrow("único espacio");
+
+            expect(mocks.workspaceDelete).not.toHaveBeenCalled();
+        });
+
+        it("impide borrar un espacio con otros miembros", async () => {
+            configureOwnerMembership();
+
+            mocks.workspaceMemberCount
+                .mockResolvedValueOnce(2)
+                .mockResolvedValueOnce(1);
+
+            await expect(
+                deleteWorkspace("user-A", "workspace-A"),
+            ).rejects.toThrow("otros miembros");
+
+            expect(mocks.workspaceDelete).not.toHaveBeenCalled();
+        });
+
+        it("impide borrar un espacio que contiene movimientos", async () => {
+            configureOwnerMembership();
+
+            mocks.workspaceMemberCount
+                .mockResolvedValueOnce(2)
+                .mockResolvedValueOnce(0);
+
+            mocks.movementCount.mockResolvedValue(1);
+
+            await expect(
+                deleteWorkspace("user-A", "workspace-A"),
+            ).rejects.toThrow("espacios vacíos");
+
+            expect(mocks.workspaceDelete).not.toHaveBeenCalled();
+        });
+
+        it("elimina un espacio vacío si cumple todas las condiciones", async () => {
+            configureOwnerMembership();
+
+            mocks.workspaceMemberCount
+                .mockResolvedValueOnce(2)
+                .mockResolvedValueOnce(0);
+
+            await expect(
+                deleteWorkspace("user-A", "workspace-A"),
+            ).resolves.toEqual({
+                success: true,
+            });
+
+            expect(mocks.movementCount).toHaveBeenCalledWith({
+                where: { workspaceId: "workspace-A" },
+            });
+
+            expect(mocks.expenseTypeCount).toHaveBeenCalledWith({
+                where: { workspaceId: "workspace-A" },
+            });
+
+            expect(mocks.paymentMethodCount).toHaveBeenCalledWith({
+                where: { workspaceId: "workspace-A" },
+            });
+
+            expect(mocks.recurringExpenseCount).toHaveBeenCalledWith({
+                where: { workspaceId: "workspace-A" },
+            });
+
+            expect(mocks.workspaceInvitationCount).toHaveBeenCalledWith({
+                where: { workspaceId: "workspace-A" },
+            });
+
+            expect(mocks.workspaceDelete).toHaveBeenCalledWith({
+                where: { id: "workspace-A" },
+            });
+        });
+    });
+});
