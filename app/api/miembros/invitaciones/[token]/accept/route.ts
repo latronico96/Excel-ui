@@ -1,4 +1,3 @@
-
 import { NextResponse } from "next/server";
 import { createHash } from "crypto";
 import { getServerSession } from "next-auth";
@@ -6,15 +5,16 @@ import { authOptions } from "@/app/api/auth/auth-options";
 import { prisma } from "@/prisma/prisma";
 
 type RouteContext = {
-    params: { token: string };
+    params: Promise<{ token: string }>;
 };
 
 export async function POST(
-    _request: Request,
+    request: Request,
     { params }: RouteContext
 ) {
     try {
         const session = await getServerSession(authOptions);
+        const { token } = await params;
 
         if (!session?.user?.email) {
             return NextResponse.json(
@@ -22,8 +22,6 @@ export async function POST(
                 { status: 401 }
             );
         }
-
-        const token = params.token;
 
         if (!token || !/^[a-f0-9]{64}$/i.test(token)) {
             return NextResponse.json(
@@ -90,7 +88,6 @@ export async function POST(
                 throw new Error("INVITATION_EXPIRED");
             }
 
-            // Evitar que una cuenta real se incorpore al espacio demo.
             if (invitation.workspace.isDemo) {
                 throw new Error("DEMO_WORKSPACE");
             }

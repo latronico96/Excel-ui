@@ -131,7 +131,7 @@ export async function getCurrentWorkspace() {
 
     const defaultWorkspace = await getOrCreateWorkspaceForUser(user.id);
 
-    const cookieStore = cookies();
+    const cookieStore = await cookies();
     const activeWorkspaceId = cookieStore.get(
         ACTIVE_WORKSPACE_COOKIE
     )?.value;

@@ -9,6 +9,7 @@ import { ACTIVE_WORKSPACE_COOKIE } from "@/server/services/workspace.service";
 export async function POST(request: Request) {
     try {
         const session = await getServerSession(authOptions);
+        const cookieStore = await cookies();
 
         if (!session?.user?.email) {
             return NextResponse.json(
@@ -63,7 +64,7 @@ export async function POST(request: Request) {
             );
         }
 
-        cookies().set(ACTIVE_WORKSPACE_COOKIE, workspaceId, {
+        cookieStore.set(ACTIVE_WORKSPACE_COOKIE, workspaceId, {
             httpOnly: true,
             secure: process.env.NODE_ENV === "production",
             sameSite: "lax",

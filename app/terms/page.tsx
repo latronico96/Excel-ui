@@ -1,3 +1,5 @@
+import Link from 'next/link';
+
 export default function TermsPage() {
     return (
         <div style={{ maxWidth: '800px', margin: '0 auto', padding: '2rem', fontFamily: 'sans-serif', lineHeight: '1.6' }}>
@@ -20,7 +22,9 @@ export default function TermsPage() {
             <p>Nos reservamos el derecho de modificar o interrumpir el servicio en cualquier momento, aunque al ser una aplicación que utiliza su propio almacenamiento, sus datos siempre permanecerán en su Google Drive.</p>
 
             <div style={{ marginTop: '2rem', borderTop: '1px solid #eee', paddingTop: '1rem' }}>
-                <a href="/" style={{ color: 'var(--primary, #c54b8c)', textDecoration: 'none' }}>Volver al inicio</a>
+                <Link href="/" style={{ color: 'var(--primary, #c54b8c)', textDecoration: 'none' }}>
+                    Volver al inicio
+                </Link>
             </div>
         </div>
     );

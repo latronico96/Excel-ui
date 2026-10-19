@@ -15,6 +15,7 @@ import {
     Wallet,
 } from 'lucide-react';
 import styles from './page.module.css';
+import Link from 'next/link';
 
 export default function RootPage() {
     const { status } = useSession();
@@ -66,16 +67,20 @@ export default function RootPage() {
     return (
         <main className={styles.page}>
             <header className={styles.nav}>
-                <a className={styles.brand} href="/" aria-label="Excel Pro, inicio">
+                <Link className={styles.brand} href="/" aria-label="Excel Pro, inicio">
                     <span className={styles.brandMark}>
                         <LayoutDashboard size={23} strokeWidth={2.2} />
                     </span>
                     <span>Excel <b>Pro</b></span>
-                </a>
+                </Link>
 
                 <nav className={styles.navActions} aria-label="Navegación principal">
-                    <a href="#funciones" className={styles.navLink}>Funciones</a>
-                    <a href="#privacidad" className={styles.navLink}>Tu información</a>
+                    <Link href="#funciones" className={styles.navLink}>
+                        Funciones
+                    </Link>
+                    <Link href="#privacidad" className={styles.navLink}>
+                        Tu información
+                    </Link>
                     <button
                         type="button"
                         className={styles.navLogin}
@@ -253,11 +258,13 @@ export default function RootPage() {
             </section>
 
             <footer className={styles.footer}>
-                <a className={styles.footerBrand} href="/">Excel Pro</a>
+                <Link className={styles.footerBrand} href="/" aria-label="Excel Pro, inicio">
+                    Excel Pro
+                </Link>
                 <span>Una forma más clara de organizar tus finanzas.</span>
                 <div className={styles.footerLinks}>
-                    <a href="/privacy">Política de privacidad</a>
-                    <a href="/terms">Términos de servicio</a>
+                    <Link href="/privacy">Política de privacidad</Link>
+                    <Link href="/terms">Términos de servicio</Link>
                 </div>
             </footer>
         </main>

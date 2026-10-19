@@ -4,9 +4,9 @@ import { createHash } from "crypto";
 import { prisma } from "@/prisma/prisma";
 
 type RouteContext = {
-    params: {
+    params: Promise<{
         token: string;
-    };
+    }>;
 };
 
 export async function GET(
@@ -14,7 +14,7 @@ export async function GET(
     { params }: RouteContext
 ) {
     try {
-        const token = params.token;
+        const { token } = await params;
 
         if (!token || !/^[a-f0-9]{64}$/i.test(token)) {
             return NextResponse.json(
