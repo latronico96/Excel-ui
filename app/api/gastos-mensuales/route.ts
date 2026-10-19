@@ -1,4 +1,3 @@
-
 import { NextResponse } from "next/server";
 import { prisma } from "@/prisma/prisma";
 import { getCurrentWorkspace } from "@/server/services/workspace.service";
@@ -21,11 +20,11 @@ const serializeExpense = (expense: any) => ({
 
     lastPayment: expense.payments?.[0]
         ? {
-              id: expense.payments[0].id,
-              amount: Number(expense.payments[0].amount),
-              paidAt: expense.payments[0].paidAt,
-              period: expense.payments[0].period,
-          }
+            id: expense.payments[0].id,
+            amount: Number(expense.payments[0].amount),
+            paidAt: expense.payments[0].paidAt,
+            period: expense.payments[0].period,
+        }
         : null,
 });
 
@@ -115,15 +114,15 @@ export async function POST(request: Request) {
 
         const amount =
             body.amount === null ||
-            body.amount === undefined ||
-            body.amount === ""
+                body.amount === undefined ||
+                body.amount === ""
                 ? null
                 : Number(body.amount);
 
         const dueDay =
             body.dueDay === null ||
-            body.dueDay === undefined ||
-            body.dueDay === ""
+                body.dueDay === undefined ||
+                body.dueDay === ""
                 ? null
                 : Number(body.dueDay);
 
@@ -300,6 +299,7 @@ export async function PATCH(request: Request) {
             const updated = await prisma.recurringExpense.update({
                 where: {
                     id: existing.id,
+                    workspaceId: workspaceId,
                 },
                 data: {
                     active: body.active,
@@ -316,18 +316,20 @@ export async function PATCH(request: Request) {
                 : existing.name;
 
         const amount =
-            body.amount === null ||
-            body.amount === undefined ||
-            body.amount === ""
-                ? null
-                : Number(body.amount);
+            body.amount === undefined
+                ? existing.amount === null
+                    ? null
+                    : Number(existing.amount)
+                : body.amount === null || body.amount === ""
+                    ? null
+                    : Number(body.amount);
 
         const dueDay =
-            body.dueDay === null ||
-            body.dueDay === undefined ||
-            body.dueDay === ""
-                ? null
-                : Number(body.dueDay);
+            body.dueDay === undefined
+                ? existing.dueDay
+                : body.dueDay === null || body.dueDay === ""
+                    ? null
+                    : Number(body.dueDay);
 
         const expenseTypeId =
             body.expenseTypeId ?? existing.expenseTypeId;
@@ -403,6 +405,7 @@ export async function PATCH(request: Request) {
         const updated = await prisma.recurringExpense.update({
             where: {
                 id: existing.id,
+                workspaceId: workspaceId,
             },
             data: {
                 name,
