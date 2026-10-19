@@ -525,14 +525,13 @@ export class MovimientosService {
 
     static async deleteMovement(
         workspaceId: string,
-        userId: string,
         movementId: string
     ) {
         return prisma.$transaction(async (tx) => {
             const movement = await tx.movement.findFirst({
                 where: {
                     id: movementId,
-                    workspaceId,
+                    workspaceId: workspaceId,
                 },
                 select: {
                     id: true,
@@ -548,7 +547,7 @@ export class MovimientosService {
             const deleted = await tx.movement.deleteMany({
                 where: {
                     id: movement.id,
-                    workspaceId,
+                    workspaceId: workspaceId,
                 },
             });
 

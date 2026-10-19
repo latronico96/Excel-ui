@@ -83,7 +83,7 @@ export async function GET() {
         console.error("GET /api/movimientos:", error);
 
         return NextResponse.json(
-            { error: "Error fetching movements" },
+            { error: "Error interno del servidor" },
             { status: 500 }
         );
     }
@@ -128,12 +128,7 @@ export async function POST(req: NextRequest) {
         }
 
         return NextResponse.json(
-            {
-                error:
-                    error instanceof Error
-                        ? error.message
-                        : "Error creating movement",
-            },
+            { error: "Error interno del servidor" },
             { status: 500 }
         );
     }
@@ -188,12 +183,7 @@ export async function PUT(req: NextRequest) {
         }
 
         return NextResponse.json(
-            {
-                error:
-                    error instanceof Error
-                        ? error.message
-                        : "Error updating movement",
-            },
+            { error: "Error interno del servidor" },
             { status: 500 }
         );
     }
@@ -221,7 +211,6 @@ export async function DELETE(req: NextRequest) {
 
         await MovimientosService.deleteMovement(
             current.workspaceId,
-            current.userId,
             id
         );
 
@@ -245,12 +234,7 @@ export async function DELETE(req: NextRequest) {
         }
 
         return NextResponse.json(
-            {
-                error:
-                    error instanceof Error
-                        ? error.message
-                        : "Error deleting movement",
-            },
+            { error: "Error interno del servidor" },
             { status: 500 }
         );
     }
