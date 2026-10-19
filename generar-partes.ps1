@@ -8,7 +8,7 @@ $MaxChars = 25000
 
 $Files = @(
     "server/services/movimientos.service.ts",
-    "server/services/workspace.service.ts"
+    "prisma/schema.prisma"
 )
 
 # Agregar otros tests existentes, sin duplicar los anteriores.
