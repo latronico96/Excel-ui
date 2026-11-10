@@ -1,168 +1,318 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { CATEGORIES, PAYMENT_METHODS } from '@/shared/constants';
-import { Movement } from '@/shared/types';
-import { Plus, Loader2 } from 'lucide-react';
+import { useEffect, useState } from "react";
+import { useSearchParams, useRouter } from "next/navigation";
+import {
+    ExpenseTypeOption,
+    Movement,
+    PaymentMethodOption,
+} from "@/shared/types";
+import { Plus } from "lucide-react";
+
+import EgresoForm from "./components/EgresoForm";
+import IngresoForm from "./components/IngresoForm";
+import MovimientosHistorial from "./components/MovimientosHistorial";
 
 export default function MovimientosPage() {
+    const searchParams = useSearchParams();
+    const router = useRouter();
+
     const [movements, setMovements] = useState<Movement[]>([]);
+    const [expenseTypes, setExpenseTypes] = useState<
+        ExpenseTypeOption[]
+    >([]);
+    const [paymentMethods, setPaymentMethods] = useState<
+        PaymentMethodOption[]
+    >([]);
+
     const [loading, setLoading] = useState(true);
-    const [saving, setSaving] = useState(false);
+    const [error, setError] = useState("");
 
-    // Form State
-    const [formData, setFormData] = useState({
-        date: new Date().toISOString().split('T')[0],
-        type: 'INGRESO',
-        paymentMethod: 'EFECTIVO',
-        grossAmount: '',
-        commissionPercentage: '0',
-        category: 'Ventas',
-        observations: ''
-    });
+    const [showIngresoForm, setShowIngresoForm] = useState(false);
+    const [showEgresoForm, setShowEgresoForm] = useState(false);
 
-    const fetchMovements = async () => {
+    const [editingMovement, setEditingMovement] =
+        useState<Movement | null>(null);
+
+    const fetchData = async () => {
         try {
-            const res = await fetch('/api/movimientos');
-            const data = await res.json();
-            if (Array.isArray(data)) setMovements(data);
+            setLoading(true);
+            setError("");
+
+            const [
+                movementsRes,
+                paymentMethodsRes,
+                expenseTypesRes,
+            ] = await Promise.all([
+                fetch("/api/movimientos"),
+                fetch("/api/medios-pago?all=true"),
+                fetch("/api/tipos-gasto"),
+            ]);
+
+            if (!movementsRes.ok) {
+                throw new Error(
+                    "No se pudieron cargar los movimientos"
+                );
+            }
+
+            if (!paymentMethodsRes.ok) {
+                throw new Error(
+                    "No se pudieron cargar los medios de pago"
+                );
+            }
+
+            if (!expenseTypesRes.ok) {
+                throw new Error(
+                    "No se pudieron cargar los tipos de gasto"
+                );
+            }
+
+            const [
+                movementsData,
+                paymentMethodsData,
+                expenseTypesData,
+            ] = await Promise.all([
+                movementsRes.json(),
+                paymentMethodsRes.json(),
+                expenseTypesRes.json(),
+            ]);
+
+            setMovements(
+                Array.isArray(movementsData)
+                    ? movementsData
+                    : []
+            );
+
+            setPaymentMethods(
+                Array.isArray(paymentMethodsData)
+                    ? paymentMethodsData
+                    : []
+            );
+
+            setExpenseTypes(
+                Array.isArray(expenseTypesData)
+                    ? expenseTypesData
+                    : []
+            );
         } catch (err) {
             console.error(err);
+
+            setError(
+                err instanceof Error
+                    ? err.message
+                    : "Ocurrió un error al cargar los datos"
+            );
         } finally {
             setLoading(false);
         }
     };
 
     useEffect(() => {
-        fetchMovements();
+        fetchData();
     }, []);
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        setSaving(true);
+    const openIngreso = () => {
+        setEditingMovement(null);
+        setShowEgresoForm(false);
+        setShowIngresoForm(true);
+        setError("");
 
-        const gross = parseFloat(formData.grossAmount);
-        const commPct = parseFloat(formData.commissionPercentage);
-        const commAmt = (gross * commPct) / 100;
-        const net = gross - commAmt;
+        window.scrollTo({
+            top: 0,
+            behavior: "smooth",
+        });
+    };
 
-        const movement: Movement = {
-            ...formData as any,
-            grossAmount: gross,
-            commissionPercentage: commPct,
-            commissionAmount: commAmt,
-            netAmount: net,
-        };
+    const openEgreso = () => {
+        setEditingMovement(null);
+        setShowIngresoForm(false);
+        setShowEgresoForm(true);
+        setError("");
 
-        try {
-            const res = await fetch('/api/movimientos', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(movement),
+        window.scrollTo({
+            top: 0,
+            behavior: "smooth",
+        });
+    };
+
+    const closeIngreso = () => {
+        setShowIngresoForm(false);
+        setEditingMovement(null);
+    };
+
+    const closeEgreso = () => {
+        setShowEgresoForm(false);
+        setEditingMovement(null);
+    };
+
+    /*
+     * Abrir automáticamente el formulario indicado
+     * por el botón "+" del DashboardLayout.
+     */
+    useEffect(() => {
+        const nuevo = searchParams.get("nuevo");
+
+        if (nuevo === "ingreso") {
+            openIngreso();
+        }
+
+        if (nuevo === "egreso") {
+            openEgreso();
+        }
+
+        if (nuevo) {
+            router.replace("/movimientos", {
+                scroll: false,
             });
-            if (res.ok) {
-                setFormData({ ...formData, grossAmount: '', observations: '' });
-                fetchMovements();
+        }
+    }, [searchParams, router]);
+
+    const handleEdit = (movement: Movement) => {
+        setError("");
+        setEditingMovement(movement);
+
+        if (movement.type === "INGRESO") {
+            setShowEgresoForm(false);
+            setShowIngresoForm(true);
+        } else {
+            setShowIngresoForm(false);
+            setShowEgresoForm(true);
+        }
+
+        window.scrollTo({
+            top: 0,
+            behavior: "smooth",
+        });
+    };
+
+    const handleDelete = async (movementId: string) => {
+        try {
+            setError("");
+
+            const res = await fetch(
+                `/api/movimientos?id=${encodeURIComponent(
+                    movementId
+                )}`,
+                {
+                    method: "DELETE",
+                }
+            );
+
+            const data = await res.json();
+
+            if (!res.ok) {
+                throw new Error(
+                    data.error ||
+                        "No se pudo eliminar el movimiento"
+                );
             }
+
+            await fetchData();
         } catch (err) {
             console.error(err);
-        } finally {
-            setSaving(false);
+
+            setError(
+                err instanceof Error
+                    ? err.message
+                    : "No se pudo eliminar el movimiento"
+            );
+
+            throw err;
         }
     };
 
     return (
         <div className="animate-fade">
-            <h1>Movimientos Diarios</h1>
+            <h1>Movimientos</h1>
 
-            <div className="card">
-                <h3>Cargar Movimiento</h3>
-                <form onSubmit={handleSubmit} style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem', alignItems: 'end' }}>
-                    <div className="form-group">
-                        <label>Fecha</label>
-                        <input type="date" className="input" value={formData.date} onChange={e => setFormData({ ...formData, date: e.target.value })} required />
-                    </div>
-                    <div className="form-group">
-                        <label>Tipo</label>
-                        <select className="select" value={formData.type} onChange={e => setFormData({ ...formData, type: e.target.value })}>
-                            <option value="INGRESO">Ingreso</option>
-                            <option value="GASTO">Gasto</option>
-                        </select>
-                    </div>
-                    <div className="form-group">
-                        <label>Medio de Pago</label>
-                        <select className="select" value={formData.paymentMethod} onChange={e => setFormData({ ...formData, paymentMethod: e.target.value })}>
-                            {PAYMENT_METHODS.map(pm => <option key={pm.value} value={pm.value}>{pm.label}</option>)}
-                        </select>
-                    </div>
-                    <div className="form-group">
-                        <label>Categoría</label>
-                        <select className="select" value={formData.category} onChange={e => setFormData({ ...formData, category: e.target.value })}>
-                            {CATEGORIES.map(cat => <option key={cat} value={cat}>{cat}</option>)}
-                        </select>
-                    </div>
-                    <div className="form-group">
-                        <label>Monto Bruto</label>
-                        <input type="number" step="0.01" className="input" placeholder="0.00" value={formData.grossAmount} onChange={e => setFormData({ ...formData, grossAmount: e.target.value })} required />
-                    </div>
-                    <div className="form-group">
-                        <label>Comisión %</label>
-                        <input type="number" step="0.1" className="input" placeholder="0" value={formData.commissionPercentage} onChange={e => setFormData({ ...formData, commissionPercentage: e.target.value })} />
-                    </div>
-                    <div className="form-group" style={{ gridColumn: 'span 2' }}>
-                        <label>Observaciones</label>
-                        <input type="text" className="input" placeholder="Opcional..." value={formData.observations} onChange={e => setFormData({ ...formData, observations: e.target.value })} />
-                    </div>
-                    <div style={{ marginBottom: '1.25rem' }}>
-                        <button type="submit" className="btn btn-primary" style={{ width: '100%' }} disabled={saving}>
-                            {saving ? <Loader2 className="animate-spin" size={20} /> : <Plus size={20} />}
-                            {saving ? 'Guardando...' : 'Guardar'}
-                        </button>
-                    </div>
-                </form>
-            </div>
-
-            <div className="card">
-                <h3>Historial de Movimientos</h3>
-                <div className="table-container">
-                    {loading ? (
-                        <div style={{ padding: '2rem', textAlign: 'center' }}>Cargando movimientos desde Google Sheets...</div>
-                    ) : movements.length === 0 ? (
-                        <div style={{ padding: '2rem', textAlign: 'center', color: 'var(--text-muted)' }}>No hay movimientos registrados.</div>
-                    ) : (
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>Fecha</th>
-                                    <th>Tipo</th>
-                                    <th>Categoría</th>
-                                    <th>Medio de Pago</th>
-                                    <th>Monto Bruto</th>
-                                    <th>Comisión</th>
-                                    <th>Neto</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {[...movements].reverse().map((m, i) => (
-                                    <tr key={i}>
-                                        <td>{m.date}</td>
-                                        <td><span className={`badge badge-${m.type.toLowerCase() === 'ingreso' ? 'income' : 'expense'}`}>{m.type}</span></td>
-                                        <td>{m.category}</td>
-                                        <td>
-                                            <span className={`badge badge-pm-${m.paymentMethod.toLowerCase()}`}>
-                                                {m.paymentMethod}
-                                            </span>
-                                        </td>
-                                        <td>${m.grossAmount.toLocaleString()}</td>
-                                        <td>${m.commissionAmount.toLocaleString()} ({m.commissionPercentage}%)</td>
-                                        <td style={{ fontWeight: '600' }}>${m.netAmount.toLocaleString()}</td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    )}
+            {error && (
+                <div
+                    className="card"
+                    style={{
+                        marginBottom: "1rem",
+                        color: "var(--danger, #dc2626)",
+                    }}
+                >
+                    {error}
                 </div>
+            )}
+
+            <div
+                style={{
+                    display: "flex",
+                    gap: "0.75rem",
+                    marginBottom: "1.5rem",
+                    flexWrap: "wrap",
+                }}
+            >
+                <button
+                    type="button"
+                    className="btn btn-primary"
+                    onClick={openIngreso}
+                >
+                    <Plus size={18} />
+                    Nuevo ingreso
+                </button>
+
+                <button
+                    type="button"
+                    className="btn"
+                    onClick={openEgreso}
+                >
+                    <Plus size={18} />
+                    Nuevo egreso
+                </button>
             </div>
+
+            <div
+                style={{
+                    marginBottom: "1.5rem",
+                }}
+            >
+                {showIngresoForm && (
+                    <IngresoForm
+                        paymentMethods={paymentMethods}
+                        loading={loading}
+                        movement={
+                            editingMovement?.type === "INGRESO"
+                                ? editingMovement
+                                : undefined
+                        }
+                        onSaved={async () => {
+                            await fetchData();
+                            closeIngreso();
+                        }}
+                        onClose={closeIngreso}
+                        onError={setError}
+                    />
+                )}
+
+                {showEgresoForm && (
+                    <EgresoForm
+                        paymentMethods={paymentMethods.filter((method) => method.active !== false)}
+                        expenseTypes={expenseTypes}
+                        loading={loading}
+                        movement={
+                            editingMovement?.type === "EGRESO"
+                                ? editingMovement
+                                : undefined
+                        }
+                        onSaved={async () => {
+                            await fetchData();
+                            closeEgreso();
+                        }}
+                        onClose={closeEgreso}
+                        onError={setError}
+                    />
+                )}
+            </div>
+
+            <MovimientosHistorial
+                movements={movements}
+                loading={loading}
+                onEdit={handleEdit}
+                onDelete={handleDelete}
+            />
         </div>
     );
 }

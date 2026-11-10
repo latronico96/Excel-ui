@@ -1,21 +1,16 @@
-export type MovementType = 'INGRESO' | 'GASTO';
-export type PaymentMethod = 'EFECTIVO' | 'DEBITO' | 'CREDITO' | 'TRANSFERENCIA';
-
-export interface Movement {
-  date: string;
-  type: MovementType;
-  paymentMethod: PaymentMethod;
-  grossAmount: number;
-  commissionPercentage: number;
-  commissionAmount: number;
-  netAmount: number;
-  category: string;
-  observations: string;
-}
-
-export interface DailySummary {
-  date: string;
-  totalIncome: number;
-  totalExpenses: number;
-  netDaily: number;
-}
+export {
+    type Movement,
+    type MovementInput,
+    type DailySummary,
+    type IncomePayment,
+    type ExpenseTypeOption,
+    type MovementType,
+    type MovementWithDetails,
+    type PaymentMethodOption,
+} from "./movements";
+export {
+    type SummaryPeriod,
+    type SummaryBreakdown,
+    type SummaryTotals,
+    type SummaryResponse,
+} from "./resumen";

@@ -26,6 +26,10 @@ yarn-debug.log*
 yarn-error.log*
 
 # local env files
+.env
+.env*
+!.env.example
+.env.local
 .env*.local
 
 # vercel
@@ -34,3 +38,20 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+/src/generated/prisma
+/prisma/generated/
+/prisma/generated-sqlite/
+/review-parts/
+
+# sqlite
+/dev.db
+/prisma/dev.db
+
+# Local review and inspection artifacts
+/audit-report.json
+/review-parts/
+/generar-test.ps1
+/generar-test copy.ps1
+/generar-partes.ps1
+/estructura.txt

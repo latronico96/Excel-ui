@@ -1,19 +1,35 @@
+/* =========================================================
+   VARIABLES
+   ========================================================= */
 :root {
-  --primary: #c54b8c;
-  /* Mulberry */
-  --primary-hover: #a83e76;
-  --primary-light: #fcedf5;
-  --bg: #fdfafb;
+  /* Identidad visual: lila suave */
+  --primary: #7957c8;
+  --primary-hover: #6042a8;
+  --primary-light: #f0eafe;
+
+  /* Fondos */
+  --bg: #fcfaff;
   --card-bg: #ffffff;
-  --text: #1e0914;
-  --text-muted: #7d6572;
-  --border: #f0e1e9;
+
+  /* Texto */
+  --text: #261d35;
+  --text-muted: #766d83;
+
+  /* Bordes y superficies */
+  --border: #e4dafb;
+
+  /* Estados */
   --success: #10b981;
   --error: #ef4444;
-  --radius: 12px;
-  --shadow: 0 4px 6px -1px rgb(197 75 140 / 0.1), 0 2px 4px -2px rgb(197 75 140 / 0.1);
 
-  /* Payment Methods Colors */
+  /* Componentes */
+  --radius: 12px;
+
+  --shadow:
+    0 4px 6px -1px rgb(121 87 200 / 0.1),
+    0 2px 4px -2px rgb(121 87 200 / 0.1);
+
+  /* Medios de pago: mantener sus colores diferenciados */
   --cash: #10b981;
   --debito: #0ea5e9;
   --credito: #8b5cf6;
@@ -24,25 +40,39 @@
   :root {
     --bg: #1a0b12;
     --card-bg: #2a141d;
+
     --text: #fdf3f7;
     --text-muted: #a38996;
+
     --border: #3d212d;
+
     --shadow: 0 10px 15px -3px rgb(0 0 0 / 0.4);
-    --primary-light: rgba(197, 75, 140, 0.1);
+
+    --primary-light: rgb(197 75 140 / 0.1);
   }
 }
 
+
+/* =========================================================
+   RESET / BASE
+   ========================================================= */
+
 * {
   box-sizing: border-box;
-  padding: 0;
   margin: 0;
+  padding: 0;
+}
+
+html {
+  min-height: 100%;
 }
 
 body {
+  min-height: 100vh;
   background-color: var(--bg);
   color: var(--text);
-  font-family: 'Inter', sans-serif;
-  transition: background-color 0.3s ease;
+  font-family: "Inter", Arial, sans-serif;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 a {
@@ -50,131 +80,202 @@ a {
   text-decoration: none;
 }
 
-/* Layout */
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+img {
+  max-width: 100%;
+}
+
+h1,
+h2,
+h3 {
+  color: var(--text);
+  line-height: 1.2;
+}
+
+h1 {
+  font-size: 1.75rem;
+}
+
+h2 {
+  font-size: 1.35rem;
+}
+
+h3 {
+  font-size: 1.1rem;
+}
+
+
+/* =========================================================
+   LAYOUT
+   ========================================================= */
+
 .dashboard-container {
   display: flex;
   min-height: 100vh;
+  background: var(--bg);
 }
 
 .sidebar {
-  width: 260px;
-  background-color: var(--card-bg);
+  width: 250px;
+  min-width: 250px;
+  min-height: 100vh;
+  padding: 1.25rem;
+  background: var(--card-bg);
   border-right: 1px solid var(--border);
-  padding: 2rem 1rem;
-  display: flex;
-  flex-direction: column;
-  gap: 2rem;
-  position: sticky;
-  top: 0;
-  height: 100vh;
 }
 
 .main-content {
   flex: 1;
+  min-width: 0;
   padding: 2rem;
-  overflow-y: auto;
 }
 
-/* Typography */
-h1 {
-  font-size: 1.875rem;
-  font-weight: 700;
-  margin-bottom: 1.5rem;
-}
 
-h2 {
-  font-size: 1.5rem;
-  font-weight: 600;
-  margin-bottom: 1rem;
-}
+/* =========================================================
+   CARDS
+   ========================================================= */
 
-h3 {
-  font-size: 1.25rem;
-  font-weight: 600;
-  margin-bottom: 0.75rem;
-}
-
-/* Components */
 .card {
+  padding: 1.25rem;
   background: var(--card-bg);
   border: 1px solid var(--border);
   border-radius: var(--radius);
-  padding: 1.5rem;
   box-shadow: var(--shadow);
-  margin-bottom: 1.5rem;
 }
+
+
+/* =========================================================
+   BUTTONS
+   ========================================================= */
 
 .btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 0.75rem 1.5rem;
-  border-radius: var(--radius);
+  gap: 0.5rem;
+
+  min-height: 40px;
+  padding: 0.65rem 1rem;
+
+  border: 1px solid transparent;
+  border-radius: 8px;
+
+  font-size: 0.9rem;
   font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  border: none;
-  font-size: 1rem;
+
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease,
+    transform 0.1s ease,
+    opacity 0.2s ease;
+}
+
+.btn:hover {
+  transform: translateY(-1px);
+}
+
+.btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+  transform: none;
 }
 
 .btn-primary {
-  background-color: var(--primary);
-  color: white;
+  background: var(--primary);
+  color: #fff;
 }
 
 .btn-primary:hover {
-  background-color: var(--primary-hover);
-  transform: translateY(-1px);
+  background: var(--primary-hover);
 }
 
 .btn-outline {
   background: transparent;
-  border: 1px solid var(--border);
+  border-color: var(--border);
   color: var(--text);
 }
 
 .btn-outline:hover {
-  background: var(--border);
+  background: var(--primary-light);
+  border-color: var(--primary);
 }
 
-/* Form */
+
+/* =========================================================
+   FORMS
+   ========================================================= */
+
 .form-group {
-  margin-bottom: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
 }
 
 .form-group label {
-  display: block;
-  font-size: 0.875rem;
-  font-weight: 500;
-  margin-bottom: 0.5rem;
-  color: var(--text-muted);
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text);
 }
 
 .input,
 .select,
 .textarea {
   width: 100%;
-  padding: 0.75rem;
+  min-height: 42px;
+  padding: 0.65rem 0.75rem;
+
+  background: var(--card-bg);
+  color: var(--text);
+
   border: 1px solid var(--border);
   border-radius: 8px;
-  background: var(--bg);
-  color: var(--text);
-  font-size: 1rem;
-  transition: border-color 0.2s;
+
+  outline: none;
+
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.textarea {
+  min-height: 100px;
+  resize: vertical;
 }
 
 .input:focus,
-.select:focus {
-  outline: none;
+.select:focus,
+.textarea:focus {
   border-color: var(--primary);
-  box-shadow: 0 0 0 2px var(--primary-light);
+  box-shadow: 0 0 0 3px var(--primary-light);
 }
 
-/* Table */
+.input::placeholder,
+.textarea::placeholder {
+  color: var(--text-muted);
+}
+
+
+/* =========================================================
+   TABLES
+   ========================================================= */
+
 .table-container {
+  width: 100%;
   overflow-x: auto;
-  border-radius: var(--radius);
   border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--card-bg);
 }
 
 table {
@@ -182,48 +283,66 @@ table {
   border-collapse: collapse;
 }
 
-th {
-  background: var(--bg);
+th,
+td {
+  padding: 0.8rem 1rem;
   text-align: left;
-  padding: 1rem;
-  font-size: 0.875rem;
-  color: var(--text-muted);
   border-bottom: 1px solid var(--border);
 }
 
+th {
+  color: var(--text-muted);
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
 td {
-  padding: 1rem;
-  border-bottom: 1px solid var(--border);
-  font-size: 0.875rem;
+  font-size: 0.9rem;
 }
 
 tr:last-child td {
   border-bottom: none;
 }
 
-/* Badges */
+
+/* =========================================================
+   BADGES
+   ========================================================= */
+
 .badge {
-  padding: 0.25rem 0.625rem;
-  border-radius: 9999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 0.25rem 0.6rem;
+
+  border-radius: 999px;
+
   font-size: 0.75rem;
-  font-weight: 600;
+  font-weight: 700;
 }
 
 .badge-income {
-  background: rgba(16, 185, 129, 0.1);
+  background: rgb(16 185 129 / 0.12);
   color: var(--success);
 }
 
 .badge-expense {
-  background: rgba(239, 68, 68, 0.1);
+  background: rgb(239 68 68 / 0.12);
   color: var(--error);
 }
 
-/* Animations */
+
+/* =========================================================
+   ANIMATIONS
+   ========================================================= */
+
 @keyframes fadeIn {
   from {
     opacity: 0;
-    transform: translateY(10px);
+    transform: translateY(4px);
   }
 
   to {
@@ -233,153 +352,1380 @@ tr:last-child td {
 }
 
 .animate-fade {
-  animation: fadeIn 0.4s ease-out forwards;
+  animation: fadeIn 0.2s ease-out;
 }
 
-/* Grid for Summary Cards */
+@keyframes mobile-drawer-in {
+  from {
+    transform: translateX(-100%);
+  }
+
+  to {
+    transform: translateX(0);
+  }
+}
+
+
+/* =========================================================
+   SUMMARY
+   ========================================================= */
+
 .summary-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: 1.5rem;
-  margin-bottom: 2rem;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
 }
 
 .summary-card-title {
-  color: var(--text-muted);
-  font-size: 0.875rem;
-  font-weight: 500;
   margin-bottom: 0.5rem;
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  font-weight: 600;
 }
 
 .summary-card-value {
   font-size: 1.5rem;
-  font-weight: 700;
+  font-weight: 800;
 }
+
+
+/* =========================================================
+   NAVIGATION / SIDEBAR
+   ========================================================= */
 
 .sidebar-nav {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: 0.35rem;
 }
 
 .nav-link {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
-  padding: 0.75rem 1rem;
+  gap: 0.65rem;
+
+  padding: 0.7rem 0.8rem;
+
   border-radius: 8px;
-  transition: background 0.2s;
+
   color: var(--text-muted);
+  font-size: 0.9rem;
+  font-weight: 600;
+
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease;
 }
 
-.nav-link:hover,
-.nav-link.active {
+.nav-link:hover {
   background: var(--primary-light);
   color: var(--primary);
 }
 
 .nav-link.active {
-  font-weight: 600;
+  background: var(--primary-light);
+  color: var(--primary);
 }
 
+.sidebar-section {
+  margin-top: 1.25rem;
+}
+
+.sidebar-section-title {
+  margin-bottom: 0.5rem;
+  padding: 0 0.8rem;
+
+  color: var(--text-muted);
+
+  font-size: 0.7rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.nav-link-sub {
+  padding-left: 2rem;
+  font-size: 0.85rem;
+}
+
+
+/* =========================================================
+   PAYMENT METHOD BADGES
+   ========================================================= */
+
 .badge-pm-efectivo {
-  background: rgba(16, 185, 129, 0.1);
+  background: rgb(16 185 129 / 0.12);
   color: var(--cash);
-  border: 1px solid rgba(16, 185, 129, 0.1);
 }
 
 .badge-pm-debito {
-  background: rgba(14, 165, 233, 0.1);
+  background: rgb(14 165 233 / 0.12);
   color: var(--debito);
-  border: 1px solid rgba(14, 165, 233, 0.1);
 }
 
 .badge-pm-credito {
-  background: rgba(139, 92, 246, 0.1);
+  background: rgb(139 92 246 / 0.12);
   color: var(--credito);
-  border: 1px solid rgba(139, 92, 246, 0.1);
 }
 
 .badge-pm-transferencia {
-  background: rgba(245, 158, 11, 0.1);
+  background: rgb(245 158 11 / 0.12);
   color: var(--transfer);
-  border: 1px solid rgba(245, 158, 11, 0.1);
 }
 
-/* Responsive Adjustments */
+
+/* =========================================================
+   SUMMARY BREAKDOWN
+   ========================================================= */
+
+.summary-breakdown-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.summary-breakdown-card {
+  padding: 1rem;
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+.summary-breakdown-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 0.75rem;
+}
+
+.summary-breakdown-values {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
+.summary-breakdown-values span {
+  display: block;
+  margin-bottom: 0.25rem;
+  color: var(--text-muted);
+  font-size: 0.72rem;
+}
+
+.summary-breakdown-values strong {
+  font-size: 0.9rem;
+}
+
+
+/* =========================================================
+   ABM
+   ========================================================= */
+
+.abm-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.abm-subtitle {
+  margin-top: 0.35rem;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}
+
+.abm-error {
+  margin-bottom: 1rem;
+  padding: 0.75rem 1rem;
+
+  background: rgb(239 68 68 / 0.1);
+  border: 1px solid rgb(239 68 68 / 0.2);
+  border-radius: 8px;
+
+  color: var(--error);
+  font-size: 0.85rem;
+}
+
+.abm-form {
+  margin-bottom: 1.5rem;
+  padding: 1.25rem;
+
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+
+.abm-form-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.abm-close-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 34px;
+  height: 34px;
+
+  border: none;
+  border-radius: 50%;
+
+  background: transparent;
+  color: var(--text-muted);
+}
+
+.abm-close-button:hover {
+  background: var(--primary-light);
+  color: var(--primary);
+}
+
+.abm-form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+.abm-empty {
+  padding: 2rem 1rem;
+  color: var(--text-muted);
+  text-align: center;
+}
+
+
+/* =========================================================
+   PAYMENT METHODS
+   ========================================================= */
+
+.payment-method-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.payment-method-card {
+  padding: 1rem;
+
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+
+  box-shadow: var(--shadow);
+}
+
+.payment-method-card.inactive {
+  opacity: 0.6;
+}
+
+.payment-method-card-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.payment-method-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 42px;
+  height: 42px;
+
+  border-radius: 10px;
+
+  background: var(--primary-light);
+  color: var(--primary);
+}
+
+.payment-method-name {
+  font-weight: 700;
+}
+
+.payment-method-status {
+  margin-left: auto;
+
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.payment-method-status.active {
+  color: var(--success);
+}
+
+.payment-method-status.inactive {
+  color: var(--text-muted);
+}
+
+.payment-method-commission {
+  margin-top: 1rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--border);
+
+  color: var(--text-muted);
+  font-size: 0.82rem;
+}
+
+.payment-method-commission span {
+  display: block;
+}
+
+.payment-method-commission strong {
+  color: var(--text);
+}
+
+.payment-method-actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.payment-method-actions .btn {
+  flex: 1;
+}
+
+
+/* =========================================================
+   EXPENSE TYPES
+   ========================================================= */
+
+.expense-type-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.expense-type-card {
+  padding: 1rem;
+
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+
+  box-shadow: var(--shadow);
+}
+
+.expense-type-card.inactive {
+  opacity: 0.6;
+}
+
+.expense-type-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.expense-type-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 42px;
+  height: 42px;
+
+  border-radius: 10px;
+
+  background: var(--primary-light);
+  color: var(--primary);
+}
+
+.expense-type-name {
+  flex: 1;
+  font-weight: 700;
+}
+
+.expense-type-status {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--success);
+}
+
+.expense-type-actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.expense-type-actions .btn {
+  flex: 1;
+}
+
+
+/* =========================================================
+   RECURRING EXPENSES
+   ========================================================= */
+
+.recurring-expense-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.recurring-expense-card {
+  padding: 1rem;
+
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+
+  box-shadow: var(--shadow);
+}
+
+.recurring-expense-card.inactive {
+  opacity: 0.6;
+}
+
+.recurring-expense-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.recurring-expense-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 42px;
+  height: 42px;
+
+  border-radius: 10px;
+
+  background: var(--primary-light);
+  color: var(--primary);
+}
+
+.recurring-expense-name {
+  flex: 1;
+  font-weight: 700;
+}
+
+.recurring-expense-status {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--success);
+}
+
+.recurring-expense-amount {
+  margin-top: 1rem;
+
+  font-size: 1.3rem;
+  font-weight: 800;
+}
+
+.recurring-expense-details {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+
+  margin-top: 0.75rem;
+
+  color: var(--text-muted);
+  font-size: 0.82rem;
+}
+
+.recurring-expense-details span {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.recurring-expense-details strong {
+  color: var(--text);
+}
+
+.recurring-expense-last-payment {
+  margin-top: 1rem;
+  padding-top: 0.75rem;
+
+  border-top: 1px solid var(--border);
+
+  color: var(--text-muted);
+  font-size: 0.78rem;
+}
+
+.recurring-expense-last-payment span {
+  display: block;
+}
+
+.recurring-expense-last-payment strong {
+  color: var(--text);
+}
+
+.recurring-expense-actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.recurring-expense-actions .btn {
+  flex: 1;
+}
+
+.recurring-payment-update-option {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+
+  padding: 0.75rem;
+
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+
+.recurring-payment-update-option input {
+  accent-color: var(--primary);
+}
+
+.recurring-payment-update-option span {
+  font-size: 0.85rem;
+}
+
+.recurring-payment-info {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+
+  margin-top: 0.75rem;
+
+  color: var(--text-muted);
+  font-size: 0.8rem;
+}
+
+.recurring-payment-info svg {
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+
+/* =========================================================
+   MOBILE HEADER / DRAWER
+   ========================================================= */
+
+.mobile-header {
+  display: none;
+}
+
+.mobile-menu-overlay {
+  display: none;
+}
+
+
+/* =========================================================
+   QUICK ACTIONS / FAB
+   ========================================================= */
+
+.quick-actions {
+  position: fixed;
+  right: 1.25rem;
+  bottom: 1.25rem;
+  z-index: 40;
+}
+
+.quick-action-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 56px;
+  height: 56px;
+
+  border: none;
+  border-radius: 50%;
+
+  background: var(--primary);
+  color: #fff;
+
+  box-shadow: var(--shadow);
+
+  transition:
+    transform 0.2s ease,
+    background-color 0.2s ease;
+}
+
+.quick-action-button:hover {
+  background: var(--primary-hover);
+  transform: scale(1.04);
+}
+
+.quick-action-button.open {
+  transform: rotate(45deg);
+}
+
+.quick-action-menu {
+  position: absolute;
+  right: 0;
+  bottom: 68px;
+
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+
+  min-width: 190px;
+
+  padding: 0.6rem;
+
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+
+  box-shadow: var(--shadow);
+}
+
+.quick-action-item {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+
+  width: 100%;
+  padding: 0.7rem;
+
+  border: none;
+  border-radius: 8px;
+
+  background: transparent;
+  color: var(--text);
+
+  text-align: left;
+}
+
+.quick-action-item:hover {
+  background: var(--primary-light);
+}
+
+.quick-action-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 32px;
+  height: 32px;
+
+  border-radius: 8px;
+}
+
+.quick-action-icon.income {
+  background: rgb(16 185 129 / 0.12);
+  color: var(--success);
+}
+
+.quick-action-icon.expense {
+  background: rgb(239 68 68 / 0.12);
+  color: var(--error);
+}
+
+.quick-action-icon.recurring {
+  background: rgb(139 92 246 / 0.12);
+  color: var(--credito);
+}
+
+.quick-action-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+}
+
+
+/* =========================================================
+   HOY
+   ========================================================= */
+
+.hoy-page {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.hoy-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.hoy-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.hoy-summary-card {
+  padding: 1rem;
+
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+
+  box-shadow: var(--shadow);
+}
+
+.hoy-summary-card strong {
+  display: block;
+  margin-top: 0.35rem;
+  font-size: 1.35rem;
+}
+
+.hoy-summary-label {
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.hoy-summary-label.income {
+  color: var(--success);
+}
+
+.hoy-summary-label.expense {
+  color: var(--error);
+}
+
+.hoy-balance-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+
+  padding: 1.25rem;
+
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+
+  box-shadow: var(--shadow);
+}
+
+.hoy-balance-card .label {
+  color: var(--text-muted);
+  font-size: 0.8rem;
+}
+
+.hoy-balance-card strong {
+  display: block;
+  margin-top: 0.3rem;
+  font-size: 1.6rem;
+}
+
+.hoy-balance-card .icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 44px;
+  height: 44px;
+
+  border-radius: 10px;
+
+  background: var(--primary-light);
+  color: var(--primary);
+}
+
+.hoy-balance-card.positive strong {
+  color: var(--success);
+}
+
+.hoy-balance-card.negative strong {
+  color: var(--error);
+}
+
+.hoy-movements-card {
+  overflow: hidden;
+
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+
+  box-shadow: var(--shadow);
+}
+
+.hoy-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+
+  padding: 1rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.hoy-section-header p {
+  color: var(--text-muted);
+  font-size: 0.8rem;
+}
+
+.hoy-see-all {
+  color: var(--primary);
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.hoy-movements-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.hoy-movement {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+
+  padding: 0.9rem 1rem;
+
+  border-bottom: 1px solid var(--border);
+}
+
+.hoy-movement:last-child {
+  border-bottom: none;
+}
+
+.hoy-movement-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 38px;
+  height: 38px;
+
+  flex-shrink: 0;
+
+  border-radius: 10px;
+}
+
+.hoy-movement-icon.income {
+  background: rgb(16 185 129 / 0.12);
+  color: var(--success);
+}
+
+.hoy-movement-icon.expense {
+  background: rgb(239 68 68 / 0.12);
+  color: var(--error);
+}
+
+.hoy-movement-info {
+  min-width: 0;
+  flex: 1;
+}
+
+.hoy-movement-info strong {
+  display: block;
+
+  overflow: hidden;
+
+  font-size: 0.9rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.hoy-movement-meta {
+  margin-top: 0.2rem;
+
+  color: var(--text-muted);
+  font-size: 0.75rem;
+}
+
+.hoy-empty {
+  padding: 2rem 1rem;
+  color: var(--text-muted);
+  text-align: center;
+}
+
+.hoy-empty strong {
+  display: block;
+  margin-bottom: 0.25rem;
+}
+
+
+/* =========================================================
+   RECURRING MONTH SUMMARY
+   ========================================================= */
+
+.recurring-month-summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+
+  padding: 1rem;
+
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+.recurring-month-summary span {
+  color: var(--text-muted);
+  font-size: 0.82rem;
+}
+
+.recurring-month-summary strong {
+  font-size: 1.1rem;
+}
+
+.recurring-pending-badge {
+  display: inline-flex;
+  align-items: center;
+
+  padding: 0.3rem 0.65rem;
+
+  border-radius: 999px;
+
+  background: rgb(245 158 11 / 0.12);
+  color: var(--transfer);
+
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.recurring-expense-section {
+  margin-top: 1.5rem;
+}
+
+.recurring-expense-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+
+  margin-bottom: 0.75rem;
+}
+
+.recurring-expense-section-header h3 {
+  font-size: 1rem;
+}
+
+.recurring-expense-section-header p {
+  color: var(--text-muted);
+  font-size: 0.8rem;
+}
+
+.recurring-section-empty {
+  padding: 1.5rem;
+
+  border: 1px dashed var(--border);
+  border-radius: var(--radius);
+
+  color: var(--text-muted);
+  text-align: center;
+}
+
+.recurring-section-empty strong {
+  display: block;
+  margin-bottom: 0.25rem;
+  color: var(--text);
+}
+
+.recurring-expense-card-pending,
+.recurring-expense-card-paid {
+  padding: 1rem;
+
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+
+  box-shadow: var(--shadow);
+}
+
+.recurring-expense-card-pending.overdue {
+  border-color: rgb(239 68 68 / 0.4);
+}
+
+.recurring-expense-due {
+  color: var(--text-muted);
+  font-size: 0.78rem;
+}
+
+.recurring-expense-due.overdue {
+  color: var(--error);
+  font-weight: 700;
+}
+
+.recurring-expense-card-paid .paid-icon {
+  color: var(--success);
+}
+
+.recurring-expense-section-inactive {
+  opacity: 0.65;
+}
+
+
+/* =========================================================
+   CONFIGURACIÓN
+   ========================================================= */
+
+.config-section {
+  max-width: 720px;
+}
+
+.config-header {
+  margin-bottom: 1.5rem;
+}
+
+.config-header p {
+  margin-top: 0.4rem;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}
+
+.config-card {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.config-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+.config-field label {
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.config-field small {
+  color: var(--text-muted);
+  font-size: 0.78rem;
+}
+
+.config-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  padding-top: 0.5rem;
+  border-top: 1px solid var(--border);
+}
+
+.config-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+
+  width: fit-content;
+  padding: 0.35rem 0.65rem;
+
+  border-radius: 999px;
+
+  background: rgb(16 185 129 / 0.12);
+  color: var(--success);
+
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+
+/* =========================================================
+   RESPONSIVE - TABLET / MOBILE
+   ========================================================= */
+
 @media (max-width: 768px) {
+  /* Layout */
   .dashboard-container {
-    flex-direction: column;
+    display: block;
   }
 
   .sidebar {
-    width: 100%;
-    height: auto;
-    position: sticky;
-    top: 0;
-    z-index: 100;
-    padding: 0.75rem 1rem;
-    border-right: none;
-    border-bottom: 1px solid var(--border);
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-    gap: 1rem;
-    background: var(--card-bg);
-  }
-
-  .sidebar h2 {
-    margin-bottom: 0 !important;
-    font-size: 1.1rem !important;
-  }
-
-  .sidebar-nav {
-    flex-direction: row;
-    gap: 0.25rem;
-  }
-
-  .nav-link {
-    padding: 0.4rem 0.6rem;
-    font-size: 0.8rem;
-    gap: 0.4rem;
+    display: none;
   }
 
   .main-content {
+    width: 100%;
     padding: 1rem;
+    padding-top: 4.5rem;
   }
 
-  .summary-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .card {
-    padding: 1rem;
-  }
-
+  /* Typography */
   h1 {
     font-size: 1.4rem;
   }
 
-  /* Form adjustments for mobile */
-  form {
-    grid-template-columns: 1fr !important;
+  h2 {
+    font-size: 1.15rem;
   }
 
-  .form-group {
-    grid-column: span 1 !important;
+  h3 {
+    font-size: 1rem;
   }
 
-  /* Tables need special care on small screens */
+  /* Summary */
+  .summary-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .summary-breakdown-values {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  /* Cards */
+  .card {
+    padding: 1rem;
+  }
+
+  /* Forms */
+  .abm-form {
+    padding: 1rem;
+  }
+
+  .abm-form-actions {
+    flex-direction: column-reverse;
+  }
+
+  .abm-form-actions .btn {
+    width: 100%;
+  }
+
+  /* Payment methods */
+  .payment-method-grid {
+    grid-template-columns: 1fr;
+  }
+
+  /* Expense types */
+  .expense-type-grid {
+    grid-template-columns: 1fr;
+  }
+
+  /* Recurring expenses */
+  .recurring-expense-grid {
+    grid-template-columns: 1fr;
+  }
+
+  /* Tables */
   .table-container {
-    margin: 0 -1rem;
-    /* Full bleed on mobile */
-    border-radius: 0;
-    border-left: none;
+    width: calc(100% + 2rem);
+    margin-left: -1rem;
+
     border-right: none;
+    border-left: none;
+
+    border-radius: 0;
   }
 
   .table-container table {
     min-width: 600px;
-    /* Force overflow for horizontal scroll */
+  }
+
+  /* Mobile header */
+  .mobile-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 50;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    height: 60px;
+    padding: 0 1rem;
+
+    background: var(--card-bg);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .mobile-header-title {
+    font-size: 1rem;
+    font-weight: 800;
+  }
+
+  .mobile-menu-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 40px;
+    height: 40px;
+
+    border: none;
+    border-radius: 8px;
+
+    background: transparent;
+    color: var(--text);
+  }
+
+  .mobile-menu-button:hover {
+    background: var(--primary-light);
+    color: var(--primary);
+  }
+
+  .mobile-menu-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 55;
+
+    display: block;
+
+    background: rgb(0 0 0 / 0.45);
+  }
+
+  .mobile-drawer {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 60;
+
+    display: flex;
+    flex-direction: column;
+
+    width: min(290px, 85vw);
+
+    padding: 1rem;
+
+    background: var(--card-bg);
+    border-right: 1px solid var(--border);
+
+    animation: mobile-drawer-in 0.2s ease-out;
+  }
+
+  .mobile-drawer-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    margin-bottom: 1.25rem;
+  }
+
+  .mobile-drawer-close {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 38px;
+    height: 38px;
+
+    border: none;
+    border-radius: 8px;
+
+    background: transparent;
+    color: var(--text-muted);
+  }
+
+  .mobile-drawer-close:hover {
+    background: var(--primary-light);
+    color: var(--primary);
+  }
+
+  .mobile-drawer .sidebar-nav {
+    overflow-y: auto;
+    flex: 1;
+  }
+
+  .mobile-drawer .nav-link {
+    padding: 0.8rem;
+  }
+
+  .mobile-drawer .sidebar-section {
+    margin-top: 1rem;
+  }
+
+  .mobile-drawer .sidebar-section-title {
+    padding-left: 0.8rem;
+  }
+
+  .mobile-drawer .nav-link-sub {
+    padding-left: 2rem;
+  }
+
+  .mobile-drawer-footer {
+    margin-top: auto;
+    padding-top: 1rem;
+    border-top: 1px solid var(--border);
+  }
+
+  /* Quick actions */
+  .quick-actions {
+    right: 1rem;
+    bottom: 1rem;
+  }
+
+  /* Configuration */
+  .config-section {
+    max-width: none;
+  }
+
+  .config-actions {
+    flex-direction: column;
+  }
+
+  .config-actions .btn {
+    width: 100%;
   }
 }
+
+
+/* =========================================================
+   RESPONSIVE - SMALL PHONES
+   ========================================================= */
+
+@media (max-width: 600px) {
+  .main-content {
+    padding-right: 0.75rem;
+    padding-left: 0.75rem;
+  }
+
+  .hoy-summary-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .hoy-balance-card {
+    align-items: flex-start;
+  }
+
+  .hoy-balance-card strong {
+    font-size: 1.4rem;
+  }
+
+  .hoy-movements-card {
+    border-right: none;
+    border-left: none;
+    border-radius: 0;
+  }
+
+  .hoy-section-header {
+    padding: 0.9rem;
+  }
+
+  .hoy-movement {
+    padding: 0.8rem 0.9rem;
+  }
+
+  .hoy-movement-icon {
+    width: 34px;
+    height: 34px;
+  }
+
+  .hoy-movement-info strong {
+    font-size: 0.85rem;
+  }
+
+  .summary-breakdown-values {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.5rem;
+  }
+
+  .summary-breakdown-card {
+    padding: 0.85rem;
+  }
+
+  .recurring-month-summary {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .recurring-expense-section-header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .payment-method-card,
+  .expense-type-card,
+  .recurring-expense-card {
+    padding: 0.9rem;
+  }
+}
+

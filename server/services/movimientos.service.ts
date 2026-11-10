@@ -1,51 +1,971 @@
-import { findOrCreateSheet } from '../google/drive';
-import { appendMovement, getMovements, updateDailySummary } from '../google/sheets';
-import { Movement } from '@/shared/types';
+import { prisma } from "@/prisma/prisma";
+import { MovementInput } from "@/shared/types";
+import { getArgentinaDateString, parseMovementDate, ARGENTINA_OFFSET } from "@/shared/utils/dates";
+import {
+    calculateCommission,
+    calculateInvestment,
+    calculateTithe,
+    calculateAvailable,
+    roundMoney,
+} from "@/server/utils/finance";
 
 export class MovimientosService {
-    private static async getSheetId() {
-        const id = await findOrCreateSheet();
-        if (!id) throw new Error('Could not find or create sheet');
-        return id;
-    }
+    static async saveMovement(
+        workspaceId: string,
+        userId: string,
+        movement: MovementInput
+    ) {
+        return prisma.$transaction(async (tx) => {
+            if (movement.type === "INGRESO") {
+                const date = parseMovementDate(movement.date);
 
-    static async saveMovement(movement: Movement) {
-        const sheetId = await this.getSheetId();
-        await appendMovement(sheetId, movement);
+                const investmentPercentage =
+                    movement.investmentPercentage ?? 50;
 
-        // Opcional: Actualizar el resumen después de cada inserción 
-        // o hacerlo de forma asíncrona o bajo demanda.
-        // Por simplicidad en este MVP, actualizamos el resumen después de obtener todos los movimientos.
-        const allMovements = await getMovements(sheetId);
-        await updateDailySummary(sheetId, allMovements);
-    }
+                if (
+                    !Number.isFinite(investmentPercentage) ||
+                    investmentPercentage < 0 ||
+                    investmentPercentage > 100
+                ) {
+                    throw new Error(
+                        "VALIDATION: El porcentaje de inversión debe estar entre 0 y 100"
+                    );
+                }
 
-    static async fetchMovements() {
-        const sheetId = await this.getSheetId();
-        return await getMovements(sheetId);
-    }
+                if (!Array.isArray(movement.payments)) {
+                    throw new Error(
+                        "VALIDATION: Los medios de pago son inválidos"
+                    );
+                }
 
-    static async fetchSummary() {
-        const sheetId = await this.getSheetId();
-        const movements = await getMovements(sheetId);
+                const paymentMethodIds = movement.payments.map(
+                    (payment) => payment.paymentMethodId
+                );
 
-        const summaries: Record<string, { income: number; expenses: number }> = {};
-        movements.forEach((m) => {
-            if (!summaries[m.date]) {
-                summaries[m.date] = { income: 0, expenses: 0 };
+                if (
+                    new Set(paymentMethodIds).size !==
+                    paymentMethodIds.length
+                ) {
+                    throw new Error(
+                        "VALIDATION: No se puede repetir un medio de pago en el mismo ingreso"
+                    );
+                }
+
+                const validPayments = movement.payments.filter(
+                    (payment) => payment.amount > 0
+                );
+
+                if (validPayments.length === 0) {
+                    throw new Error(
+                        "VALIDATION: El ingreso debe tener al menos un monto mayor a 0"
+                    );
+                }
+
+                const total = validPayments.reduce(
+                    (sum, payment) => sum + payment.amount,
+                    0
+                );
+
+                const incomePayments = [];
+
+                for (const payment of validPayments) {
+                    if (
+                        !Number.isFinite(payment.amount) ||
+                        payment.amount <= 0
+                    ) {
+                        throw new Error(
+                            "VALIDATION: Los montos de los medios de pago deben ser mayores a 0"
+                        );
+                    }
+
+                    const paymentMethod =
+                        await tx.paymentMethod.findFirst({
+                            where: {
+                                id: payment.paymentMethodId,
+                                workspaceId,
+                                active: true,
+                            },
+                        });
+
+                    if (!paymentMethod) {
+                        throw new Error(
+                            "VALIDATION: Medio de pago inválido"
+                        );
+                    }
+
+                    const commissionPercentage =
+                        payment.commissionPercentage ??
+                        Number(
+                            paymentMethod.defaultCommissionPercentage
+                        );
+
+                    if (
+                        !Number.isFinite(commissionPercentage) ||
+                        commissionPercentage < 0 ||
+                        commissionPercentage > 100
+                    ) {
+                        throw new Error(
+                            "VALIDATION: Porcentaje de comisión inválido"
+                        );
+                    }
+
+                    const { commissionAmount, netAmount } =
+                        calculateCommission(
+                            payment.amount,
+                            commissionPercentage
+                        );
+
+                    incomePayments.push({
+                        paymentMethodId: payment.paymentMethodId,
+                        amount: payment.amount,
+                        commissionPercentage,
+                        commissionAmount,
+                        netAmount,
+                    });
+                }
+
+                const movementRecord = await tx.movement.create({
+                    data: {
+                        workspaceId,
+                        createdById: userId,
+                        type: "INGRESO",
+                        amount: total,
+                        date,
+                        description: movement.description || null,
+                    },
+                });
+
+                await tx.income.create({
+                    data: {
+                        movementId: movementRecord.id,
+                        investmentPercentage,
+                        payments: {
+                            create: incomePayments,
+                        },
+                    },
+                });
+
+                return movementRecord;
             }
-            if (m.type === 'INGRESO') {
-                summaries[m.date].income += m.netAmount;
-            } else {
-                summaries[m.date].expenses += m.netAmount;
+
+            // EGRESO
+
+            const date = parseMovementDate(movement.date);
+
+            if (
+                !Number.isFinite(movement.amount) ||
+                movement.amount <= 0
+            ) {
+                throw new Error(
+                    "VALIDATION: El egreso debe tener un monto mayor a 0"
+                );
             }
+
+            if (!movement.paymentMethodId) {
+                throw new Error(
+                    "VALIDATION: Debe seleccionar un medio de pago"
+                );
+            }
+
+            if (!movement.expenseTypeId) {
+                throw new Error(
+                    "VALIDATION: Debe seleccionar un tipo de gasto"
+                );
+            }
+
+            const paymentMethod =
+                await tx.paymentMethod.findFirst({
+                    where: {
+                        id: movement.paymentMethodId,
+                        workspaceId,
+                        active: true,
+                    },
+                });
+
+            if (!paymentMethod) {
+                throw new Error(
+                    "VALIDATION: Medio de pago inválido"
+                );
+            }
+
+            const expenseType =
+                await tx.expenseType.findFirst({
+                    where: {
+                        id: movement.expenseTypeId,
+                        workspaceId,
+                        active: true,
+                    },
+                });
+
+            if (!expenseType) {
+                throw new Error(
+                    "VALIDATION: Tipo de gasto inválido"
+                );
+            }
+
+            const movementRecord = await tx.movement.create({
+                data: {
+                    workspaceId,
+                    createdById: userId,
+                    type: "EGRESO",
+                    amount: movement.amount,
+                    date,
+                    description: movement.description || null,
+                },
+            });
+
+            await tx.expense.create({
+                data: {
+                    movementId: movementRecord.id,
+                    expenseTypeId: expenseType.id,
+                    paymentMethodId: paymentMethod.id,
+                },
+            });
+
+            return movementRecord;
+        });
+    }
+
+    static async updateMovement(
+        workspaceId: string,
+        userId: string,
+        movementId: string,
+        movement: MovementInput
+    ) {
+        return prisma.$transaction(async (tx) => {
+            const existingMovement =
+                await tx.movement.findFirst({
+                    where: {
+                        id: movementId,
+                        workspaceId,
+                    },
+                    include: {
+                        income: {
+                            include: {
+                                payments: {
+                                    select: { paymentMethodId: true },
+                                },
+                            },
+                        },
+                        expense: true,
+                    },
+                });
+
+            if (!existingMovement) {
+                throw new Error(
+                    "VALIDATION: Movimiento no encontrado"
+                );
+            }
+
+            if (existingMovement.type !== movement.type) {
+                throw new Error(
+                    "VALIDATION: No se puede cambiar el tipo de movimiento"
+                );
+            }
+
+            // INGRESO
+            if (movement.type === "INGRESO") {
+                const date = parseMovementDate(movement.date);
+
+                const investmentPercentage =
+                    movement.investmentPercentage ?? 50;
+
+                if (
+                    !Number.isFinite(investmentPercentage) ||
+                    investmentPercentage < 0 ||
+                    investmentPercentage > 100
+                ) {
+                    throw new Error(
+                        "VALIDATION: El porcentaje de inversión debe estar entre 0 y 100"
+                    );
+                }
+
+                if (!Array.isArray(movement.payments)) {
+                    throw new Error(
+                        "VALIDATION: Los medios de pago son inválidos"
+                    );
+                }
+
+                const paymentMethodIds = movement.payments.map(
+                    (payment) => payment.paymentMethodId
+                );
+
+                if (
+                    new Set(paymentMethodIds).size !==
+                    paymentMethodIds.length
+                ) {
+                    throw new Error(
+                        "VALIDATION: No se puede repetir un medio de pago en el mismo ingreso"
+                    );
+                }
+
+                const validPayments = movement.payments.filter(
+                    (payment) => payment.amount > 0
+                );
+
+                if (validPayments.length === 0) {
+                    throw new Error(
+                        "VALIDATION: El ingreso debe tener al menos un monto mayor a 0"
+                    );
+                }
+
+                const total = validPayments.reduce(
+                    (sum, payment) => sum + payment.amount,
+                    0
+                );
+
+                const incomePayments = [];
+
+                for (const payment of validPayments) {
+                    if (
+                        !Number.isFinite(payment.amount) ||
+                        payment.amount <= 0
+                    ) {
+                        throw new Error(
+                            "VALIDATION: Los montos de los medios de pago deben ser mayores a 0"
+                        );
+                    }
+
+                    const paymentMethod =
+                        await tx.paymentMethod.findFirst({
+                            where: {
+                                id: payment.paymentMethodId,
+                                workspaceId,
+                            },
+                        });
+
+                    const wasAlreadyUsed =
+                        existingMovement.income?.payments?.some(
+                            (existingPayment) =>
+                                existingPayment.paymentMethodId === payment.paymentMethodId
+                        ) ?? false;
+
+                    if (!paymentMethod || (paymentMethod.active === false && !wasAlreadyUsed)) {
+                        throw new Error(
+                            "VALIDATION: Medio de pago inválido"
+                        );
+                    }
+
+                    const commissionPercentage =
+                        payment.commissionPercentage ??
+                        Number(
+                            paymentMethod.defaultCommissionPercentage
+                        );
+
+                    if (
+                        !Number.isFinite(commissionPercentage) ||
+                        commissionPercentage < 0 ||
+                        commissionPercentage > 100
+                    ) {
+                        throw new Error(
+                            "VALIDATION: Porcentaje de comisión inválido"
+                        );
+                    }
+
+                    const { commissionAmount, netAmount } =
+                        calculateCommission(
+                            payment.amount,
+                            commissionPercentage
+                        );
+
+                    incomePayments.push({
+                        paymentMethodId: payment.paymentMethodId,
+                        amount: payment.amount,
+                        commissionPercentage,
+                        commissionAmount,
+                        netAmount,
+                    });
+                }
+
+                if (!existingMovement.income) {
+                    throw new Error(
+                        "VALIDATION: El ingreso asociado al movimiento no existe"
+                    );
+                }
+
+                const updated = await tx.movement.updateMany({
+                    where: {
+                        id: movementId,
+                        workspaceId,
+                    },
+                    data: {
+                        amount: total,
+                        date,
+                        description: movement.description || null,
+                        updatedById: userId,
+                    },
+                });
+
+                if (updated.count !== 1) {
+                    throw new Error(
+                        "VALIDATION: Movimiento no encontrado"
+                    );
+                }
+
+                await tx.income.update({
+                    where: {
+                        movementId,
+                    },
+                    data: {
+                        investmentPercentage,
+                    },
+                });
+
+                await tx.incomePayment.deleteMany({
+                    where: {
+                        incomeId: movementId,
+                    },
+                });
+
+                await tx.incomePayment.createMany({
+                    data: incomePayments.map((payment) => ({
+                        incomeId: movementId,
+                        paymentMethodId: payment.paymentMethodId,
+                        amount: payment.amount,
+                        commissionPercentage:
+                            payment.commissionPercentage,
+                        commissionAmount: payment.commissionAmount,
+                        netAmount: payment.netAmount,
+                    })),
+                });
+
+                return tx.movement.findUnique({
+                    where: {
+                        id: movementId,
+                    },
+                });
+            }
+
+            // EGRESO
+            const date = parseMovementDate(movement.date);
+
+            if (
+                !Number.isFinite(movement.amount) ||
+                movement.amount <= 0
+            ) {
+                throw new Error(
+                    "VALIDATION: El egreso debe tener un monto mayor a 0"
+                );
+            }
+
+            if (!movement.paymentMethodId) {
+                throw new Error(
+                    "VALIDATION: Debe seleccionar un medio de pago"
+                );
+            }
+
+            if (!movement.expenseTypeId) {
+                throw new Error(
+                    "VALIDATION: Debe seleccionar un tipo de gasto"
+                );
+            }
+
+            const paymentMethod =
+                await tx.paymentMethod.findFirst({
+                    where: {
+                        id: movement.paymentMethodId,
+                        workspaceId,
+                        active: true,
+                    },
+                });
+
+            if (!paymentMethod) {
+                throw new Error(
+                    "VALIDATION: Medio de pago inválido"
+                );
+            }
+
+            const expenseType =
+                await tx.expenseType.findFirst({
+                    where: {
+                        id: movement.expenseTypeId,
+                        workspaceId,
+                        active: true,
+                    },
+                });
+
+            if (!expenseType) {
+                throw new Error(
+                    "VALIDATION: Tipo de gasto inválido"
+                );
+            }
+
+            if (!existingMovement.expense) {
+                throw new Error(
+                    "VALIDATION: El egreso asociado al movimiento no existe"
+                );
+            }
+
+
+            const updated = await tx.movement.updateMany({
+                where: {
+                    id: movementId,
+                    workspaceId,
+                },
+                data: {
+                    amount: movement.amount,
+                    date,
+                    description: movement.description || null,
+                    updatedById: userId,
+                },
+            });
+
+            if (updated.count !== 1) {
+                throw new Error(
+                    "VALIDATION: Movimiento no encontrado"
+                );
+            }
+
+            await tx.expense.update({
+                where: {
+                    movementId,
+                },
+                data: {
+                    paymentMethodId: paymentMethod.id,
+                    expenseTypeId: expenseType.id,
+                },
+            });
+
+            return tx.movement.findUnique({
+                where: {
+                    id: movementId,
+                },
+            });
+        });
+    }
+
+    static async deleteMovement(
+        workspaceId: string,
+        movementId: string
+    ) {
+        return prisma.$transaction(async (tx) => {
+            const movement = await tx.movement.findFirst({
+                where: {
+                    id: movementId,
+                    workspaceId: workspaceId,
+                },
+                select: {
+                    id: true,
+                },
+            });
+
+            if (!movement) {
+                throw new Error(
+                    "VALIDATION: Movimiento no encontrado"
+                );
+            }
+
+            const deleted = await tx.movement.deleteMany({
+                where: {
+                    id: movement.id,
+                    workspaceId: workspaceId,
+                },
+            });
+
+            if (deleted.count !== 1) {
+                throw new Error(
+                    "VALIDATION: Movimiento no encontrado"
+                );
+            }
+
+            return { id: movement.id };
+        });
+    }
+
+    static async fetchMovements(workspaceId: string) {
+        return prisma.movement.findMany({
+            where: {
+                workspaceId,
+            },
+            include: {
+                expense: {
+                    include: {
+                        expenseType: true,
+                        paymentMethod: true,
+                    },
+                },
+                income: {
+                    include: {
+                        payments: {
+                            include: {
+                                paymentMethod: true,
+                            },
+                        },
+                    },
+                },
+            },
+            orderBy: [
+                { date: "desc" },
+                { createdAt: "desc" },
+                { id: "desc" },
+            ],
+
+        });
+    }
+
+
+    static async fetchSummary(
+        workspaceId: string,
+        period: "day" | "week" | "month" | "year" = "month"
+    ) {
+        const now = new Date();
+        const argentinaToday = getArgentinaDateString(now);
+        const [year, month, day] = argentinaToday.split("-").map(Number);
+        const nowArgentina = new Date();
+        nowArgentina.setUTCDate(now.getUTCDate() + 1);
+
+        let startDate: Date;
+
+        if (period === "day") {
+            // Inicio del día actual en Argentina.
+            startDate = parseMovementDate(
+                argentinaToday
+            );
+        } else if (period === "week") {
+            // Día de la semana según calendario argentino.
+            const argentinaDate = new Date(
+                `${argentinaToday}T12:00:00${ARGENTINA_OFFSET}`
+            );
+
+            const dayOfWeek =
+                argentinaDate.getUTCDay();
+
+            const daysFromMonday =
+                dayOfWeek === 0
+                    ? 6
+                    : dayOfWeek - 1;
+
+            const monday =
+                new Date(argentinaDate);
+
+            monday.setUTCDate(
+                monday.getUTCDate() -
+                daysFromMonday
+            );
+
+            const mondayString = [
+                monday.getUTCFullYear(),
+                String(
+                    monday.getUTCMonth() + 1
+                ).padStart(2, "0"),
+                String(
+                    monday.getUTCDate()
+                ).padStart(2, "0"),
+            ].join("-");
+
+            startDate =
+                parseMovementDate(mondayString);
+        } else if (period === "month") {
+            const monthString = [
+                year,
+                String(month).padStart(2, "0"),
+                "01",
+            ].join("-");
+
+            startDate =
+                parseMovementDate(monthString);
+        } else {
+            const yearString = `${year}-01-01`;
+
+            startDate =
+                parseMovementDate(yearString);
+        }
+
+        /*
+         * Configuración financiera del usuario.
+         *
+         * El diezmo se calcula acá, en el backend,
+         * y no en cada pantalla.
+         */
+        const workspace = await prisma.workspace.findUnique({
+            where: {
+                id: workspaceId,
+            },
+            select: {
+                titheEnabled: true,
+                tithePercentage: true,
+                titheBase: true,
+            },
         });
 
-        return Object.entries(summaries).map(([date, data]) => ({
-            date,
-            totalIncome: data.income,
-            totalExpenses: data.expenses,
-            netDaily: data.income - data.expenses,
-        })).sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+        const movements =
+            await prisma.movement.findMany({
+                where: {
+                    workspaceId,
+                    date: {
+                        gte: startDate,
+                        lte: now,
+                    },
+                },
+                select: {
+                    type: true,
+                    amount: true,
+                    date: true,
+                    income: {
+                        select: {
+                            investmentPercentage: true,
+                            payments: {
+                                select: {
+                                    commissionAmount: true,
+                                    netAmount: true,
+                                },
+                            },
+                        },
+                    },
+                },
+                orderBy: {
+                    date: "desc",
+                },
+            });
+
+        const totals = {
+            income: 0,
+            expenses: 0,
+            balance: 0,
+            commissions: 0,
+            netIncome: 0,
+            investment: 0,
+            tithe: 0,
+            available: 0,
+        };
+
+        const breakdown: Record<
+            string,
+            {
+                income: number;
+                expenses: number;
+                commissions: number;
+                netIncome: number;
+                investment: number;
+                tithe: number;
+                available: number;
+            }
+        > = {};
+
+        for (const movement of movements) {
+            const movementDate =
+                movement.date;
+
+            let key: string;
+
+            if (
+                period === "day" ||
+                period === "week" ||
+                period === "month"
+            ) {
+                // Agrupar por día argentino.
+                key =
+                    getArgentinaDateString(
+                        movementDate
+                    );
+            } else {
+                // Agrupar por mes argentino.
+                key =
+                    getArgentinaDateString(
+                        movementDate
+                    ).slice(0, 7);
+            }
+
+            if (!breakdown[key]) {
+                breakdown[key] = {
+                    income: 0,
+                    expenses: 0,
+                    commissions: 0,
+                    netIncome: 0,
+                    investment: 0,
+                    tithe: 0,
+                    available: 0,
+                };
+            }
+
+            if (movement.type === "INGRESO") {
+                const grossIncome =
+                    Number(movement.amount);
+
+                const commissions =
+                    movement.income?.payments.reduce(
+                        (
+                            sum: number,
+                            payment
+                        ) =>
+                            sum +
+                            Number(
+                                payment.commissionAmount
+                            ),
+                        0
+                    ) ?? 0;
+
+                const netIncome =
+                    movement.income?.payments.reduce(
+                        (
+                            sum: number,
+                            payment
+                        ) =>
+                            sum +
+                            Number(
+                                payment.netAmount
+                            ),
+                        0
+                    ) ?? 0;
+
+                const investmentPercentage =
+                    Number(
+                        movement.income
+                            ?.investmentPercentage ??
+                        0
+                    );
+
+                const investment = calculateInvestment(
+                    netIncome,
+                    investmentPercentage
+                );
+
+                /*
+                 * DIEZMO
+                 *
+                 * Se calcula por ingreso.
+                 *
+                 * NET_INCOME:
+                 *   diezmo = ingreso neto × porcentaje
+                 *
+                 * AFTER_INVESTMENT:
+                 *   diezmo =
+                 *   (ingreso neto - reinversión)
+                 *   × porcentaje
+                 */
+                const tithe = calculateTithe(
+                    netIncome,
+                    investment,
+                    Number(workspace?.tithePercentage ?? 0),
+                    workspace?.titheBase === "AFTER_INVESTMENT"
+                        ? "AFTER_INVESTMENT"
+                        : "NET_INCOME",
+                    workspace?.titheEnabled ?? false
+                );
+
+                /*
+                 * Disponible después de:
+                 *
+                 * ingreso neto
+                 * - reinversión
+                 * - diezmo
+                 */
+                const available = calculateAvailable(
+                    netIncome,
+                    investment,
+                    tithe
+                );
+
+                totals.income +=
+                    grossIncome;
+
+                totals.commissions +=
+                    commissions;
+
+                totals.netIncome +=
+                    netIncome;
+
+                totals.investment +=
+                    investment;
+
+                totals.tithe += tithe;
+
+                totals.available +=
+                    available;
+
+                breakdown[key].income +=
+                    grossIncome;
+
+                breakdown[key].commissions +=
+                    commissions;
+
+                breakdown[key].netIncome +=
+                    netIncome;
+
+                breakdown[key].investment +=
+                    investment;
+
+                breakdown[key].tithe +=
+                    tithe;
+
+                breakdown[key].available +=
+                    available;
+            } else {
+                const expense =
+                    Number(movement.amount);
+
+                totals.expenses +=
+                    expense;
+
+                breakdown[key].expenses +=
+                    expense;
+            }
+        }
+
+        totals.balance =
+            totals.income -
+            totals.expenses;
+
+        /*
+         * Redondeamos los acumulados.
+         * Evita pequeños errores de coma flotante.
+         */
+        totals.income = roundMoney(totals.income);
+        totals.expenses = roundMoney(totals.expenses);
+        totals.balance = roundMoney(totals.balance);
+        totals.commissions = roundMoney(totals.commissions);
+        totals.netIncome = roundMoney(totals.netIncome);
+        totals.investment = roundMoney(totals.investment);
+        totals.tithe = roundMoney(totals.tithe);
+        totals.available = roundMoney(totals.available);
+
+        const result = Object.entries(
+            breakdown
+        )
+            .map(([date, data]) => ({
+                date,
+                totalIncome:
+                    data.income,
+                totalExpenses:
+                    data.expenses,
+                commissions:
+                    data.commissions,
+                netIncome:
+                    data.netIncome,
+                investment:
+                    data.investment,
+                tithe:
+                    data.tithe,
+                available:
+                    data.available,
+                netDaily:
+                    data.income -
+                    data.expenses,
+            }))
+            .sort(
+                (a, b) =>
+                    b.date.localeCompare(
+                        a.date
+                    )
+            );
+
+        return {
+            period,
+            tithe: {
+                enabled:
+                    workspace?.titheEnabled ??
+                    false,
+                percentage:
+                    Number(
+                        workspace?.tithePercentage ??
+                        0
+                    ),
+                base:
+                    workspace?.titheBase ??
+                    "NET_INCOME",
+            },
+            totals,
+            breakdown: result,
+        };
     }
 }

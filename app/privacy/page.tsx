@@ -1,3 +1,5 @@
+import Link from 'next/link';
+
 export default function PrivacyPage() {
     return (
         <div style={{ maxWidth: '800px', margin: '0 auto', padding: '2rem', fontFamily: 'sans-serif', lineHeight: '1.6' }}>
@@ -30,7 +32,9 @@ export default function PrivacyPage() {
             <p>Usted puede revocar el acceso de esta aplicación a su cuenta de Google en cualquier momento desde la configuración de seguridad de su cuenta de Google.</p>
 
             <div style={{ marginTop: '2rem', borderTop: '1px solid #eee', paddingTop: '1rem' }}>
-                <a href="/" style={{ color: 'var(--primary, #c54b8c)', textDecoration: 'none' }}>Volver al inicio</a>
+                <Link href="/" style={{ color: 'var(--primary, #c54b8c)', textDecoration: 'none' }}>
+                    Volver al inicio
+                </Link>
             </div>
         </div>
     );

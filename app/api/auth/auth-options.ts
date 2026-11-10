@@ -1,36 +1,50 @@
-import { NextAuthOptions } from 'next-auth';
-import GoogleProvider from 'next-auth/providers/google';
+import { NextAuthOptions } from "next-auth";
+import GoogleProvider from "next-auth/providers/google";
+import CredentialsProvider from "next-auth/providers/credentials";
+import { PrismaAdapter } from "@auth/prisma-adapter";
+import { prisma } from "@/prisma/prisma";
 
 export const authOptions: NextAuthOptions = {
+    adapter: PrismaAdapter(prisma as any),
+
     providers: [
         GoogleProvider({
             clientId: process.env.GOOGLE_CLIENT_ID!,
             clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
-            authorization: {
-                params: {
-                    scope: 'openid email profile https://www.googleapis.com/auth/drive.file',
-                    access_type: 'offline',
-                    prompt: 'consent',
-                },
+        }),
+
+        CredentialsProvider({
+            id: "demo",
+            name: "Demo",
+            credentials: {},
+
+            async authorize() {
+                const demoUser = await prisma.user.upsert({
+                    where: { email: "demo@excel-ui.demo" },
+                    update: {},
+                    create: {
+                        email: "demo@excel-ui.demo",
+                        name: "Usuario Demo",
+                    },
+                });
+
+                return {
+                    id: demoUser.id,
+                    name: demoUser.name,
+                    email: demoUser.email,
+                    image: demoUser.image,
+                };
             },
         }),
     ],
-    callbacks: {
-        async jwt({ token, account }) {
-            if (account) {
-                token.accessToken = account.access_token;
-                token.refreshToken = account.refresh_token;
-            }
-            return token;
-        },
-        async session({ session, token }: any) {
-            session.accessToken = token.accessToken;
-            session.refreshToken = token.refreshToken;
-            return session;
-        },
+
+    session: {
+        strategy: "database",
     },
+
     secret: process.env.NEXTAUTH_SECRET,
+
     pages: {
-        signIn: '/',
+        signIn: "/",
     },
 };
