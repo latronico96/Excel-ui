@@ -4,6 +4,7 @@ export interface PaymentMethodOption {
     id: string;
     name: string;
     defaultCommissionPercentage: number;
+    active?: boolean;
 }
 
 export interface ExpenseTypeOption {
