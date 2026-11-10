@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import {
     Movement,
     PaymentMethodOption
@@ -40,10 +40,18 @@ export default function IngresoForm({
     const today = getArgentinaDateString();
 
     const isEditing = Boolean(movement);
+    const existingPaymentIds = useMemo(
+        () => new Set((movement?.payments ?? []).map((payment) => payment.paymentMethodId)),
+        [movement?.payments]
+    );
+    const visiblePaymentMethods = useMemo(
+        () => paymentMethods.filter((method) => method.active !== false || existingPaymentIds.has(method.id)),
+        [paymentMethods, existingPaymentIds]
+    );
 
     const createPayments = useCallback(
         (): IncomePaymentForm[] =>
-            paymentMethods.map((method) => ({
+            paymentMethods.filter((method) => method.active !== false).map((method) => ({
                 paymentMethodId: method.id,
                 amount: "",
                 commissionPercentage: String(
@@ -85,7 +93,7 @@ export default function IngresoForm({
                 const movementPayments =
                     movement.payments ?? [];
 
-                const payments = paymentMethods.map(
+                const payments = visiblePaymentMethods.map(
                     (method) => {
                         const existingPayment =
                             movementPayments.find(
@@ -163,7 +171,7 @@ export default function IngresoForm({
         };
 
         loadForm();
-    }, [movement, paymentMethods, createForm, today]);
+    }, [movement, paymentMethods, visiblePaymentMethods, createForm, today]);
 
     const updatePayment = (
         paymentMethodId: string,
@@ -434,7 +442,7 @@ export default function IngresoForm({
                             gap: "0.4rem",
                         }}
                     >
-                        {paymentMethods.map((method) => {
+                        {visiblePaymentMethods.map((method) => {
                             const payment = form.payments.find(
                                 (p) => p.paymentMethodId === method.id
                             );

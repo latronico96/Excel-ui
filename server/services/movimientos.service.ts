@@ -240,7 +240,13 @@ export class MovimientosService {
                         workspaceId,
                     },
                     include: {
-                        income: true,
+                        income: {
+                            include: {
+                                payments: {
+                                    select: { paymentMethodId: true },
+                                },
+                            },
+                        },
                         expense: true,
                     },
                 });
@@ -325,11 +331,16 @@ export class MovimientosService {
                             where: {
                                 id: payment.paymentMethodId,
                                 workspaceId,
-                                active: true,
                             },
                         });
 
-                    if (!paymentMethod) {
+                    const wasAlreadyUsed =
+                        existingMovement.income?.payments?.some(
+                            (existingPayment) =>
+                                existingPayment.paymentMethodId === payment.paymentMethodId
+                        ) ?? false;
+
+                    if (!paymentMethod || (paymentMethod.active === false && !wasAlreadyUsed)) {
                         throw new Error(
                             "VALIDATION: Medio de pago inválido"
                         );
@@ -683,7 +694,7 @@ export class MovimientosService {
                     workspaceId,
                     date: {
                         gte: startDate,
-                        lte: nowArgentina,
+                        lte: now,
                     },
                 },
                 select: {

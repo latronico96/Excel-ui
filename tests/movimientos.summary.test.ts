@@ -105,6 +105,19 @@ describe("MovimientosService.fetchSummary", () => {
         expect(result.totals.balance).toBe(-1250);
     });
 
+    it("no incluye movimientos posteriores al momento actual", async () => {
+        const before = new Date();
+
+        await MovimientosService.fetchSummary("workspace-A", "day");
+
+        const after = new Date();
+        const query = mocks.movementFindMany.mock.calls[0][0];
+        const upperBound = query.where.date.lte as Date;
+
+        expect(upperBound.getTime()).toBeGreaterThanOrEqual(before.getTime());
+        expect(upperBound.getTime()).toBeLessThanOrEqual(after.getTime());
+    });
+
     it("devuelve totales en cero cuando no hay movimientos", async () => {
         const result = await MovimientosService.fetchSummary(
             "workspace-A",
