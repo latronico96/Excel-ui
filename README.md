@@ -1,59 +1,171 @@
-# Excel-UI: Gestión de Comercio con Google Sheets
+# Excel-ui
 
-Este proyecto es una aplicación web full-stack construida con **Next.js 14** que utiliza **Google Sheets** como base de datos principal. Permite a pequeños comercios registrar sus movimientos diarios de forma profesional y segura.
+Aplicación web para administrar las finanzas de un comercio: registrar ingresos y egresos, organizar medios de pago y categorías, consultar resúmenes y trabajar con espacios compartidos.
 
-## 🚀 Arquitectura
-- **Frontend**: Next.js (App Router), React, TypeScript.
-- **Backend**: API Routes de Next.js integradas.
-- **Servicios**: Capa de abstracción enfocada en Google APIs (`Drive` y `Sheets`).
-- **Autenticación**: NextAuth.js con Google Provider y scopes de Drive/Sheets.
-- **Almacenamiento**: Google Drive (se crea un archivo ".Control Diario - Mi Comercio" automáticamente).
+## Stack
 
-## 🛠️ Configuración Paso a Paso
+- **Next.js 15** (App Router) y **React 18**
+- **TypeScript**
+- **NextAuth.js 4** para autenticación con Google y acceso demo
+- **Prisma ORM 7** con adaptadores para PostgreSQL y SQLite
+- **PostgreSQL** (compatible con Neon) o **SQLite** para desarrollo local
+- **Vitest** para pruebas automatizadas
 
-### 1. Google Cloud Console
-1. Ve a [Google Cloud Console](https://console.cloud.google.com/).
-2. Crea un nuevo proyecto.
-3. Habilita las siguientes APIs:
-   - **Google Sheets API**
-   - **Google Drive API**
-4. Ve a **Pantalla de consentimiento de OAuth**:
-   - Configura el nombre de la app y tu correo.
-   - Añade los scopes: `.../auth/spreadsheets` y `.../auth/drive.file`.
-   - Añade tu correo como usuario de prueba (si está en modo Testing).
-5. Ve a **Credenciales**:
-   - Crea un **ID de cliente de OAuth 2.0** (Tipo: Aplicación Web).
-   - Orígenes de JavaScript autorizados: `http://localhost:3000`
-   - URI de redireccionamiento autorizados: `http://localhost:3000/api/auth/callback/google`
+## Funcionalidades implementadas
 
-### 2. Variables de Entorno
-Crea un archivo `.env.local` en la raíz copiando el contenido de `.env.example` y completa tus credenciales:
-```env
-GOOGLE_CLIENT_ID=XXXX
-GOOGLE_CLIENT_SECRET=XXXX
-NEXTAUTH_URL=http://localhost:3000
-NEXTAUTH_SECRET=GeneraUnaClaveSegura
+- Registro, edición, consulta y eliminación de movimientos.
+- Ingresos distribuidos entre varios medios de pago, con cálculo de comisiones e inversión.
+- Egresos asociados a categorías y medios de pago.
+- Resúmenes por día, semana, mes y año.
+- Configuración del espacio de trabajo: porcentaje de inversión y reglas de diezmo.
+- Categorías de gastos y medios de pago, con activación y desactivación.
+- Gastos recurrentes y registro de sus pagos.
+- Espacios de trabajo, cambio de espacio, miembros, roles e invitaciones.
+- Modo demo con una cuenta y un espacio de demostración.
+- Páginas de privacidad y términos.
+
+Los permisos y las operaciones de datos se validan en el backend y se limitan al espacio de trabajo activo del usuario.
+
+## Requisitos
+
+- Node.js **22 o superior**.
+- npm.
+- Para iniciar sesión con Google: credenciales OAuth de Google Cloud.
+- Una base PostgreSQL local/remota (por ejemplo Neon), o SQLite para desarrollo local.
+
+## Instalación
+
+```bash
+npm ci
 ```
 
-### 3. Instalación y Ejecución
-```bash
-# Instalar dependencias
-npm install
+## Variables de entorno
 
-# Iniciar servidor de desarrollo
+Copiá el archivo de ejemplo:
+
+```bash
+cp .env.example .env.local
+```
+
+En Windows PowerShell:
+
+```powershell
+Copy-Item .env.example .env.local
+```
+
+Configurá las variables:
+
+| Variable | Uso |
+|---|---|
+| `GOOGLE_CLIENT_ID` | ID OAuth de Google |
+| `GOOGLE_CLIENT_SECRET` | Secreto OAuth de Google |
+| `NEXTAUTH_URL` | URL base de la aplicación; local: `http://localhost:8080` |
+| `NEXTAUTH_SECRET` | Secreto de NextAuth; generá uno único y privado |
+| `DATABASE_URL` | Conexión PostgreSQL usada por Prisma |
+| `DATABASE_URL_SQLITE` | Ruta del archivo SQLite |
+| `USE_SQLITE` | `true` para usar SQLite; `false` para PostgreSQL |
+
+Generá el secreto de NextAuth con:
+
+```bash
+openssl rand -base64 32
+```
+
+No subas `.env.local`, credenciales ni secretos al repositorio.
+
+## Base de datos local
+
+### Opción A: SQLite
+
+Es la opción más simple para probar localmente sin instalar PostgreSQL. En `.env.local`:
+
+```env
+USE_SQLITE=true
+DATABASE_URL_SQLITE="file:./dev.db"
+```
+
+El archivo SQLite se crea localmente. El esquema está en `prisma/schema.sqlite.prisma` y su configuración CLI en `prisma.sqlite.config.ts`.
+
+### Opción B: PostgreSQL
+
+Configurá `DATABASE_URL` con una base PostgreSQL local o de desarrollo. Por ejemplo, para una instancia local:
+
+```env
+USE_SQLITE=false
+DATABASE_URL="postgresql://postgres:postgres@localhost:5432/excel_ui?schema=public"
+```
+
+El esquema PostgreSQL está en `prisma/schema.prisma` y su configuración CLI en `prisma7.config.ts`.
+
+**Seguridad:** no ejecutes comandos de sincronización o migración contra producción como parte de la configuración local. Verificá siempre a qué base apunta `DATABASE_URL` antes de ejecutar comandos que escriban en ella.
+
+## Prisma Client
+
+Generá ambos clientes (PostgreSQL y SQLite):
+
+```bash
+npm run prisma:generate
+```
+
+Validá los esquemas:
+
+```bash
+npx prisma validate --config=prisma7.config.ts
+npx prisma validate --config=prisma.sqlite.config.ts
+```
+
+## Ejecutar la aplicación
+
+Servidor de desarrollo:
+
+```bash
 npm run dev
 ```
 
-## 📊 Funcionalidades
-- **Login Seguro**: Acceso restringido con Google OAuth.
-- **Gestión de Drive**: Creación automática del Sheet al primer login.
-- **Carga de Movimientos**: Formulario inteligente con cálculo de comisiones.
-- **Resumen Automático**: Sincronización de totales en tiempo real.
-- **Diseño Premium**: Interfaz limpia, responsiva y con modo oscuro soportado.
+La aplicación queda disponible en [http://localhost:8080](http://localhost:8080).
 
-## 📁 Estructura del Proyecto
-- `/app`: Rutas, API y páginas (App Router).
-- `/server`: Lógica de negocio y drivers de Google APIs.
-- `/shared`: Tipos TypeScript y constantes globales.
-- `/public`: Activos estáticos.
-- `/components`: (Integrados en /app por simplicidad de estructura solicitada).
+Para iniciar sesión con Google, registrá la URL local y el callback `http://localhost:8080/api/auth/callback/google` en las credenciales OAuth. El acceso demo está disponible desde la pantalla de inicio.
+
+## Pruebas y verificaciones
+
+Ejecutar las pruebas:
+
+```bash
+npm test
+```
+
+Modo watch:
+
+```bash
+npm run test:watch
+```
+
+Lint y chequeo de tipos:
+
+```bash
+npm run lint
+npx tsc --noEmit
+```
+
+## Build de producción
+
+```bash
+npm run build
+npm start
+```
+
+La build valida los esquemas y genera los clientes Prisma antes de compilar Next.js.
+
+## Estructura principal
+
+- `app/`: páginas, layouts y endpoints API.
+- `prisma/`: esquemas, clientes generados y scripts de datos.
+- `server/services/`: lógica de negocio y permisos.
+- `server/utils/`: cálculos financieros y utilidades.
+- `shared/`: tipos y utilidades compartidas.
+- `tests/`: pruebas unitarias y de rutas.
+- `.github/workflows/`: integración continua.
+
+## Integración continua
+
+GitHub Actions ejecuta instalación limpia, generación de Prisma Client, pruebas Vitest, ESLint, TypeScript, build y auditoría de dependencias en los eventos configurados en `.github/workflows/ci.yml`.
