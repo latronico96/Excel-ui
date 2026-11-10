@@ -9,7 +9,6 @@
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
     "prisma:validate": "prisma validate --config=prisma7.config.ts",
-    "prisma:generate": "prisma generate --config=prisma7.config.ts",
     "prisma:validate:sqlite": "prisma validate --config=prisma.sqlite.config.ts",
     "prisma:generate:sqlite": "prisma generate --config=prisma.sqlite.config.ts",
     "seed": "tsx --tsconfig tsconfig.json prisma/seed.ts",
@@ -51,6 +50,8 @@
   "overrides": {
     "next": {
       "postcss": "^8.5.30"
-    }
+    },
+    "fast-uri": "^3.1.9",
+    "gaxios": "^7.3.1"
   }
 }
