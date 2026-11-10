@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import {
     Movement,
     PaymentMethodOption
@@ -40,8 +40,14 @@ export default function IngresoForm({
     const today = getArgentinaDateString();
 
     const isEditing = Boolean(movement);
-    const existingPaymentIds = new Set((movement?.payments ?? []).map((payment) => payment.paymentMethodId));
-    const visiblePaymentMethods = paymentMethods.filter((method) => method.active !== false || existingPaymentIds.has(method.id));
+    const existingPaymentIds = useMemo(
+        () => new Set((movement?.payments ?? []).map((payment) => payment.paymentMethodId)),
+        [movement?.payments]
+    );
+    const visiblePaymentMethods = useMemo(
+        () => paymentMethods.filter((method) => method.active !== false || existingPaymentIds.has(method.id)),
+        [paymentMethods, existingPaymentIds]
+    );
 
     const createPayments = useCallback(
         (): IncomePaymentForm[] =>
