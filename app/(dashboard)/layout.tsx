@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { signOut, useSession } from "next-auth/react";
 import { usePathname, useRouter } from "next/navigation";
+import OnboardingTour from "./components/OnboardingTour";
 import Link from "next/link";
 import {
     ArrowDownCircle,
@@ -289,6 +290,7 @@ export default function DashboardLayout({
                     <nav className="sidebar-nav">
                         <Link
                             href="/hoy"
+                            data-tour="inicio"
                             className={`nav-link ${isActive("/hoy") ? "active" : ""}`}
                         >
                             <LayoutDashboard size={20} />
@@ -297,6 +299,7 @@ export default function DashboardLayout({
 
                         <Link
                             href="/resumen"
+                            data-tour="resumen"
                             className={`nav-link ${isActive("/resumen") ? "active" : ""}`}
                         >
                             <PieChart size={20} />
@@ -305,6 +308,7 @@ export default function DashboardLayout({
 
                         <Link
                             href="/movimientos"
+                            data-tour="movimientos"
                             className={`nav-link ${isActive("/movimientos") ? "active" : ""}`}
                         >
                             <Receipt size={20} />
@@ -313,6 +317,7 @@ export default function DashboardLayout({
 
                         <Link
                             href="/gastos-mensuales"
+                            data-tour="gastos-mensuales"
                             className={`nav-link ${isActive("/gastos-mensuales") ? "active" : ""}`}
                         >
                             <Calendar size={20} />
@@ -333,6 +338,7 @@ export default function DashboardLayout({
                             </Link>
                             <Link
                                 href="/tipos-gasto"
+                                data-tour="tipos-gasto"
                                 className={`nav-link nav-link-sub ${isActive("/tipos-gasto") ? "active" : ""}`}
                             >
                                 <Tags size={19} />
@@ -341,6 +347,7 @@ export default function DashboardLayout({
 
                             <Link
                                 href="/medios-pago"
+                                data-tour="medios-pago"
                                 className={`nav-link nav-link-sub ${isActive("/medios-pago") ? "active" : ""}`}
                             >
                                 <CreditCard size={19} />
@@ -348,6 +355,7 @@ export default function DashboardLayout({
                             </Link>
                             <Link
                                 href="/miembros"
+                                data-tour="miembros"
                                 className={`nav-link nav-link-sub ${isActive("/miembros") ? "active" : ""}`}
                             >
                                 <Users size={19} />
@@ -355,6 +363,7 @@ export default function DashboardLayout({
                             </Link>
                             <Link
                                 href="/espacios"
+                                data-tour="espacios"
                                 className={`nav-link nav-link-sub ${isActive("/espacios") ? "active" : ""}`}
                             >
                                 <Folder size={19} />
@@ -419,6 +428,7 @@ export default function DashboardLayout({
                         <div className="mobile-drawer-header">
                             <div
                                 className="flex min-w-0 flex-1 items-center gap-2"
+                                data-tour="workspace"
                                 style={{
                                     fontWeight: 700,
                                     fontSize: "1.1rem",
@@ -497,6 +507,7 @@ export default function DashboardLayout({
                             <Link
                                 href="/hoy"
                                 onClick={closeMenus}
+                                data-tour="inicio"
                                 className={`nav-link ${isActive("/hoy") ? "active" : ""}`}
                             >
                                 <LayoutDashboard size={20} />
@@ -569,6 +580,7 @@ export default function DashboardLayout({
                                 </Link>
                                 <Link
                                     href="/espacios"
+                                    data-tour="espacios"
                                     className={`nav-link nav-link-sub ${isActive("/espacios") ? "active" : ""}`}
                                 >
                                     <Folder size={19} />
@@ -677,6 +689,7 @@ export default function DashboardLayout({
                     {quickMenuOpen ? <X size={27} /> : <Plus size={28} />}
                 </button>
             </div>
+            <OnboardingTour />
         </div>
     );
 }

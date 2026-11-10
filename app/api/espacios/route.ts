@@ -135,3 +135,4 @@ export async function DELETE(request: Request) {
         return handleError(error, "No se pudo eliminar el espacio");
     }
 }
+

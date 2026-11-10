@@ -5,6 +5,7 @@ on:
   push:
     branches:
       - main
+      - master
       - develop
       - feat/validaciones-movimientos
   pull_request:
@@ -28,14 +29,16 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
           cache: npm
 
       - name: Install dependencies
         run: npm ci
 
       - name: Generate Prisma Client
-        run: npx prisma generate
+        run: |
+          npm run prisma:generate
+          npm run prisma:generate:sqlite
 
       - name: Run tests
         run: npm test
@@ -50,7 +53,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
           cache: npm
 
       - name: Install dependencies
@@ -69,14 +72,16 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
           cache: npm
 
       - name: Install dependencies
         run: npm ci
 
       - name: Generate Prisma Client
-        run: npx prisma generate
+        run: |
+          npm run prisma:generate
+          npm run prisma:generate:sqlite
 
       - name: Check types
         run: npx tsc --noEmit
@@ -91,14 +96,16 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
           cache: npm
 
       - name: Install dependencies
         run: npm ci
 
       - name: Generate Prisma Client
-        run: npx prisma generate
+        run: |
+          npm run prisma:generate
+          npm run prisma:generate:sqlite
 
       - name: Build application
         run: npm run build
@@ -113,7 +120,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
           cache: npm
 
       - name: Install dependencies
