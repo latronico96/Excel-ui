@@ -45,7 +45,7 @@ export default function MovimientosPage() {
                 expenseTypesRes,
             ] = await Promise.all([
                 fetch("/api/movimientos"),
-                fetch("/api/medios-pago"),
+                fetch("/api/medios-pago?all=true"),
                 fetch("/api/tipos-gasto"),
             ]);
 
