@@ -335,7 +335,7 @@ export class MovimientosService {
                         });
 
                     const wasAlreadyUsed =
-                        existingMovement.income?.payments.some(
+                        existingMovement.income?.payments?.some(
                             (existingPayment) =>
                                 existingPayment.paymentMethodId === payment.paymentMethodId
                         ) ?? false;
