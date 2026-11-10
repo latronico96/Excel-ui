@@ -683,7 +683,7 @@ export class MovimientosService {
                     workspaceId,
                     date: {
                         gte: startDate,
-                        lte: nowArgentina,
+                        lte: now,
                     },
                 },
                 select: {
