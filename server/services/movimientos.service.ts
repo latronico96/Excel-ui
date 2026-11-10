@@ -240,7 +240,13 @@ export class MovimientosService {
                         workspaceId,
                     },
                     include: {
-                        income: true,
+                        income: {
+                            include: {
+                                payments: {
+                                    select: { paymentMethodId: true },
+                                },
+                            },
+                        },
                         expense: true,
                     },
                 });
@@ -329,7 +335,13 @@ export class MovimientosService {
                             },
                         });
 
-                    if (!paymentMethod) {
+                    const wasAlreadyUsed =
+                        existingMovement.income?.payments.some(
+                            (existingPayment) =>
+                                existingPayment.paymentMethodId === payment.paymentMethodId
+                        ) ?? false;
+
+                    if (!paymentMethod || (!paymentMethod.active && !wasAlreadyUsed)) {
                         throw new Error(
                             "VALIDATION: Medio de pago inválido"
                         );
