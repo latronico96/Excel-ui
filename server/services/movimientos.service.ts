@@ -340,7 +340,7 @@ export class MovimientosService {
                                 existingPayment.paymentMethodId === payment.paymentMethodId
                         ) ?? false;
 
-                    if (!paymentMethod || (!paymentMethod.active && !wasAlreadyUsed)) {
+                    if (!paymentMethod || (paymentMethod.active === false && !wasAlreadyUsed)) {
                         throw new Error(
                             "VALIDATION: Medio de pago inválido"
                         );
