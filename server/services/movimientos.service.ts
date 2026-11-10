@@ -331,7 +331,6 @@ export class MovimientosService {
                             where: {
                                 id: payment.paymentMethodId,
                                 workspaceId,
-                                active: true,
                             },
                         });
 
