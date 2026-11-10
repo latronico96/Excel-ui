@@ -289,7 +289,7 @@ export default function MovimientosPage() {
 
                 {showEgresoForm && (
                     <EgresoForm
-                        paymentMethods={paymentMethods}
+                        paymentMethods={paymentMethods.filter((method) => method.active !== false)}
                         expenseTypes={expenseTypes}
                         loading={loading}
                         movement={
