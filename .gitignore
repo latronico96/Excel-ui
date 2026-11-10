@@ -28,6 +28,7 @@ yarn-error.log*
 # local env files
 .env
 .env*
+!.env.example
 .env.local
 .env*.local
 
@@ -39,6 +40,13 @@ yarn-error.log*
 next-env.d.ts
 
 /src/generated/prisma
+/prisma/generated/
+/prisma/generated-sqlite/
+/review-parts/
+/audit-report.json
 
 # sqlite
 /dev.db
+/prisma/dev.db
+*.sqlite
+*.sqlite3
