@@ -67,11 +67,11 @@ export default function RootPage() {
     return (
         <main className={styles.page}>
             <header className={styles.nav}>
-                <Link className={styles.brand} href="/" aria-label="Excel Pro, inicio">
+                <Link className={styles.brand} href="/" aria-label="Ordená tus Finanzas, inicio">
                     <span className={styles.brandMark}>
                         <LayoutDashboard size={23} strokeWidth={2.2} />
                     </span>
-                    <span>Excel <b>Pro</b></span>
+                    <span>Ordená tus <b>Finanzas</b></span>
                 </Link>
 
                 <nav className={styles.navActions} aria-label="Navegación principal">
@@ -96,17 +96,18 @@ export default function RootPage() {
                 <div className={styles.heroCopy}>
                     <div className={styles.eyebrow}>
                         <Sparkles size={15} aria-hidden="true" />
-                        Tus finanzas, en orden
+                        Tu plata, más organizada
                     </div>
 
                     <h1>
-                        Entendé tu dinero.
-                        <span>Decidí con claridad.</span>
+                        Ordená tus finanzas.
+                        <span>Administrá tu plata fácilmente.</span>
                     </h1>
 
                     <p className={styles.heroDescription}>
-                        Registrá tus ingresos y gastos, revisá tus movimientos y entendé
-                        mejor cómo usás tu plata. Todo organizado en un solo lugar.
+                        Registrá tus ingresos y gastos, organizá tus cuentas y
+                        descubrí en qué estás usando tu plata. Todo en un solo lugar,
+                        de manera simple y clara.
                     </p>
 
                     <div className={styles.heroActions}>
@@ -135,7 +136,7 @@ export default function RootPage() {
 
                     <div className={styles.trustNote}>
                         <Lock size={15} aria-hidden="true" />
-                        <span>Entrá a tu cuenta o explorá un espacio de prueba.</span>
+                        <span>Empezá gratis o explorá la aplicación antes de registrarte.</span>
                     </div>
                 </div>
 
@@ -223,45 +224,53 @@ export default function RootPage() {
             <section id="funciones" className={styles.featuresSection}>
                 <div className={styles.sectionHeading}>
                     <span className={styles.sectionEyebrow}>MENOS VUELTAS, MÁS CLARIDAD</span>
-                    <h2>Lo importante, sin complicarte.</h2>
-                    <p>Herramientas simples para tener una imagen más clara de tus finanzas.</p>
+                    <h2>Todo lo que necesitás para organizarte.</h2>
+                    <p>Herramientas simples para tomar el control de tus finanzas cotidianas.</p>
                 </div>
 
                 <div className={styles.featuresGrid}>
                     <article className={styles.featureCard}>
-                        <span className={styles.featureIcon}><TrendingUp size={21} aria-hidden="true" /></span>
+                        <span className={styles.featureIcon}>
+                            <TrendingUp size={21} aria-hidden="true" />
+                        </span>
                         <h3>Ingresos y gastos</h3>
-                        <p>Registrá lo que entra y sale para mantener tus números al día.</p>
+                        <p>Registrá lo que entra y sale para saber cómo se mueve tu plata.</p>
                     </article>
                     <article className={styles.featureCard}>
-                        <span className={styles.featureIcon}><Receipt size={21} aria-hidden="true" /></span>
+                        <span className={styles.featureIcon}>
+                            <Receipt size={21} aria-hidden="true" />
+                        </span>
                         <h3>Historial ordenado</h3>
-                        <p>Encontrá movimientos, revisá fechas y filtrá la información que necesitás.</p>
+                        <p>Consultá tus movimientos, revisá fechas y encontrá lo que necesitás.</p>
                     </article>
                     <article className={styles.featureCard}>
-                        <span className={styles.featureIcon}><CreditCard size={21} aria-hidden="true" /></span>
-                        <h3>Medios y categorías</h3>
-                        <p>Adaptá las opciones a tu forma de organizar y registrar el dinero.</p>
+                        <span className={styles.featureIcon}>
+                            <CreditCard size={21} aria-hidden="true" />
+                        </span>
+                        <h3>Cuentas y categorías</h3>
+                        <p>Organizá tus cuentas, billeteras y categorías a tu manera.</p>
                     </article>
                 </div>
             </section>
 
             <section id="privacidad" className={styles.privacyBanner}>
-                <span className={styles.privacyIcon}><Lock size={21} aria-hidden="true" /></span>
+                <span className={styles.privacyIcon}>
+                    <Lock size={21} aria-hidden="true" />
+                </span>
                 <div>
-                    <h2>Tu información importa.</h2>
+                    <h2>Tus finanzas son tuyas.</h2>
                     <p>
                         Ingresá con tu cuenta para guardar y consultar tus movimientos.
-                        La demo es un espacio de prueba separado.
+                        La demo funciona en un espacio de prueba separado.
                     </p>
                 </div>
             </section>
 
             <footer className={styles.footer}>
-                <Link className={styles.footerBrand} href="/" aria-label="Excel Pro, inicio">
-                    Excel Pro
+                <Link className={styles.footerBrand} href="/" aria-label="Ordená tus Finanzas, inicio">
+                    Ordená tus Finanzas
                 </Link>
-                <span>Una forma más clara de organizar tus finanzas.</span>
+                <span>Administrá tu plata fácilmente.</span>
                 <div className={styles.footerLinks}>
                     <Link href="/privacy">Política de privacidad</Link>
                     <Link href="/terms">Términos de servicio</Link>
