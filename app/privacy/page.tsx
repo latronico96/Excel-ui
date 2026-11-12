@@ -1,41 +1,178 @@
+
 import Link from 'next/link';
 
+export const metadata = {
+  title: 'Política de Privacidad | Ordená tus Finanzas',
+  description:
+    'Conocé qué datos recopila Ordená tus Finanzas, cómo se utilizan y cómo podés ejercer tus derechos.',
+};
+
 export default function PrivacyPage() {
-    return (
-        <div style={{ maxWidth: '800px', margin: '0 auto', padding: '2rem', fontFamily: 'sans-serif', lineHeight: '1.6' }}>
-            <h1>Política de Privacidad</h1>
-            <p>Última actualización: 25 de enero de 2026</p>
+  return (
+    <main
+      style={{
+        maxWidth: '800px',
+        margin: '0 auto',
+        padding: '2rem',
+        fontFamily: 'sans-serif',
+        lineHeight: '1.7',
+      }}
+    >
+      <h1>Política de Privacidad</h1>
+      <p>Última actualización: 11 de noviembre de 2026</p>
 
-            <p>Esta aplicación (&quot;Excel-UI&quot;) respeta su privacidad y se compromete a proteger sus datos personales.</p>
+      <p>
+        En <strong>Ordená tus Finanzas</strong> nos comprometemos a proteger
+        la privacidad de las personas que utilizan la aplicación. Esta
+        política explica qué información recopilamos, para qué la utilizamos
+        y qué opciones tenés para administrar tus datos.
+      </p>
 
-            <h2>1. Datos que recopilamos</h2>
-            <p>Excel-UI no almacena sus datos en servidores propios. La aplicación actúa como una interfaz entre usted y su propia cuenta de Google Drive.</p>
-            <ul>
-                <li><strong>Información de perfil:</strong> Obtenemos su nombre y correo electrónico a través de Google OAuth para identificar su sesión.</li>
-                <li><strong>Acceso a Google Drive/Sheets:</strong> Solicitamos permiso para crear y editar un archivo específico en su Google Drive para almacenar sus registros de ingresos y gastos.</li>
-            </ul>
+      <h2>1. Información que recopilamos</h2>
+      <p>
+        Para prestar el servicio podemos recopilar y almacenar las siguientes
+        categorías de información:
+      </p>
+      <ul>
+        <li>
+          <strong>Datos de cuenta:</strong> nombre, dirección de correo
+          electrónico e imagen de perfil, cuando estén disponibles mediante
+          el inicio de sesión con Google.
+        </li>
+        <li>
+          <strong>Datos financieros:</strong> ingresos, gastos, movimientos,
+          descripciones, fechas, categorías y demás información que ingreses
+          voluntariamente.
+        </li>
+        <li>
+          <strong>Datos de espacios de trabajo:</strong> nombres de espacios,
+          configuraciones, integrantes, roles e invitaciones.
+        </li>
+        <li>
+          <strong>Datos técnicos:</strong> información necesaria para
+          mantener la sesión, autenticar usuarios, proteger y operar el
+          servicio.
+        </li>
+      </ul>
 
-            <h2>2. Uso de los datos</h2>
-            <p>Los datos a los que accedemos solo se utilizan para:</p>
-            <ul>
-                <li>Permitirle registrar, editar y visualizar sus movimientos financieros.</li>
-                <li>Generar resúmenes automáticos dentro de sus propias hojas de cálculo.</li>
-            </ul>
+      <h2>2. Cómo utilizamos la información</h2>
+      <p>Utilizamos la información para:</p>
+      <ul>
+        <li>Crear y administrar tu cuenta.</li>
+        <li>Permitir el registro y seguimiento de ingresos y gastos.</li>
+        <li>Generar resúmenes y estadísticas financieras.</li>
+        <li>Administrar espacios de trabajo, integrantes y permisos.</li>
+        <li>Proteger la aplicación y prevenir usos indebidos.</li>
+        <li>Atender consultas y solicitudes de soporte.</li>
+      </ul>
 
-            <h2>3. Almacenamiento y Seguridad</h2>
-            <p>Todos sus datos financieros se almacenan exclusivamente en su cuenta personal de Google Drive. Nosotros no tenemos acceso a sus archivos fuera de los que la aplicación crea bajo su autorización (&quot;drive.file&quot;).</p>
+      <h2>3. Almacenamiento y servicios de terceros</h2>
+      <p>
+        A diferencia de una aplicación que utiliza Google Sheets como
+        almacenamiento, Ordená tus Finanzas guarda la información de la
+        aplicación en su propia base de datos.
+      </p>
+      <p>
+        La infraestructura tecnológica y los servicios externos que permiten
+        operar la aplicación pueden procesar información técnica o datos
+        necesarios para prestar sus funciones. Entre los servicios utilizados
+        se encuentran Google para la autenticación, Vercel para el alojamiento
+        de la aplicación y Neon para la infraestructura de base de datos.
+      </p>
+      <p>
+        Google se utiliza para facilitar el inicio de sesión. Los movimientos
+        financieros que ingresás en Ordená tus Finanzas no se almacenan en
+        Google Sheets ni en Google Drive.
+      </p>
 
-            <h2>4. Compartir datos con terceros</h2>
-            <p>No vendemos, alquilamos ni compartimos sus datos personales con terceros. Su información permanece privada en su entorno de Google.</p>
+      <h2>4. Acceso y espacios de trabajo</h2>
+      <p>
+        La información de cada espacio de trabajo se encuentra sujeta a los
+        permisos y roles de sus integrantes. Los usuarios que tengan acceso
+        a un mismo espacio podrán visualizar o administrar la información
+        según los permisos asignados por la aplicación.
+      </p>
+      <p>
+        No compartas invitaciones ni credenciales con personas a las que no
+        quieras conceder acceso.
+      </p>
 
-            <h2>5. Sus derechos</h2>
-            <p>Usted puede revocar el acceso de esta aplicación a su cuenta de Google en cualquier momento desde la configuración de seguridad de su cuenta de Google.</p>
+      <h2>5. Compartir información</h2>
+      <p>
+        No comercializamos ni vendemos datos personales. La información
+        puede ser procesada por los proveedores tecnológicos necesarios para
+        operar el servicio o ser accesible para otros integrantes de un espacio
+        de trabajo de acuerdo con sus permisos.
+      </p>
+      <p>
+        También podremos comunicar información cuando exista una obligación
+        legal o un requerimiento válido de una autoridad competente.
+      </p>
 
-            <div style={{ marginTop: '2rem', borderTop: '1px solid #eee', paddingTop: '1rem' }}>
-                <Link href="/" style={{ color: 'var(--primary, #c54b8c)', textDecoration: 'none' }}>
-                    Volver al inicio
-                </Link>
-            </div>
-        </div>
-    );
+      <h2>6. Conservación y eliminación de datos</h2>
+      <p>
+        Podés eliminar un espacio de trabajo desde las funcionalidades
+        disponibles en la aplicación. La eliminación de un espacio de trabajo
+        no implica automáticamente la eliminación de tu cuenta de usuario.
+      </p>
+      <p>
+        Actualmente, la aplicación no ofrece una opción de eliminación
+        automática de la cuenta. Si querés solicitar la eliminación de tu
+        cuenta y los datos personales asociados, escribinos a:
+      </p>
+      <p>
+        <a href="mailto:ignacio.latronico96@gmail.com">
+          ignacio.latronico96@gmail.com
+        </a>
+      </p>
+      <p>
+        Para proteger tu información, podremos solicitar datos adicionales
+        que permitan verificar que sos el titular de la cuenta. Las solicitudes
+        serán evaluadas y gestionadas según las obligaciones legales aplicables
+        y las necesidades operativas del servicio.
+      </p>
+
+      <h2>7. Seguridad</h2>
+      <p>
+        Adoptamos medidas técnicas y organizativas razonables para proteger
+        la información frente al acceso, modificación o divulgación no
+        autorizados. Sin embargo, ningún sistema informático puede garantizar
+        una seguridad absoluta.
+      </p>
+
+      <h2>8. Derechos de los usuarios</h2>
+      <p>
+        Podés solicitar información sobre los datos personales asociados a
+        tu cuenta, así como pedir su actualización, corrección o eliminación
+        cuando corresponda.
+      </p>
+      <p>
+        Para ejercer estos derechos, contactanos mediante el correo indicado
+        en esta política.
+      </p>
+
+      <h2>9. Cambios en esta política</h2>
+      <p>
+        Podemos actualizar esta política para reflejar cambios en la
+        aplicación, sus funcionalidades o las obligaciones legales aplicables.
+        Publicaremos la versión vigente en esta página e indicaremos su fecha
+        de actualización.
+      </p>
+
+      <h2>10. Contacto</h2>
+      <p>
+        Si tenés preguntas sobre esta política o sobre el tratamiento de tus
+        datos personales, podés escribirnos a:
+      </p>
+      <p>
+        <a href="mailto:ignacio.latronico96@gmail.com">
+          ignacio.latronico96@gmail.com
+        </a>
+      </p>
+
+      <p style={{ marginTop: '2rem' }}>
+        <Link href="/onboarding">Volver a Ordená tus Finanzas</Link>
+      </p>
+    </main>
+  );
 }
