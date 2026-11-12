@@ -14,7 +14,7 @@ const appDescription =
 export const metadata: Metadata = {
     metadataBase: new URL("https://ordenentusfinanzas.vercel.app"),
     title: {
-        default: `${appTitle} | Administrá tu plata fácilmente`,
+        default: appTitle,
         template: `%s | ${appTitle}`,
     },
     creator: "Ordená tus Finanzas",
@@ -31,7 +31,7 @@ export const metadata: Metadata = {
         "presupuesto personal",
     ],
     openGraph: {
-        title: `${appTitle} | Administrá tu plata fácilmente`,
+        title: appTitle,
         description: appDescription,
         url: "/",
         siteName: appTitle,
@@ -48,7 +48,7 @@ export const metadata: Metadata = {
     },
     twitter: {
         card: "summary_large_image",
-        title: `${appTitle} | Administrá tu plata fácilmente`,
+        title: appTitle,
         description: appDescription,
         images: ["/opengraph-image.png"],
     },
@@ -69,6 +69,21 @@ export default function RootLayout({
     return (
         <html lang="es-AR">
             <body className={inter.className}>
+                <script
+                    type="application/ld+json"
+                    dangerouslySetInnerHTML={{
+                        __html: JSON.stringify({
+                            "@context": "https://schema.org",
+                            "@type": "SoftwareApplication",
+                            name: appTitle,
+                            applicationCategory: "FinanceApplication",
+                            operatingSystem: "Web",
+                            inLanguage: "es-AR",
+                            url: "https://ordenentusfinanzas.vercel.app",
+                            description: appDescription,
+                        }),
+                    }}
+                />
                 <Providers>{children}</Providers>
             </body>
         </html>
