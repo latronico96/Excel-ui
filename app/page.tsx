@@ -1,10 +1,4 @@
-'use client';
-
-import { signIn, useSession } from 'next-auth/react';
-import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
 import {
-    ArrowRight,
     LayoutDashboard,
     CreditCard,
     Lock,
@@ -16,58 +10,17 @@ import {
 } from 'lucide-react';
 import styles from './page.module.css';
 import Link from 'next/link';
+import { LandingActions } from './components/LandingActions';
 
 export default function RootPage() {
-    const { status } = useSession();
-    const router = useRouter();
-    const [demoLoading, setDemoLoading] = useState(false);
-    const [loginLoading, setLoginLoading] = useState(false);
-    const [demoError, setDemoError] = useState('');
-
-    useEffect(() => {
-        if (status === 'authenticated') {
-            router.replace('/hoy');
-        }
-    }, [status, router]);
-
-    const handleLogin = async () => {
-        setLoginLoading(true);
-        await signIn('google', { callbackUrl: '/hoy' });
-    };
-
-    const handleDemoLogin = async () => {
-        setDemoError('');
-        setDemoLoading(true);
-
-        try {
-            const response = await fetch('/api/auth/demo', { method: 'POST' });
-
-            if (!response.ok) {
-                throw new Error('No se pudo iniciar la demo. Probá de nuevo en unos segundos.');
-            }
-
-            window.location.href = '/hoy';
-        } catch {
-            setDemoError('No se pudo iniciar la demo. Probá de nuevo en unos segundos.');
-            setDemoLoading(false);
-        }
-    };
-
-    if (status === 'loading' || status === 'authenticated') {
-        return (
-            <main className={styles.loadingScreen}>
-                <div className={styles.loadingMark}>
-                    <LayoutDashboard size={25} />
-                </div>
-                <p>Preparando tus finanzas...</p>
-            </main>
-        );
-    }
-
     return (
         <main className={styles.page}>
             <header className={styles.nav}>
-                <Link className={styles.brand} href="/" aria-label="Ordená tus Finanzas, inicio">
+                <Link
+                    className={styles.brand}
+                    href="/"
+                    aria-label="Ordená tus Finanzas, inicio"
+                >
                     <span className={styles.brandMark}>
                         <LayoutDashboard size={23} strokeWidth={2.2} />
                     </span>
@@ -81,14 +34,7 @@ export default function RootPage() {
                     <Link href="#privacidad" className={styles.navLink}>
                         Tu información
                     </Link>
-                    <button
-                        type="button"
-                        className={styles.navLogin}
-                        onClick={handleLogin}
-                        disabled={loginLoading}
-                    >
-                        {loginLoading ? 'Conectando...' : 'Iniciar sesión'}
-                    </button>
+                    <LandingActions variant="nav" />
                 </nav>
             </header>
 
@@ -110,53 +56,43 @@ export default function RootPage() {
                         de manera simple y clara.
                     </p>
 
-                    <div className={styles.heroActions}>
-                        <button
-                            type="button"
-                            className={styles.primaryButton}
-                            onClick={handleLogin}
-                            disabled={loginLoading}
-                        >
-                            {loginLoading ? 'Conectando...' : 'Continuar con Google'}
-                            <ArrowRight size={17} aria-hidden="true" />
-                        </button>
-                        <button
-                            type="button"
-                            className={styles.secondaryButton}
-                            onClick={handleDemoLogin}
-                            disabled={demoLoading}
-                        >
-                            {demoLoading ? 'Preparando demo...' : 'Explorar demo'}
-                        </button>
-                    </div>
-
-                    {demoError && (
-                        <p className={styles.errorMessage} role="alert">{demoError}</p>
-                    )}
-
+                    <LandingActions variant="hero" />
+                    
                     <div className={styles.trustNote}>
                         <Lock size={15} aria-hidden="true" />
-                        <span>Empezá gratis o explorá la aplicación antes de registrarte.</span>
+                        <span>
+                            Empezá gratis o explorá la aplicación antes de registrarte.
+                        </span>
                     </div>
                 </div>
 
-                <div className={styles.previewWrap} aria-label="Vista ilustrativa del panel financiero">
+                <div
+                    className={styles.previewWrap}
+                    aria-label="Vista ilustrativa del panel financiero"
+                >
                     <div className={styles.previewGlow} />
+
                     <div className={styles.previewCard}>
                         <div className={styles.previewHeader}>
                             <div>
-                                <span className={styles.previewKicker}>RESUMEN FINANCIERO</span>
+                                <span className={styles.previewKicker}>
+                                    RESUMEN FINANCIERO
+                                </span>
                                 <h2>Así se ve tu plata</h2>
                             </div>
                             <span className={styles.monthPill}>Este mes</span>
                         </div>
 
                         <div className={styles.balanceCard}>
-                            <span className={styles.balanceLabel}>Balance del período</span>
+                            <span className={styles.balanceLabel}>
+                                Balance del período
+                            </span>
                             <strong>$ 530.000</strong>
                             <span className={styles.balanceHint}>
-                                <TrendingUp size={14} aria-hidden="true" /> Ingresos menos gastos
+                                <TrendingUp size={14} aria-hidden="true" />
+                                Ingresos menos gastos
                             </span>
+
                             <div className={styles.chart} aria-hidden="true">
                                 <span style={{ height: '34%' }} />
                                 <span style={{ height: '48%' }} />
@@ -181,6 +117,7 @@ export default function RootPage() {
                                 <span className={styles.statLabel}>Ingresos</span>
                                 <strong>$ 850.000</strong>
                             </div>
+
                             <div className={styles.statCard}>
                                 <span className={`${styles.statIcon} ${styles.expenseIcon}`}>
                                     <TrendingDown size={17} aria-hidden="true" />
@@ -194,6 +131,7 @@ export default function RootPage() {
                             <strong>Movimientos recientes</strong>
                             <span>Vista de ejemplo</span>
                         </div>
+
                         <div className={styles.movement}>
                             <span className={`${styles.movementIcon} ${styles.incomeIcon}`}>
                                 <Wallet size={17} aria-hidden="true" />
@@ -202,8 +140,11 @@ export default function RootPage() {
                                 <strong>Ingreso registrado</strong>
                                 <small>Transferencia</small>
                             </span>
-                            <strong className={styles.incomeAmount}>+$ 120.000</strong>
+                            <strong className={styles.incomeAmount}>
+                                +$ 120.000
+                            </strong>
                         </div>
+
                         <div className={styles.movement}>
                             <span className={`${styles.movementIcon} ${styles.expenseIcon}`}>
                                 <Receipt size={17} aria-hidden="true" />
@@ -212,8 +153,11 @@ export default function RootPage() {
                                 <strong>Gasto cotidiano</strong>
                                 <small>Débito</small>
                             </span>
-                            <strong className={styles.expenseAmount}>−$ 18.500</strong>
+                            <strong className={styles.expenseAmount}>
+                                −$ 18.500
+                            </strong>
                         </div>
+
                         <div className={styles.previewFootnote}>
                             Importes ilustrativos, no son datos de tu cuenta
                         </div>
@@ -223,9 +167,14 @@ export default function RootPage() {
 
             <section id="funciones" className={styles.featuresSection}>
                 <div className={styles.sectionHeading}>
-                    <span className={styles.sectionEyebrow}>MENOS VUELTAS, MÁS CLARIDAD</span>
+                    <span className={styles.sectionEyebrow}>
+                        MENOS VUELTAS, MÁS CLARIDAD
+                    </span>
                     <h2>Todo lo que necesitás para organizarte.</h2>
-                    <p>Herramientas simples para tomar el control de tus finanzas cotidianas.</p>
+                    <p>
+                        Herramientas simples para tomar el control de tus finanzas
+                        cotidianas.
+                    </p>
                 </div>
 
                 <div className={styles.featuresGrid}>
@@ -234,21 +183,29 @@ export default function RootPage() {
                             <TrendingUp size={21} aria-hidden="true" />
                         </span>
                         <h3>Ingresos y gastos</h3>
-                        <p>Registrá lo que entra y sale para saber cómo se mueve tu plata.</p>
+                        <p>
+                            Registrá lo que entra y sale para saber cómo se mueve tu plata.
+                        </p>
                     </article>
+
                     <article className={styles.featureCard}>
                         <span className={styles.featureIcon}>
                             <Receipt size={21} aria-hidden="true" />
                         </span>
                         <h3>Historial ordenado</h3>
-                        <p>Consultá tus movimientos, revisá fechas y encontrá lo que necesitás.</p>
+                        <p>
+                            Consultá tus movimientos, revisá fechas y encontrá lo que necesitás.
+                        </p>
                     </article>
+
                     <article className={styles.featureCard}>
                         <span className={styles.featureIcon}>
                             <CreditCard size={21} aria-hidden="true" />
                         </span>
                         <h3>Cuentas y categorías</h3>
-                        <p>Organizá tus cuentas, billeteras y categorías a tu manera.</p>
+                        <p>
+                            Organizá tus cuentas, billeteras y categorías a tu manera.
+                        </p>
                     </article>
                 </div>
             </section>
@@ -267,10 +224,16 @@ export default function RootPage() {
             </section>
 
             <footer className={styles.footer}>
-                <Link className={styles.footerBrand} href="/" aria-label="Ordená tus Finanzas, inicio">
+                <Link
+                    className={styles.footerBrand}
+                    href="/"
+                    aria-label="Ordená tus Finanzas, inicio"
+                >
                     Ordená tus Finanzas
                 </Link>
+
                 <span>Administrá tu plata fácilmente.</span>
+
                 <div className={styles.footerLinks}>
                     <Link href="/privacy">Política de privacidad</Link>
                     <Link href="/terms">Términos de servicio</Link>

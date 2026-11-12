@@ -13,16 +13,14 @@ const appDescription =
 
 export const metadata: Metadata = {
     metadataBase: new URL("https://ordenentusfinanzas.vercel.app"),
-
     title: {
         default: `${appTitle} | Administrá tu plata fácilmente`,
         template: `%s | ${appTitle}`,
     },
-
+    creator: "Ordená tus Finanzas",
+    publisher: "Ordená tus Finanzas",
     description: appDescription,
-
     applicationName: appTitle,
-
     keywords: [
         "finanzas personales",
         "control de gastos",
@@ -32,11 +30,10 @@ export const metadata: Metadata = {
         "ahorro",
         "presupuesto personal",
     ],
-
     openGraph: {
         title: `${appTitle} | Administrá tu plata fácilmente`,
         description: appDescription,
-        url: "/onboarding",
+        url: "/",
         siteName: appTitle,
         locale: "es_AR",
         type: "website",
@@ -49,19 +46,16 @@ export const metadata: Metadata = {
             },
         ],
     },
-
     twitter: {
         card: "summary_large_image",
         title: `${appTitle} | Administrá tu plata fácilmente`,
         description: appDescription,
         images: ["/opengraph-image.png"],
     },
-
     robots: {
         index: true,
         follow: true,
     },
-
     verification: {
         google: "LPSt3_sjFJfq1Qv7_ISCHgBPvXt41xcRKK2Nzk_kRfU",
     },

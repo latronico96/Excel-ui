@@ -175,7 +175,7 @@ export default function PrivacyPage() {
             </p>
 
             <p style={{ marginTop: '2rem' }}>
-                <Link href="/onboarding">Volver a Ordená tus Finanzas</Link>
+                <Link href="/">Volver a Ordená tus Finanzas</Link>
             </p>
         </main>
     );
