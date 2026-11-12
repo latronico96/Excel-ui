@@ -7,6 +7,8 @@ import {
     TrendingDown,
     TrendingUp,
     Wallet,
+    CircleHelp,
+    CheckCircle2,
 } from 'lucide-react';
 import styles from './page.module.css';
 import Link from 'next/link';
@@ -30,6 +32,9 @@ export default function RootPage() {
                 <nav className={styles.navActions} aria-label="Navegación principal">
                     <Link href="#funciones" className={styles.navLink}>
                         Funciones
+                    </Link>
+                    <Link href="#como-funciona" className={styles.navLink}>
+                        Cómo funciona
                     </Link>
                     <Link href="#privacidad" className={styles.navLink}>
                         Tu información
@@ -57,7 +62,7 @@ export default function RootPage() {
                     </p>
 
                     <LandingActions variant="hero" />
-                    
+
                     <div className={styles.trustNote}>
                         <Lock size={15} aria-hidden="true" />
                         <span>
@@ -207,6 +212,130 @@ export default function RootPage() {
                             Organizá tus cuentas, billeteras y categorías a tu manera.
                         </p>
                     </article>
+                </div>
+            </section>
+
+            <section id="como-funciona" className={styles.howSection}>
+                <div className={styles.sectionHeading}>
+                    <span className={styles.sectionEyebrow}>
+                        TU ECONOMÍA, MÁS CLARA
+                    </span>
+                    <h2>Organizá tus finanzas personales en pocos pasos.</h2>
+                    <p>
+                        No necesitás planillas complicadas. Empezá registrando tus
+                        movimientos y consultá tu situación cuando quieras.
+                    </p>
+                </div>
+
+                <div className={styles.stepsGrid}>
+                    <article className={styles.stepCard}>
+                        <span className={styles.stepNumber}>01</span>
+                        <span className={styles.stepIcon}>
+                            <Wallet size={22} aria-hidden="true" />
+                        </span>
+                        <h3>Registrá tus ingresos</h3>
+                        <p>
+                            Anotá el dinero que recibís y mantené tus entradas
+                            organizadas en un mismo lugar.
+                        </p>
+                    </article>
+
+                    <article className={styles.stepCard}>
+                        <span className={styles.stepNumber}>02</span>
+                        <span className={styles.stepIcon}>
+                            <Receipt size={22} aria-hidden="true" />
+                        </span>
+                        <h3>Anotá tus gastos</h3>
+                        <p>
+                            Registrá tus compras y pagos para tener un historial
+                            claro de tus movimientos.
+                        </p>
+                    </article>
+
+                    <article className={styles.stepCard}>
+                        <span className={styles.stepNumber}>03</span>
+                        <span className={styles.stepIcon}>
+                            <TrendingUp size={22} aria-hidden="true" />
+                        </span>
+                        <h3>Revisá tu balance</h3>
+                        <p>
+                            Compará ingresos y gastos para entender cómo evoluciona
+                            tu economía durante el período.
+                        </p>
+                    </article>
+                </div>
+            </section>
+
+            <section className={styles.faqSection} aria-labelledby="faq-title">
+                <div className={styles.sectionHeading}>
+                    <span className={styles.sectionEyebrow}>
+                        PREGUNTAS FRECUENTES
+                    </span>
+                    <h2 id="faq-title">Resolvemos tus dudas.</h2>
+                    <p>
+                        Conocé un poco más sobre cómo funciona Ordená tus Finanzas.
+                    </p>
+                </div>
+
+                <div className={styles.faqList}>
+                    <details className={styles.faqItem}>
+                        <summary>
+                            <span>
+                                <CircleHelp size={19} aria-hidden="true" />
+                                ¿Para qué sirve Ordená tus Finanzas?
+                            </span>
+                            <span className={styles.faqPlus} aria-hidden="true">+</span>
+                        </summary>
+                        <p>
+                            Es una aplicación para organizar tus finanzas personales.
+                            Podés registrar ingresos, gastos, administrar tus cuentas
+                            y consultar tus movimientos para tener una visión más clara
+                            de tu dinero.
+                        </p>
+                    </details>
+
+                    <details className={styles.faqItem}>
+                        <summary>
+                            <span>
+                                <CircleHelp size={19} aria-hidden="true" />
+                                ¿Puedo registrar ingresos y gastos?
+                            </span>
+                            <span className={styles.faqPlus} aria-hidden="true">+</span>
+                        </summary>
+                        <p>
+                            Sí. Podés registrar tanto el dinero que recibís como los
+                            gastos que realizás y consultar el historial de movimientos.
+                        </p>
+                    </details>
+
+                    <details className={styles.faqItem}>
+                        <summary>
+                            <span>
+                                <CircleHelp size={19} aria-hidden="true" />
+                                ¿Puedo organizar distintas cuentas?
+                            </span>
+                            <span className={styles.faqPlus} aria-hidden="true">+</span>
+                        </summary>
+                        <p>
+                            Sí. Podés organizar tus movimientos utilizando distintas
+                            cuentas y categorías, según tu forma de administrar el dinero.
+                        </p>
+                    </details>
+
+                    <details className={styles.faqItem}>
+                        <summary>
+                            <span>
+                                <CircleHelp size={19} aria-hidden="true" />
+                                ¿Puedo probar la aplicación antes de registrarme?
+                            </span>
+                            <span className={styles.faqPlus} aria-hidden="true">+</span>
+                        </summary>
+                        <p>
+                            Sí. Podés explorar la demostración para conocer la aplicación
+                            antes de ingresar con tu propia cuenta. La demo utiliza un
+                            espacio de prueba separado.
+                        </p>
+                    </details>
                 </div>
             </section>
 
