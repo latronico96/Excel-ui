@@ -36,16 +36,25 @@ export const metadata: Metadata = {
     openGraph: {
         title: `${appTitle} | Administrá tu plata fácilmente`,
         description: appDescription,
-        url: "/",
+        url: "/onboarding",
         siteName: appTitle,
         locale: "es_AR",
         type: "website",
+        images: [
+            {
+                url: "/opengraph-image.png",
+                width: 1200,
+                height: 630,
+                alt: "Ordená tus Finanzas",
+            },
+        ],
     },
 
     twitter: {
         card: "summary_large_image",
         title: `${appTitle} | Administrá tu plata fácilmente`,
         description: appDescription,
+        images: ["/opengraph-image.png"],
     },
 
     robots: {

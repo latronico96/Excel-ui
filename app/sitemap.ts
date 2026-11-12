@@ -6,7 +6,7 @@ const baseUrl = "https://ordenentusfinanzas.vercel.app";
 export default function sitemap(): MetadataRoute.Sitemap {
     return [
         {
-            url: `${baseUrl}/onboarding`,
+            url: `${baseUrl}/`,
             changeFrequency: "weekly",
             priority: 1,
         },
